@@ -5,11 +5,13 @@ const wave4 = 'M0 6C115.7-6 198.3 76.6 308 76.6c109.6 0 131.8-20 223-28.3 114.3-
 
 width = window.innerWidth
 
+barColours = [{offset: 0, colour: '#00A8DE'}, {offset: 0.2, colour: '#333391'}, {offset: 0.4, colour: '#E91388'}, {offset: 0.8, colour: '#EB2D2E'}]
+
 bannerSvg = d3.select('#inner-wrap').append('svg')
   .attr('class', 'waves')
   .attr('xmlns', 'http://www.w3.org/2000/svg')
   .attr('width', width)
-  .attr('height', 600)
+  .attr('height', 225)
   .attr('viewbox', `viewBox="0 0 ${width} 600`)
   .attr('preserveAspectRatio', 'xMidYMax meet')
 
@@ -18,7 +20,14 @@ defs = bannerSvg.append('defs')
 waveGradient = defs.append('linearGradient')
   .attr('id', 'a')
 
+// waveGradient
+//   .append('stop')
+//   .data(barColours)
+//   .attr('offset', d => d.offset)
+//   .attr('stop-color', d => d.colour)
+
 waveGradient.append('stop')
+  .attr('offset', 0)
   .attr('stop-color', '#00A8DE')
 
 waveGradient.append('stop')
@@ -59,3 +68,23 @@ bannerSvg.append('text')
   .attr('x', width / 2)
   .attr('y', 107)
   .text('Joseph Smith')
+
+var main = d3.select('#main')
+var scrolly = d3.select('#containter')
+var figure = scrolly.select('#graph')
+var article = scrolly.select('#sections')
+var step = article.selectAll('.storySection')
+
+var scroller = scrollama()
+
+scroller
+  .setup({
+    step: '.storySection',
+    offset: 0.33,
+    debug: true
+  })
+  .onStepEnter(handleStepEnter)
+
+function handleStepEnter(response) {
+  console.log(response)
+}

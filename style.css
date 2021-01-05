@@ -6,8 +6,25 @@
   fill: url(#a)
 }
 
+.storySection {
+  padding-bottom: 800;
+  border-style: solid;
+}
+
+#sections {
+  width: 340px;
+}
+
+#containter {
+  max-width: 900px;
+  position: relative;
+  margin: auto;
+  width: 50%
+}
+
 text {
   text-align: center;
+  font: Arial;
 }
 
 .waves>path{-webkit-animation:a 17390ms ease-in-out infinite alternate-reverse both;

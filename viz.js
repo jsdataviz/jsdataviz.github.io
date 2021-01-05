@@ -79,12 +79,12 @@ var scroller = scrollama()
 
 graph = d3.select('#graph')
   .append('svg')
-  .attr('x', 400)
-  .attr('y', 400)
+  .attr('width', 400)
+  .attr('height', 400)
 
 graph.append('circle')
-  .attr('cx', 100)
-  .attr('cy', 100)
+  .attr('cx', 200)
+  .attr('cy', 200)
   .attr('fill', 'black')
   .attr('r', 10)
 

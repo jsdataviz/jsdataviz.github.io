@@ -8,23 +8,24 @@
 
 .storySection {
   padding-bottom: 800;
+  width: 50%;
   border-style: solid;
 }
 
 #sections {
-  width: 340px;
+  /* width: 340px; */
 }
 
 #containter {
   max-width: 900px;
   position: relative;
   margin: auto;
-  width: 50%
 }
 
 #graph{
-  margin-left: 50%;
+  /* margin-left: 50%; */
   width: 50%;
+  height: 650px;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;

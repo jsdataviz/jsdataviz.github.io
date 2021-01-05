@@ -77,6 +77,17 @@ var step = article.selectAll('.storySection')
 
 var scroller = scrollama()
 
+graph = d3.select('#graph')
+  .append('svg')
+  .attr('x', 400)
+  .attr('y', 400)
+
+graph.append('circle')
+  .attr('cx', 100)
+  .attr('cy', 100)
+  .attr('fill', 'black')
+  .attr('r', 10)
+
 scroller
   .setup({
     step: '.storySection',

@@ -12,6 +12,10 @@
   border-style: solid;
 }
 
+#inner-wrap {
+  margin-bottom: 300px;
+}
+
 #sections {
   /* width: 340px; */
 }

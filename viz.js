@@ -5,7 +5,128 @@ const wave4 = 'M0 6C115.7-6 198.3 76.6 308 76.6c109.6 0 131.8-20 223-28.3 114.3-
 
 width = window.innerWidth
 
+skills = [{
+    name: 'D3',
+    url: './img/d3.png',
+    type: 'Front-End',
+  },
+  {
+    name: 'SQL',
+    url: './img/sql.png',
+    type: 'Data-Management',
+  },
+  {
+    name: 'Python',
+    url: './img/python.png',
+    type: 'Data-Management',
+  },
+  {
+    name: 'CSS',
+    url: './img/css.png',
+    type: 'Front-End',
+  },
+  {
+    name: 'Tableau',
+    url: './img/tableau.png',
+    type: 'Front-End',
+  },
+  {
+    name: 'Tableau Server',
+    url: './img/tableau-server.png',
+    type: 'Data-Infrastructure',
+  },
+  {
+    name: 'Terraform',
+    url: './img/terraform.png',
+    type: 'Data-Infrastructure',
+  },
+  {
+    name: 'HPCC',
+    url: './img/HPCC.png',
+    type: 'Data-Management',
+  },
+  {
+    name: 'Alteryx',
+    url: './img/alteryx.png',
+    type: 'Data-Management',
+  },
+  {
+    name: 'AWS',
+    url: './img/aws.png',
+    type: 'Data-Infrastructure',
+  },
+]
+
+links = [
+  {
+    source: 'D3',
+    target: 'AWS',
+    value: 1,
+  },
+  {
+    source: 'D3',
+    target: 'CSS',
+    value: 1,
+  },
+  {
+    source: 'D3',
+    target: 'Python',
+    value: 1,
+  },
+  {
+    source: 'CSS',
+    target: 'AWS',
+    value: 1,
+  },
+  {
+    source: 'Tableau',
+    target: 'Tableau Server',
+    value: 1,
+  },
+  {
+    source: 'Tableau',
+    target: 'Python',
+    value: 1,
+  },
+  {
+    source: 'Tableau',
+    target: 'Alteryx',
+    value: 1,
+  },
+  {
+    source: 'Tableau',
+    target: 'SQL',
+    value: 1,
+  },
+  {
+    source: 'Tableau Server',
+    target: 'SQL',
+    value: 1,
+  },
+  {
+    source: 'Tableau Server',
+    target: 'AWS',
+    value: 1,
+  },
+  {
+    source: 'Tableau Server',
+    target: 'Terraform',
+    value: 1,
+  },
+  {
+    source: 'HPCC',
+    target: 'Tableau Server',
+    value: 1,
+  },
+  {
+  source: 'HPCC',
+  target: 'Terraform',
+  value: 1,
+  },
+]
+
 barColours = [{offset: 0, colour: '#00A8DE'}, {offset: 0.2, colour: '#333391'}, {offset: 0.4, colour: '#E91388'}, {offset: 0.8, colour: '#EB2D2E'}]
+pointColour = d3.scaleOrdinal(d3.schemeCategory10)
 
 bannerSvg = d3.select('#inner-wrap').append('svg')
   .attr('class', 'waves')
@@ -41,7 +162,6 @@ waveGradient.append('stop')
 waveGradient.append('stop')
   .attr('offset', 0.8)
   .attr('stop-color', '#EB2D2E')
-
 
 bannerSvg.append('path')
   .attr('class', 'wave1')
@@ -79,14 +199,33 @@ var scroller = scrollama()
 
 graph = d3.select('#graph')
   .append('svg')
-  .attr('width', 400)
-  .attr('height', 400)
+  .attr('width', 450)
+  .attr('height', 800)
 
-graph.append('circle')
-  .attr('cx', 200)
-  .attr('cy', 200)
-  .attr('fill', 'black')
-  .attr('r', 10)
+const simulation = d3.forceSimulation(skills)
+  .force('link', d3.forceLink(links).id(d => d.name))
+  .force('charge', d3.forceManyBody())
+  .force('center', d3.forceCenter(225, 400))
+  .force('collide', d3.forceCollide().radius(16))
+
+const link = graph.append('g')
+  .attr('stroke', '#999')
+  .attr('stroke-opacity', 0.6)
+  .selectAll('line')
+  .data(links)
+  .join('line')
+  .attr('stroke-width', d => d.value)
+
+const node = graph.append('g')
+  .attr('stroke', '#fff')
+  .attr('stroke-width', 1.5)
+  .selectAll('circle')
+  .data(skills)
+  .join('circle')
+  .attr('r', 7.5)
+  .attr('fill', d => pointColour(d.type))
+
+simulation.on('tick', tick)
 
 scroller
   .setup({
@@ -97,5 +236,21 @@ scroller
   .onStepEnter(handleStepEnter)
 
 function handleStepEnter(response) {
-  console.log(response)
+  if (response.index === 0) {
+
+  } else if (response.index === 1) {
+
+  }
+}
+
+function tick() {
+  link
+    .attr('x1', d => d.source.x)
+    .attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x)
+    .attr('y2', d => d.target.y);
+
+  node
+    .attr('cx', d => d.x)
+    .attr('cy', d => d.y);
 }

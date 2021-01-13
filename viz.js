@@ -206,7 +206,7 @@ const simulation = d3.forceSimulation(skills)
   .force('link', d3.forceLink(links).id(d => d.name))
   .force('charge', d3.forceManyBody())
   .force('center', d3.forceCenter(225, 400))
-  .force('collide', d3.forceCollide().radius(16))
+  .force('collide', d3.forceCollide().radius(55))
 
 const link = graph.append('g')
   .attr('stroke', '#999')
@@ -216,14 +216,26 @@ const link = graph.append('g')
   .join('line')
   .attr('stroke-width', d => d.value)
 
-const node = graph.append('g')
-  .attr('stroke', '#fff')
-  .attr('stroke-width', 1.5)
-  .selectAll('circle')
+const node = graph.selectAll('.nodes')
   .data(skills)
-  .join('circle')
-  .attr('r', 7.5)
-  .attr('fill', d => pointColour(d.type))
+  .join('g')
+  .attr('stroke-width', 1.5)
+  .attr('class', 'nodes')
+  .attr('transform', d => `translate(${d.x}, ${d.y})`)
+  .append('circle')
+  .attr('r', 30)
+  .attr('stroke', d => pointColour(d.type))
+  .attr('fill', 'white')
+  // .attr('fill', d => `url('${d.url}')`)
+
+
+nodes = d3.selectAll('.nodes')
+  .append('image')
+  .attr('href', d => d.url)
+  .attr('width', 50)
+  .attr('height', 50)
+  .attr('x', -25)
+  .attr('y', -25)
 
 simulation.on('tick', tick)
 
@@ -250,7 +262,6 @@ function tick() {
     .attr('x2', d => d.target.x)
     .attr('y2', d => d.target.y);
 
-  node
-    .attr('cx', d => d.x)
-    .attr('cy', d => d.y);
+  d3.selectAll('.nodes')
+    .attr('transform', d => `translate(${d.x}, ${d.y})`)
 }

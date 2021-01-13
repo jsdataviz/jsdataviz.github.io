@@ -222,11 +222,11 @@ const node = graph.selectAll('.nodes')
   .attr('stroke-width', 1.5)
   .attr('class', 'nodes')
   .attr('transform', d => `translate(${d.x}, ${d.y})`)
+  .call(drag(simulation))
   .append('circle')
   .attr('r', 30)
   .attr('stroke', d => pointColour(d.type))
   .attr('fill', 'white')
-  // .attr('fill', d => `url('${d.url}')`)
 
 
 nodes = d3.selectAll('.nodes')
@@ -251,6 +251,10 @@ function handleStepEnter(response) {
   if (response.index === 0) {
 
   } else if (response.index === 1) {
+    simulation.stop()
+
+    nodes
+      .transition(400)
 
   }
 }
@@ -264,4 +268,28 @@ function tick() {
 
   d3.selectAll('.nodes')
     .attr('transform', d => `translate(${d.x}, ${d.y})`)
+}
+
+function drag(simulation) {
+    function dragstarted(event) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      event.subject.fx = event.subject.x;
+      event.subject.fy = event.subject.y;
+    }
+    
+    function dragged(event) {
+      event.subject.fx = event.x;
+      event.subject.fy = event.y;
+    }
+    
+    function dragended(event) {
+      if (!event.active) simulation.alphaTarget(0);
+      event.subject.fx = null;
+      event.subject.fy = null;
+    }
+    
+    return d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended)
 }

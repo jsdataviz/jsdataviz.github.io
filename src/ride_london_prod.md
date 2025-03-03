@@ -51,11 +51,10 @@ function formatRaceTime(timeDecimal) {
   return `${hours}:${minutes.toString().padStart(2, '0')}`;
 }
 ```
-
+<!-- 
 ```js
 display(raceData2024.filter(d => d.rider_no == 126410))
-```
-
+``` -->
 
 ## Basic Ride Facts
 - How many people raced
@@ -231,25 +230,6 @@ display(
     })
 )
 ```
-
-```js
-display(
-    Plot.plot({
-    width: width,
-    marginLeft: 40,
-    x: {domain:[0, 4]},
-    r: {range: [5, 30], domain: [15000, 20432]},
-    marks: [
-        Plot.circle(rideTotals_100, {
-            x: (d, i) => i + 1,
-            y: 1,
-            r: d => d,
-        }),
-    ]
-    })
-)
-```
-
 
 - Average speed
 - Overall distribution

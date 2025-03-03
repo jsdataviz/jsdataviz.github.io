@@ -1,43 +1,63 @@
 ---
-toc: false
+# toc: false
 ---
 
 <div class="hero">
-  <h1>Joe Smith</h1>
-  <h2>Welcome to your new app! Edit&nbsp;<code style="font-size: 90%;">src/index.md</code> to change this page.</h2>
-  <a href="https://observablehq.com/framework/getting-started">Get started<span style="display: inline-block; margin-left: 0.25rem;">↗︎</span></a>
-</div>
-
-<div class="grid grid-cols-2" style="grid-auto-rows: 504px;">
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "Your awesomeness over time 🚀",
-      subtitle: "Up and to the right!",
-      width,
-      y: {grid: true, label: "Awesomeness"},
-      marks: [
-        Plot.ruleY([0]),
-        Plot.lineY(aapl, {x: "Date", y: "Close", tip: true})
-      ]
-    }))
-  }</div>
-  <div class="card">${
-    resize((width) => Plot.plot({
-      title: "How big are penguins, anyway? 🐧",
-      width,
-      grid: true,
-      x: {label: "Body mass (g)"},
-      y: {label: "Flipper length (mm)"},
-      color: {legend: true},
-      marks: [
-        Plot.linearRegressionY(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species"}),
-        Plot.dot(penguins, {x: "body_mass_g", y: "flipper_length_mm", stroke: "species", tip: true})
-      ]
-    }))
-  }</div>
+  <h1>Hi there, I'm <span id='name'>Joe</span>.</h1>
+  <h2>I'm a full stack data specialist based in London with a passion for finding answers to complex questions.</h2>
 </div>
 
 ---
+
+## What exactly is a full stack data specialist?
+It's a job title I've held since 2023 that sums up my role best. I enjoy solving the puzzles and drawing the value that can be found in data, from building the infrastructure to obtain the raw data from interal or public sources, to presenting that data as analysis or useful data products to stakeholders.
+
+### Examples
+
+<div class="grid grid-cols-3" style="grid-auto-rows: 404px;">
+  <div class="card">
+    <h1>Scraping and Infrastructure</h1>
+  </div>
+  <div class="card">## Dashboards and Products</div>
+  <div class="card">## Analysis</div>
+</div>  
+
+---
+
+```js
+  const raceData_100 = FileAttachment("./data/final_I_data.csv").csv({tyed: true});
+```
+```js
+console.log(raceData_100)
+```
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: 960,
+        grid: true,
+        y: { label: "Finish Time", grid: true},
+        x: { type: "time" },
+        marks: [
+            Plot.dot(raceData_100.filter(d => d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "final_time_decimal",
+                // stroke: d => d.charity_name !== null ? "red" : "white", 
+                tip: true,
+            }),
+            // Plot.dot(raceData_100.filter(d => d.year == 2024 && d.charity_name !== null), {
+            //     x: "rider_no",
+            //     y: d => d3.timeParse("%H:%M:%S")(d.final_time),
+            //     stroke: "red",
+            //     tip: true,
+            //     // title: d => `Date: ${d.price_updated_datetime.substring(0, 10)}\nHectare Trading Close: £${Math.round(d.hectare_close)}`
+            // }),
+        ]
+        })
+)
+```
 
 ## Next steps
 
@@ -74,7 +94,7 @@ Here are some ideas of things you could try…
   flex-direction: column;
   align-items: center;
   font-family: var(--sans-serif);
-  margin: 4rem 0 8rem;
+  margin: 12rem 0 12rem;
   text-wrap: balance;
   text-align: center;
 }
@@ -83,9 +103,13 @@ Here are some ideas of things you could try…
   margin: 1rem 0;
   padding: 1rem 0;
   max-width: none;
-  font-size: 14vw;
-  font-weight: 900;
+  font-size: 11vw;
+  font-weight: 600;
   line-height: 1;
+
+}
+
+#name {
   background: linear-gradient(30deg, var(--theme-foreground-focus), currentColor);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -93,9 +117,9 @@ Here are some ideas of things you could try…
 }
 
 .hero h2 {
-  margin: 0;
+  margin: 0rem 0 10rem;
   max-width: 34em;
-  font-size: 20px;
+  font-size: 2vw;
   font-style: initial;
   font-weight: 500;
   line-height: 1.5;

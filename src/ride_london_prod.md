@@ -34,7 +34,9 @@ So let's pay our respects to our fallen event by digging into the data and seein
 </div>
 
 ```js
-  const raceData_100 = FileAttachment("./data/final_I_data.csv").csv({typed: true});
+  const raceData_100 = FileAttachment("./data/parsed_I_data.csv").csv({typed: true});
+  const raceData_60 = FileAttachment("./data/parsed_I60_data.csv").csv({typed: true});
+  const raceData_30 = FileAttachment("./data/parsed_I30_data.csv").csv({typed: true});
   const rideBlue = '#060549'
   const rideTotals_100 = [20432, 20057, 17887]
   const rideTotals_60 = [2124, 2145, 2378]
@@ -50,11 +52,19 @@ So let's pay our respects to our fallen event by digging into the data and seein
     {year: "2022", distance: "60", num_riders: 2124},
     {year: "2022", distance: "30", num_riders: 413},
   ]
+
 ```
 
 ```js
 const raceData2024 = raceData_100.filter(d => d.year == 2024)
 const sortedTimeData2024 = raceData2024.sort((a, b) => a.final_time_decimal - b.final_time_decimal).map(d => d.final_time_decimal)
+const combinedRaceData = [
+    ...raceData_100.map(item => ({ ...item, raceLength: '100' })),
+    ...raceData_60.map(item => ({ ...item, raceLength: '60' })),
+    ...raceData_30.map(item => ({ ...item, raceLength: '30' }))
+  ];
+
+
 ```
 
 ```js
@@ -77,11 +87,44 @@ const raceColors = {
 
 # How many people rode?
 
-Add overall total number of riders here.
+A total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023. However, this is the number of riders who completed the race, rather than registrations. The conditions of the race in 2023 were much better, which may have led to less people choosing to hit the road in 2024.
 
-### Less people rode the 100, but the event was drawing in more beginners
+```js
+const groupedYearlyData = Object.values(
+combinedRaceData.reduce((acc, { year, raceLength }) => {
+  const key = `${year}-${raceLength}`;
+  
+  if (!acc[key]) {
+    acc[key] = { year, raceLength, riders: 0 };
+  }
+
+  acc[key].riders++;
+  return acc;
+}, {})
+);
+
+groupedYearlyData.push(
+  {year: 2022, raceLength: "100", riders: 20432},
+  {year: 2022, raceLength: "60", riders: 1386},
+  {year: 2022, raceLength: "30", riders: 413},
+)
+
+display(
+Plot.plot({
+    marginLeft: 55,
+    y: {grid: true, label: "Riders"},
+    x: {label: null},
+    marks: [
+      Plot.barY(groupedYearlyData, {x: "year", y: "riders", fill: d => raceColors[d.raceLength]}),
+      Plot.ruleY([0])
+    ]
+  })
+);
+```
+
+### Less people rode the 100, but the shorter rides were growing in popularity
 <br>
-The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the day.
+The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the morning.
 
 <div>
   ${Plot.plot({
@@ -91,7 +134,7 @@ The number of total 100 riders dropped by 11% between 2024 and 2023. Which had b
       marginLeft: 50,
       marginTop: 25,
       x: {label: null},
-      y: {label: "Number of Riders", domain: [0, 22000]},
+      y: {label: "Number of Riders", domain: [0, 22000], grid: true,},
       marks: [
         Plot.barY(rideTotals.filter(d => d.distance == "100"), {
           x: "year",
@@ -122,7 +165,7 @@ Despite the weather however, the shorter events aimed at beginners had considera
         marginLeft: 50,
         marginTop: 25,
         x: {label: null},
-        y: {label: "Number of Riders", domain: [0, 2500]},
+        y: {label: "Number of Riders", domain: [0, 2500], grid: true,},
         marks: [
           Plot.barY(rideTotals.filter(d => d.distance == "60"), {
             x: "year",
@@ -148,7 +191,7 @@ Despite the weather however, the shorter events aimed at beginners had considera
         marginLeft: 50,
         marginTop: 25,
         x: {label: null},
-        y: {label: "Number of Riders", domain: [0, 2500]},
+        y: {label: "Number of Riders", domain: [0, 2500], grid: true,},
         marks: [
           Plot.barY(rideTotals.filter(d => d.distance == "30"), {
             x: "year",
@@ -168,10 +211,138 @@ Despite the weather however, the shorter events aimed at beginners had considera
   </div>
 </div>
 
+### However, fewer women raced than ever before, including beginners.
+
+At 4,088 total female riders, fewer women rode in the Ride London events than since 2022. Continuing the declining trend of female participation even when the event grew in total attendance 2023.
+
+```js
+const groupedFemaleData = Object.values(
+  combinedRaceData.filter(d => d.sex == 'W').reduce((acc, { year, raceLength }) => {
+    const key = `${year}-${raceLength}`;
+    
+    if (!acc[key]) {
+      acc[key] = { year, raceLength, riders: 0 };
+    }
+
+    acc[key].riders++;
+    return acc;
+  }, {})
+);
+
+groupedFemaleData.push(
+  {year: 2022, raceLength: "100", riders: 4502},
+  {year: 2022, raceLength: "60", riders: 429},
+  {year: 2022, raceLength: "30", riders: 228},
+)
+
+display(
+Plot.plot({
+    y: {grid: true},
+    marks: [
+      Plot.barY(groupedFemaleData, {x: "year", y: "riders", fill: d => raceColors[d.raceLength]}),
+      Plot.ruleY([0])
+    ]
+  })
+);
+```
+
+```js
+  // to-do: reduce this data in a better way
+  const femaleRatioData = [
+    {
+      year: "2024",
+      raceDistance: "100",
+      genderRatio: raceData_100.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_100.filter(d => d.year == 2024).length,
+    },
+    {      
+      year: "2024",
+      raceDistance: "60",
+      genderRatio: raceData_60.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_60.filter(d => d.year == 2024).length,
+    },
+    {
+      year: "2024",
+      raceDistance: "30",
+      genderRatio: raceData_30.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_30.filter(d => d.year == 2024).length,
+    },
+    {
+      year: "2023",
+      raceDistance: "100",
+      genderRatio: raceData_100.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_100.filter(d => d.year == 2023).length,
+    },
+    {      
+      year: "2023",
+      raceDistance: "60",
+      genderRatio: raceData_60.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_60.filter(d => d.year == 2023).length,
+    },
+    {
+      year: "2023",
+      raceDistance: "30",
+      genderRatio: raceData_30.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_30.filter(d => d.year == 2023).length,
+    },
+    {
+      year: "2022",
+      raceDistance: "100",
+      genderRatio: 0.22,
+    },
+    {      
+      year: "2022",
+      raceDistance: "60",
+      genderRatio: 0.309523,
+    },
+    {
+      year: "2022",
+      raceDistance: "30",
+      genderRatio: 0.552,
+    },
+    ]
+
+function femaleRatioBars(data) {
+  return Plot.plot({
+        height: 350,
+        width: 400,
+        marginLeft: 50,
+        marginTop: 25,
+        x: {label: null},
+        y: {label: "Perc. of Female Riders", domain: [0, 1], grid: true, tickFormat: d => `${d * 100}%`},
+        marks: [
+          Plot.barY(data, {
+            x: "year",
+            y: "genderRatio",
+            fill: d => raceColors[d.raceDistance],
+          }),
+          Plot.ruleY([0]),
+          Plot.text(data, {
+            x: "year",
+            y: "genderRatio",
+            text: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
+            dy: -6,
+            lineAnchor: "bottom",
+          })
+        ]
+      });
+}
+```
+
+The ratio of female to male riders has dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
+
+It's also worth noting the decline in the most beginner friendly race category of 30 miles. Where more women used to race than men. This race's doubling in popularity has not been felt by both male and female riders equally, seeing a 8% drop from 2023 to 2024.
+
+<div class="grid grid-cols-3">
+  <div>
+    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '100'))}
+  </div>
+  <div>
+    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '60'))}
+  </div>
+  <div>
+    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '30'))}
+  </div>
+</div>
+
 ## Basic Ride Facts
 - How many people raced ✅
-- What the makeup of riders was
-- Percentiles
+- What the makeup of riders was ✅
+- Percentiles and fun facts.
 
 ```js
 const riderNo = view(Inputs.text({placeholder: "Enter your rider number", type: "Number"}));

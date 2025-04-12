@@ -57,14 +57,11 @@ So let's pay our respects to our fallen event by digging into the data and seein
 
 ```js
 const raceData2024 = raceData_100.filter(d => d.year == 2024)
-const sortedTimeData2024 = raceData2024.sort((a, b) => a.final_time_decimal - b.final_time_decimal).map(d => d.final_time_decimal)
 const combinedRaceData = [
     ...raceData_100.map(item => ({ ...item, raceLength: '100' })),
     ...raceData_60.map(item => ({ ...item, raceLength: '60' })),
     ...raceData_30.map(item => ({ ...item, raceLength: '30' }))
   ];
-
-
 ```
 
 ```js
@@ -122,8 +119,9 @@ Plot.plot({
 );
 ```
 
-### Less people rode the 100, but the shorter rides were growing in popularity
 <br>
+
+### Less people rode the 100, but the shorter rides were growing in popularity
 The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the morning.
 
 <div>
@@ -211,6 +209,8 @@ Despite the weather however, the shorter events aimed at beginners had considera
   </div>
 </div>
 
+<br>
+
 ### However, fewer women raced than ever before, including beginners.
 
 At 4,088 total female riders, fewer women rode in the Ride London events than since 2022. Continuing the declining trend of female participation even when the event grew in total attendance 2023.
@@ -296,22 +296,25 @@ Plot.plot({
     },
     ]
 
-function femaleRatioBars(data) {
+function femaleRatioBars(data, distance) {
+  const graphData = data.filter(d => d.raceDistance == distance)
+
   return Plot.plot({
         height: 350,
         width: 400,
         marginLeft: 50,
         marginTop: 25,
+        title: `${distance} miles`,
         x: {label: null},
         y: {label: "Perc. of Female Riders", domain: [0, 1], grid: true, tickFormat: d => `${d * 100}%`},
         marks: [
-          Plot.barY(data, {
+          Plot.barY(graphData, {
             x: "year",
             y: "genderRatio",
             fill: d => raceColors[d.raceDistance],
           }),
           Plot.ruleY([0]),
-          Plot.text(data, {
+          Plot.text(graphData, {
             x: "year",
             y: "genderRatio",
             text: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
@@ -329,30 +332,37 @@ It's also worth noting the decline in the most beginner friendly race category o
 
 <div class="grid grid-cols-3">
   <div>
-    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '100'))}
+    ${femaleRatioBars(femaleRatioData, "100")}
   </div>
   <div>
-    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '60'))}
+    ${femaleRatioBars(femaleRatioData, "60")}
   </div>
   <div>
-    ${femaleRatioBars(femaleRatioData.filter(d => d.raceDistance == '30'))}
+    ${femaleRatioBars(femaleRatioData, "30")}
   </div>
 </div>
 
-## Basic Ride Facts
-- How many people raced ✅
-- What the makeup of riders was ✅
-- Percentiles and fun facts.
+# How did people ride?
 
+Most people finished the ride within 6 hours and 40 minutes. See the ride time distributions below.
+
+Enter your ride number below to see where you place on the distribution, if you don't know your ride number you can find it by entering your name [here](https://results.ridelondon.co.uk/2024/).
 ```js
 const riderNo = view(Inputs.text({placeholder: "Enter your rider number", type: "Number"}));
+const eventPicker = view(Inputs.select(["100", "60", "30"], {value: "100", label: "Race Length"}));
 const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulative Histogram"], {value: "Distribution", label: "Graph Type"}));
 ```
 
 ```js
-  function distroGraph(graphType) {
-      let plotConfig;
+  display(Plot.plot(distroGraph(distroPicker, eventPicker)))
+```
 
+```js
+  function distroGraph(graphType, length) {
+      let plotConfig;
+      const distroData = combinedRaceData.filter(d => d.raceLength == length && d.year == 2024)
+      const sortedTimeData2024 = distroData.sort((a, b) => a.final_time_decimal - b.final_time_decimal).map(d => d.final_time_decimal)
+      const maxRiders = d3.max(distroData.map(d => d.rider_pos))
       const quantiles = [0.01, 0.10, 0.25, 0.50, 0.75, 0.90, 0.99];
       const quantileValues = quantiles.map(q => d3.quantile(sortedTimeData2024, q));
 
@@ -370,44 +380,44 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
               marginRight: 60,
               grid: true,
               y: { label: "Ride Time (Hours)", grid: true, tickFormat: d => formatRaceTime(d) },
-              x: { label: "Finish Position", axis: null },
+              x: { label: "Finish Position", axis: null,},
               marks: [
                   Plot.ruleY(quantileValues, { stroke: rideBlue, strokeWidth: 1.5 }),
-                  Plot.ruleY(raceData2024.filter(d => d.rider_no == riderNo), { y: "final_time_decimal", stroke: "darkRed", strokeWidth: 1.5 }),
+                  Plot.ruleY(distroData.filter(d => d.rider_no == riderNo), { y: "final_time_decimal", stroke: "darkRed", strokeWidth: 1.5 }),
                   Plot.text(quantileValues, {
-                      x: 18000,
+                      x: maxRiders,
                       dx: 24,
                       dy: -6,
                       y: (d) => d,
                       text: (d, i) => `${d3.format(".0%")(quantiles[i])}`,
                   }),
                   Plot.text(quantileValues, {
-                      x: 18000,
+                      x: maxRiders,
                       dx: 24,
                       dy: 6,
                       y: (d) => d,
                       text: (d, i) => `${formatRaceTime(d)}`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      x: 18000,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      x: maxRiders,
                       dx: 24,
                       dy: -6,
                       y: "final_time_decimal",
                       fill: "red",
                       text: (d) => `${quantileScale(d.final_time_decimal)}%`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      x: 18000,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      x: maxRiders,
                       dx: 24,
                       dy: 6,
                       y: "final_time_decimal",
                       fill: "red",
                       text: (d) => `${formatRaceTime(d.final_time_decimal)}`,
                   }),
-                  Plot.dot(raceData2024, {
+                  Plot.dot(distroData, {
                       x: "rider_pos",
                       y: "final_time_decimal",
-                      stroke: rideBlue,
+                      stroke: raceColors[length],
                       r: 2,
                       strokeWidth: 1,
                       tip: true,
@@ -417,7 +427,7 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
                         }
                       },
                   }),
-                  Plot.dot(raceData2024.filter(d => d.rider_no == riderNo), {
+                  Plot.dot(distroData.filter(d => d.rider_no == riderNo), {
                       x: "rider_pos",
                       y: "final_time_decimal",
                       stroke: "red",
@@ -430,38 +440,39 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
           plotConfig = {
               marginLeft: 60,
               marginTop: 40,
+              marginBottom: 60,
               height: 640,
               width: width,
               x: { label: "Ride Time (Hours)", tickFormat: d => formatRaceTime(d) },
               y: { label: "Number of Finished Riders", grid: true },
               marks: [
-                  Plot.rectY(raceData_100.filter(d => d.year == 2024),
-                      Plot.binX({ y: "count" }, { x: "final_time_decimal", fill: rideBlue }),
+                  Plot.rectY(distroData,
+                      Plot.binX({ y: "count" }, { x: "final_time_decimal", fill: raceColors[length] }),
                   ),
                   Plot.ruleX(quantileValues, { stroke: "darkRed", strokeWidth: 2 }),
-                  Plot.ruleX(raceData2024.filter(d => d.rider_no == riderNo), { x: "final_time_decimal", stroke: "red", strokeWidth: 1.5 }),
+                  Plot.ruleX(distroData.filter(d => d.rider_no == riderNo), { x: "final_time_decimal", stroke: "red", strokeWidth: 1.5 }),
                   Plot.text(quantileValues, {
-                      y: 1200,
-                      dy: -26,
+                      y: 0,
+                      dy: 35,
                       x: (d) => d,
                       text: (d, i) => `${d3.format(".0%")(quantiles[i])}`,
                   }),
                   Plot.text(quantileValues, {
-                      y: 1200,
-                      dy: -16,
+                      y: 0,
+                      dy: 25,
                       x: (d) => d,
                       text: (d, i) => `${formatRaceTime(d)}`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      y: 1200,
-                      dy: -26,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      y: 0,
+                      dy: 35,
                       x: (d) => d.final_time_decimal,
                       fill: "red",
                       text: (d) => `${quantileScale(d.final_time_decimal)}%`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      y: 1200,
-                      dy: -16,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      y: 0,
+                      dy: 25,
                       x: (d) => d.final_time_decimal,
                       fill: "red",
                       text: (d) => `${formatRaceTime(d.final_time_decimal)}`,
@@ -478,31 +489,31 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
               x: { label: "Ride Time (Hours)", tickFormat: d => formatRaceTime(d) },
               y: { label: "Number of Finished Riders", grid: true },
               marks: [
-                  Plot.rectY(raceData_100.filter(d => d.year == 2024),
-                      Plot.binX({ y: "count" }, { x: "final_time_decimal", cumulative: 1, fill: rideBlue })),
+                  Plot.rectY(distroData,
+                      Plot.binX({ y: "count" }, { x: "final_time_decimal", cumulative: 1, fill: raceColors[length] })),
                   Plot.ruleX(quantileValues, { stroke: "darkRed", strokeWidth: 2 }),
-                  Plot.ruleX(raceData2024.filter(d => d.rider_no == riderNo), { x: "final_time_decimal", stroke: "red", strokeWidth: 1.5 }),
+                  Plot.ruleX(distroData.filter(d => d.rider_no == riderNo), { x: "final_time_decimal", stroke: "red", strokeWidth: 1.5 }),
                   Plot.text(quantileValues, {
-                      y: 17500,
+                      y: maxRiders,
                       dy: -26,
                       x: (d) => d,
                       text: (d, i) => `${d3.format(".0%")(quantiles[i])}`,
                   }),
                   Plot.text(quantileValues, {
-                      y: 17500,
+                      y: maxRiders,
                       dy: -16,
                       x: (d) => d,
                       text: (d, i) => `${formatRaceTime(d)}`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      y: 17500,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      y: maxRiders,
                       dy: -26,
                       x: (d) => d.final_time_decimal,
                       fill: "red",
                       text: (d) => `${quantileScale(d.final_time_decimal)}%`,
                   }),
-                  Plot.text(raceData2024.filter(d => d.rider_no == riderNo), {
-                      y: 17500,
+                  Plot.text(distroData.filter(d => d.rider_no == riderNo), {
+                      y: maxRiders,
                       dy: -16,
                       x: (d) => d.final_time_decimal,
                       fill: "red",
@@ -518,25 +529,7 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
 }
 ```
 
-```js
-  display(Plot.plot(distroGraph(distroPicker)))
-```
-
-- Average speed
-- Overall distribution
-
-## How was the event run?
-- Start time waves
-- Did the weather cause a crowded start?
-- Number of breaks
-- Most popular spots
-- Least break time spot
-
-## Event compared to previous years
-- Number of riders per year (weather effect)
-- Event types growing or shrinking
-- Finish time distribution
-- Wind speed factor
+However, there was a much wider distribution of finish times in the 100 mile race when compared to the 2023 ride, with people generally taking longer to finish the race.
 
 ```js
 display(
@@ -553,13 +546,51 @@ display(
         y: { label: "Number of Riders", grid: true },
         x: { label: "Ride Time Hours" },
         marks: [
-            Plot.rectY(raceData_100,
+            Plot.rectY(combinedRaceData.filter(d => d.raceLength == '100'),
                 Plot.binX({y2: "count"}, {x: "final_time_decimal", fill: "year", mixBlendMode: "multiply"})),
             Plot.ruleY([0]),
         ]
         })
 )
 ```
+
+## Did the poor weather lead to lower times overall?
+
+Add wind impact analysis.
+
+# How was the race run?
+
+When entering into the Ride London events, you're asked to give an estimated time you expect to complete the events. The organisers then place riders into gated starting times to manage the flow of riders throughout the day.
+
+But how well was this managed? And how many people actually began in the starting groups they were assigned?
+
+Generally, riders who began riding earlier in the day did complete the race quicker.
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: width,
+        marginLeft: 60,
+        grid: true,
+        y: { label: "Total Ride Time (hours)", grid: true},
+        x: { label: "Start Time of Day", type: "time" },
+        marks: [
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "final_time_decimal",
+                stroke: rideBlue, 
+                tip: true,
+            })
+        ]
+        })
+)
+```
+
+But did everyone start when they were meant to? How many people started the race outside of the time they were designated on registration?
+
+If we plot the each rider's designated race number against the time they began the race.
 
 ```js
 display(
@@ -572,23 +603,41 @@ display(
         y: { label: "Rider Number", grid: true},
         x: { label: "Start Time of Day", type: "time" },
         marks: [
-            Plot.dot(raceData_100.filter(d => d.year == 2024), {
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
                 y: "rider_no",
                 stroke: rideBlue, 
                 tip: true,
             })
-            // Plot.dot(raceData_100.filter(d => d.year == 2024 && d.charity_name !== null), {
-            //     x: "rider_no",
-            //     y: d => d3.timeParse("%H:%M:%S")(d.final_time),
-            //     stroke: "red",
-            //     tip: true,
-            //     // title: d => `Date: ${d.price_updated_datetime.substring(0, 10)}\nHectare Trading Close: £${Math.round(d.hectare_close)}`
-            // }),
         ]
         })
 )
 ```
+
+ We can see that the 100 mile race was split into 5 starting waves:
+
+1) Riders with numbers between 101,000 and 103,500 began at 6:00am.
+2) Riders with numbers between 103,700 and 110,000 began at 6:05am.
+3) Riders with numbers between 110,000 and 116,000 began at 6:45am.
+4) Riders with numbers between 116,000 and 122,500 began at 7:35am
+5) Riders with numbers between 123,000 and 129,000 began 8:15am.
+
+There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
+
+We can *also* see that some riders, who based on their rider number and start time, either bumped into waves early than they should have had, or joined later than intended. Let's highlight those now.
+
+## Basic Ride Facts
+- How many people raced ✅ 
+- What the makeup of riders was ✅
+- Percentiles and fun facts. ✅
+- Wind speed factor
+
+
+## How was the event run?
+- Start time waves  ✅ 
+- Did the weather cause a crowded start? / Did people choose to start later due to the rain?
+- Number of breaks / Most popular spots
+- Least break time spot
 
 <style>
 

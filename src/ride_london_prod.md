@@ -379,7 +379,7 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
               marginLeft: 60,
               marginRight: 60,
               grid: true,
-              y: { label: "Ride Time (Hours)", grid: true, tickFormat: d => formatRaceTime(d) },
+              y: { label: "Ride Time (Hours)", grid: true, tickFormat: d => formatRaceTime(d)},
               x: { label: "Finish Position", axis: null,},
               marks: [
                   Plot.ruleY(quantileValues, { stroke: rideBlue, strokeWidth: 1.5 }),
@@ -558,13 +558,13 @@ display(
 
 Add wind impact analysis.
 
-# How was the race run?
+# How well was the race run?
 
-When entering into the Ride London events, you're asked to give an estimated time you expect to complete the events. The organisers then place riders into gated starting times to manage the flow of riders throughout the day.
+When entering into the Ride London events, riders are asked to give an estimated time they expect to complete the event. The organisers then place riders into gated starting times to manage the flow of riders throughout the day.
 
-But how well was this managed? And how many people actually began in the starting groups they were assigned?
+This makes sense, in the perfect scenario the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
 
-Generally, riders who began riding earlier in the day did complete the race quicker.
+We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time.
 
 ```js
 display(
@@ -579,16 +579,46 @@ display(
         marks: [
             Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "final_time_decimal",
+                y: "ride_time_finish_decimal",
                 stroke: rideBlue, 
                 tip: true,
-            })
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: "red", 
+                tip: true,
+            }),
+            Plot.link([1], {
+              x1: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 06:00:04'),
+              x2: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 09:45:04'),
+              y1: 12.90,
+              y2: 9.10,
+              strokeDasharray: 4,
+              stroke: 'black',
+            }),
+            Plot.tip(["The dreaded sweeper bus that collects any riders who have not fished by 6pm sets the upper limit of how long riders can take throughout the day."], {
+              x: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 08:00:04'),
+              y: 11,
+              frameAnchor: "bottom",
+            }),
         ]
         })
 )
 ```
+Generally, riders who began riding earlier in the day did complete the race quicker. However there is a lot of variance in this trend.
 
-But did everyone start when they were meant to? How many people started the race outside of the time they were designated on registration?
+### How well was this management system implemented?
+
+This gating system only works if two things are true:
+
+- Riders actually begin at their designated starting time.
+
+- Riders are realistic about their estimated finishing time.
+
+There are so clues in the data that might help us evaluate how closely these two points were followed.
+
+## Did everyone start when they were meant to? 
 
 If we plot the each rider's designated race number against the time they began the race.
 
@@ -616,15 +646,121 @@ display(
 
  We can see that the 100 mile race was split into 5 starting waves:
 
-1) Riders with numbers between 101,000 and 103,500 began at 6:00am.
-2) Riders with numbers between 103,700 and 110,000 began at 6:05am.
-3) Riders with numbers between 110,000 and 116,000 began at 6:45am.
-4) Riders with numbers between 116,000 and 122,500 began at 7:35am
-5) Riders with numbers between 123,000 and 129,000 began 8:15am.
+1) Between 101,000 and 103,500 began at 6:00am.
+2) Between 103,700 and 110,000 began at 6:05am.
+3) Between 110,000 and 116,000 began at 6:45am.
+4) Between 116,000 and 122,500 began at 7:35am
+5) Between 123,000 and 129,000 began 8:15am.
 
 There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
 
 We can *also* see that some riders, who based on their rider number and start time, either bumped into waves early than they should have had, or joined later than intended. Let's highlight those now.
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: width,
+        marginLeft: 60,
+        grid: true,
+        y: { label: "Rider Number", grid: true},
+        x: { label: "Start Time of Day", type: "time" },
+        marks: [
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "rider_no",
+                stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
+                tip: true,
+            })
+        ]
+        })
+)
+```
+
+If this assumption is true, that means that 12% of riders (2156) began the race earlier than specified and 15% (2704) began later than instructed. Meaning over a quarter of riders did not begin in their original starting wave.
+
+## How did this effect the race?
+
+Let's look where these rule breakers fall on our ride time plot.
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: width,
+        marginLeft: 60,
+        grid: true,
+        y: { label: "Total Ride Time (hours)", grid: true},
+        x: { label: "Start Time of Day", type: "time" },
+        marks: [
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
+                opacity: d => d.is_early_starter == "True" ? 0.8 : d.is_late_starter == "True" ? 0.8 : 0.2, 
+                tip: true,
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: "red", 
+                tip: true,
+            }),
+        ]
+        })
+)
+```
+
+We can see that our early starters more often than not fall into the upper final timezones in the correlation, whereas the late starters are quicker than their waves.
+
+This can be more cleary seen when we plot each group's regression.
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: width,
+        marginLeft: 60,
+        grid: true,
+        y: { label: "Total Ride Time (hours)", grid: true},
+        x: { label: "Start Time of Day", type: "time" },
+        marks: [
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
+                tip: true,
+                opacity: 0.05,
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_late_starter == "False" && d.is_early_starter == "False"), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: rideBlue, 
+                tip: true,
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_early_starter == "True"), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: "red", 
+                tip: true,
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_late_starter == "True"), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
+                y: "ride_time_finish_decimal",
+                stroke: "green", 
+                tip: true,
+            }),
+        ]
+        })
+)
+```
+
+### What if every rider starter when they supposed to?
+
+Let's give every rebellious rider a randomised start time in their starting wave and see how well the race time correlates with start time in comparison to the actual results to get an idea of how much this behavior effected the race planning.
 
 ## Basic Ride Facts
 - How many people raced ✅ 

@@ -1,5 +1,5 @@
 ---
-toc: false
+# toc: false
 theme: "air"
 ---
 
@@ -37,6 +37,7 @@ So let's pay our respects to our fallen event by digging into the data and seein
   const raceData_100 = FileAttachment("./data/parsed_I_data.csv").csv({typed: true});
   const raceData_60 = FileAttachment("./data/parsed_I60_data.csv").csv({typed: true});
   const raceData_30 = FileAttachment("./data/parsed_I30_data.csv").csv({typed: true});
+  const raceSimData = FileAttachment("./data/race_sim_data.csv").csv();
   const rideBlue = '#060549'
   const rideTotals_100 = [20432, 20057, 17887]
   const rideTotals_60 = [2124, 2145, 2378]
@@ -341,6 +342,63 @@ It's also worth noting the decline in the most beginner friendly race category o
     ${femaleRatioBars(femaleRatioData, "30")}
   </div>
 </div>
+<br>
+
+### This low level of female participation is an outlier in regards to London Sportifs
+
+When compared to the other two events in the London Classic series, the London marathon and the two mile swim in the Serpentine, we can see that Ride London had the lowest share of female participants of any event. Falling a massive 26% behind the participation rate of the London Marathon.
+
+```js
+  const londonMarathonData = [
+    {year: "2022", genderRatio: 0.40589935496},
+    {year: "2023", genderRatio: 0.41509433962},
+    {year: "2024", genderRatio: 0.42614504114},
+  ]
+
+  const londonClassicData = [
+    {year: "London Marathon", genderRatio: 0.42614504114},
+    {year: "Serpentine 2 Mile Swim", genderRatio: 0.45594649607},
+    {year: "Ride London 100", genderRatio: 0.17},
+  ]
+
+  const londonSwimData = [
+    {year: "2022", genderRatio: 0.3},
+    {year: "2023", genderRatio: 0.49975864843},
+    {year: "2024", genderRatio: 0.45594649607},
+  ]
+
+  display(
+    Plot.plot({
+        marginLeft: 50,
+        marginTop: 25,
+        title: `Female Participants in London Classic events`,
+        x: {label: null, domain: ['Serpentine 2 Mile Swim', "London Marathon", "Ride London 100"]},
+        y: {label: "Perc. of Female Participants", domain: [0, 1], grid: true, tickFormat: d => `${d * 100}%`},
+        marks: [
+          Plot.barY(londonClassicData, {
+            x: "year",
+            y: "genderRatio",
+          }),
+          Plot.ruleY([0]),
+          Plot.text(londonClassicData, {
+            x: "year",
+            y: "genderRatio",
+            text: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
+            dy: -6,
+            lineAnchor: "bottom",
+          })
+        ]
+      })
+    )
+```
+
+It was the only event where this proportion was declining.
+
+The proportion of London Marathon runners has been steadily moving towards even over the last 3 years. Last year, over X of Y total runners were women.
+
+The two-mile serpentine swim also has far better participation than the ride 100.
+
+---
 
 # How did people ride?
 
@@ -581,13 +639,11 @@ display(
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
                 y: "ride_time_finish_decimal",
                 stroke: rideBlue, 
-                tip: true,
             }),
             Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
                 y: "ride_time_finish_decimal",
                 stroke: "red", 
-                tip: true,
             }),
             Plot.link([1], {
               x1: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 06:00:04'),
@@ -637,7 +693,6 @@ display(
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
                 y: "rider_no",
                 stroke: rideBlue, 
-                tip: true,
             })
         ]
         })
@@ -676,13 +731,142 @@ display(
         ]
         })
 )
+
 ```
 
 If this assumption is true, that means that 12% of riders (2156) began the race earlier than specified and 15% (2704) began later than instructed. Meaning over a quarter of riders did not begin in their original starting wave.
 
+---
+
 ## How did this effect the race?
 
-Let's look where these rule breakers fall on our ride time plot.
+From our riders asigned waves, we can see that the idea was to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave.
+
+However, there was an overlapping of people from wave 2 starting later in the day, and wave 5 starting earlier. With over 55% of the total race riders (or ~10,000 people) leaving in waves 3 and 4.
+
+<div class="grid grid-cols-2">
+  <div>
+    ${Plot.plot({
+      title: 'Riders Assigned Starts',
+      y: {grid: true, domain: [0, 6000]},
+      x: {label: 'Assigned Start Wave'},
+      height: width * 0.5,
+      marks: [
+        Plot.barY(raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'), Plot.groupX(
+          { y: "count" }, { 
+            x: "assigned_wave_number", 
+            fill: rideBlue
+          })),
+        Plot.text(raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'), Plot.groupX(
+          { y: "count" }, { 
+            x: "assigned_wave_number", 
+            dy: - 8,
+            text: d => d.length,
+          }))
+      ]
+    })}
+  </div>
+  <div>
+    ${Plot.plot({
+      title: 'Riders Actual Starts',
+      y: {grid: true, domain: [0, 6000]},
+      x: {label: 'Actual Start Wave'},
+      height: width * 0.5,
+      marks: [
+        Plot.barY(raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null), Plot.groupX(
+          { y: "count" }, { 
+            x: "assigned_start_wave", 
+            fill: rideBlue
+          })),
+        Plot.text(raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null), Plot.groupX(
+          { y: "count" }, { 
+            x: "assigned_start_wave", 
+            dy: -8,
+            text: d => d.length,
+          }))
+      ]
+    })}
+  </div>
+</div>
+
+### How did this effect the flow of the race?
+
+Due to people not starting in their designated waves, a large portion of the race began in two waves rather than evenly distributed across the morning. But how did that effect the *~flow~* of the race?
+
+To analyse this, I've simulated each riders distance along the course, and divided this into 5 mile intervals, including rest stops (you can read more about this here).
+
+Below you can scrub through the day by adjusting the time of day and see how the flow of riders progressed throughout the day.
+
+```js
+const simTime = view(Inputs.range([6, 18], {step: 0.25, value: 6, label: "Hour of Race Day"}));
+```
+
+```js
+const raceSimFiltered = raceSimData.filter(d => simTime == d.hour)
+
+const riderDistributionLong = raceSimFiltered.flatMap(d => [
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "regular", riders: +d.regular_riders },
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "early", riders: +d.early_starters },
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "late", riders: +d.late_starters }
+])
+```
+
+```js
+const showRestStops = view(Inputs.toggle({label: "Show Rest Stops", value: true}));
+const withoutRestStops = (d3.range(0, 100, 5)).map(String)
+const withRestStops = withoutRestStops.toSpliced(6, 0, "Stop 25").toSpliced(12, 0, "Stop 53").toSpliced(17, 0, "Stop 73")
+const showRiderType = view(Inputs.toggle({label: "Show Early/Late Starts", value: false}));
+const startersRemaining = raceSimFiltered.filter(d => d.estimated_distance_bucket == "Not Started")[0];
+const startersRemainingInt = 
+  Number(startersRemaining?.regular_riders || 0) +
+  Number(startersRemaining?.early_starters || 0) +
+  Number(startersRemaining?.late_starters || 0);
+
+const ridersFinished = raceSimFiltered.filter(d => d.estimated_distance_bucket == "Finished")[0];
+const ridersFinishedInt = 
+  Number(ridersFinished?.regular_riders || 0) +
+  Number(ridersFinished?.early_starters || 0) +
+  Number(ridersFinished?.late_starters || 0);
+
+```
+
+Remaining starting riders: ${startersRemainingInt}
+Finished riders: ${ridersFinishedInt}
+```js
+display(
+  Plot.plot({
+    width: width,
+    height: 0.66 * width,
+    y: {
+      grid: true,
+      label: "Number of Riders",
+      domain: [0, 3500]
+    },
+    x: {
+      domain: showRestStops ? withRestStops : withoutRestStops,
+      type: "band",
+      label: "estimated_distance_bucket"
+    },
+    color: {
+      legend: showRiderType,
+      domain: ["regular", "early", "late"],
+      range: ["#1f77b4", "#2ca02c", "#d62728"]
+    },
+    marks: [
+      Plot.barY(riderDistributionLong, {
+        x: "bucket",
+        y: "riders",
+        fill: showRiderType ? "type" : rideBlue,
+        stack: "y"
+      })
+    ]
+  })
+)
+```
+
+Let's break down some key events:
+
+### 7AM: The tryhard wave departs 
 
 ```js
 display(
@@ -700,13 +884,6 @@ display(
                 y: "ride_time_finish_decimal",
                 stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
                 opacity: d => d.is_early_starter == "True" ? 0.8 : d.is_late_starter == "True" ? 0.8 : 0.2, 
-                tip: true,
-            }),
-            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
-                stroke: "red", 
-                tip: true,
             }),
         ]
         })
@@ -715,7 +892,7 @@ display(
 
 We can see that our early starters more often than not fall into the upper final timezones in the correlation, whereas the late starters are quicker than their waves.
 
-This can be more cleary seen when we plot each group's regression.
+This can be more clearly seen when we plot each group's regression.
 
 ```js
 display(
@@ -730,28 +907,24 @@ display(
         marks: [
             Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
+                y: "final_time_decimal",
                 stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
-                tip: true,
                 opacity: 0.05,
             }),
             Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_late_starter == "False" && d.is_early_starter == "False"), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
+                y: "final_time_decimal",
                 stroke: rideBlue, 
-                tip: true,
             }),
             Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_early_starter == "True"), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
+                y: "final_time_decimal",
                 stroke: "red", 
-                tip: true,
             }),
             Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024 && d.is_late_starter == "True"), {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
+                y: "final_time_decimal",
                 stroke: "green", 
-                tip: true,
             }),
         ]
         })
@@ -761,6 +934,37 @@ display(
 ### What if every rider starter when they supposed to?
 
 Let's give every rebellious rider a randomised start time in their starting wave and see how well the race time correlates with start time in comparison to the actual results to get an idea of how much this behavior effected the race planning.
+
+```js
+const is_sim_data = view(Inputs.toggle({label: "Simulated Data", value: true}));
+```
+
+```js
+display(
+    Plot.plot({
+        inset: 6,
+        height: 650,
+        width: width,
+        marginLeft: 60,
+        grid: true,
+        y: { label: "Total Ride Time (hours)", grid: true},
+        x: { label: "Start Time of Day", type: "time" },
+        marks: [
+            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(is_sim_data ? d.simulated_start_dt : d.start_tod),
+                y: "final_time_decimal",
+                stroke: rideBlue, 
+                opacity: d => d.is_early_starter == "True" ? 0.8 : d.is_late_starter == "True" ? 0.8 : 0.2, 
+            }),
+            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(is_sim_data ? d.simulated_start_dt : d.start_tod),
+                y: "final_time_decimal",
+                stroke: "red", 
+            }),
+        ]
+        })
+)
+```
 
 ## Basic Ride Facts
 - How many people raced ✅ 

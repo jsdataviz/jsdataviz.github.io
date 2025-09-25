@@ -2,3 +2,9 @@
 /dist/
 node_modules/
 yarn-error.log
+/data_scrape/data/.ipynb_checkpoints
+/data_scrape/.ipynb_checkpoints
+/data_scrape/.ipynb_checkpoints
+/.ipynb_checkpoints
+/data_scrape/web_data/.ipynb_checkpoints
+Untitled.ipynb

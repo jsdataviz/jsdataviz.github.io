@@ -58,6 +58,7 @@ import * as aq from "npm:arquero"
 
 ```js
 import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointMiles } from "./components/constants.js";
+import { ridersYearlyChart } from "./components/ridersYearlyChart.js";
 ```
 
 ```js
@@ -86,43 +87,10 @@ groupedYearlyData.push(
   {year: 2022, raceLength: "60", riders: 1386},
   {year: 2022, raceLength: "30", riders: 413},
 )
+```
 
-display(
-Plot.plot({
-    marginLeft: 55,
-    marginTop: 25,
-    width: width * 0.75,
-    height: width * 0.5,
-    color: {
-      legend: true,
-      domain: Object.keys(raceColors), 
-      range: Object.values(raceColors),
-    },
-    y: {
-      grid: true, 
-      label: "Riders",
-      nice: true,
-    },
-    x: {
-      label: 'Race Year', 
-      type: 'band', 
-    },
-    marks: [
-      Plot.barY(groupedYearlyData, {
-        x: d => String(d.year), 
-        y: "riders",
-        fill: 'raceLength'
-      }),
-      Plot.text(groupedYearlyData, {
-        x: d => String(d.year), 
-        y: d => d3.sum(groupedYearlyData.filter(x => x.year == d.year).map(z => z.riders)),
-        text: d => d3.sum(groupedYearlyData.filter(x => x.year == d.year).map(z => z.riders)),
-        dy: -8,
-      }),
-      Plot.ruleY([0])
-    ]
-  })
-);
+```js
+display(ridersYearlyChart(groupedYearlyData, width))
 ```
 
 <br>

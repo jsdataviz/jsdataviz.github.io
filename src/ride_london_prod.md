@@ -646,7 +646,6 @@ This crowding in the 3rd and 4th waves led to some significant moments of overcr
 ```js
   const linkData = raceData_100.filter(d => d.year == 2024)
   const highlightedData = raceData_100.filter(d => d.year == 2024 && d.rider_no == 126410)
-  const highlightedData2 = raceData_100.filter(d => d.year == 2024 && d.rider_no == 120605)
 ```
 
 ```js

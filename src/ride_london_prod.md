@@ -73,6 +73,12 @@ import { earlyLateScatterChart } from "./components/earlyLateScatterChart.js";
 import { leaveProportionsChart } from "./components/leaveProportionsChart.js";
 import { waveStartBar } from "./components/waveStartBar.js";
 import { raceSimGraph, withRestStops } from "./components/raceSimGraph.js";
+import { riderPathsSingleChart } from "./components/riderPathsSingleChart.js";
+import { riderPathsSimplifiedChart } from "./components/riderPathsSimplifiedChart.js";
+import { avgPassesChart } from "./components/avgPassesChart.js";
+import { passDistributionChart } from "./components/passDistributionChart.js";
+import { actualVsSimPassesChart } from "./components/actualVsSimPassesChart.js";
+import { shareRidersPassesChart } from "./components/shareRidersPassesChart.js";
 ```
 
 ```js
@@ -644,49 +650,11 @@ This crowding in the 3rd and 4th waves led to some significant moments of overcr
 ```
 
 ```js
-  Plot.plot({
-    width: width,
-    height: 900,
-    x: {
-      axis: "top",
-      label: "miles",
-      domain: [0, 100],
-      ticks: Object.values(checkpointMiles),
-      tickFormat: (d) => `${d}mi`,
-    },
-    y: { 
-      axis: null,
-      reverse: true 
-    },
-    marks: [
-      ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
-        Plot.link(linkData, { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.2, strokeWidth: 0.2}),
-        Plot.link(highlightedData, { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato"}),
-      ]),
-    ]
-  })
+display(riderPathsSingleChart(linkData, highlightedData, width))
 ```
 
 ```js
-  Plot.plot({
-    width: width / 4,
-    height: 900,
-    x: {
-      axis: "top",
-      type: "point",
-      domain: ["rider_pos_start", "rider_pos_finish",],
-      padding: 0,
-      label: null
-    },
-    y: { 
-      axis: null,
-      reverse: true 
-    },
-    marks: [
-      Plot.link(linkData, { x1: d => "rider_pos_start", x2: d => "rider_pos_finish", y1: "rider_pos_start", y2: "rider_pos_finish", opacity: 0.2, strokeWidth: 0.2}),
-      Plot.link(highlightedData, { x1: d => "rider_pos_start", x2: d => "rider_pos_finish", y1: "rider_pos_start", y2: "rider_pos_finish", stroke: "tomato"}),
-    ]
-  })
+display(riderPathsSimplifiedChart(linkData, highlightedData, width))
 ```
 
 ---
@@ -723,53 +691,27 @@ const avgMelted = starterTypeStats.flatMap(d => [
 ```
 
 ```js
-display(Plot.plot({
-  title: "Average passes by start-time group",
-  marginLeft: 60,
-  width: width,
-  x: { label: null },
-  y: { label: "Average passes", grid: true },
-  color: { legend: true },
-  marks: [
-    Plot.barY(avgMelted, {
-      x: "starter_type",
-      y: "value",
-      fill: "metric",
-      fx: "metric",
-    }),
-    Plot.ruleY([0]),
-  ]
-}))
+display(avgPassesChart(avgMelted, width))
 ```
 
 ```js
-display(Plot.plot({
-  title: "Distribution of total riders passed on the road",
-  marginLeft: 60,
-  width: width,
-  x: { label: "Riders passed" },
-  y: { label: "Count", grid: true },
-  fx: { label: null },
-  marks: [
-    Plot.rectY(starterTypeData, Plot.binX({ y: "count" }, { x: "total_passed_riders_race", fill: rideBlue, fillOpacity: 0.7, fx: "starter_type" })),
-    Plot.ruleY([0]),
-  ]
-}))
+display(passDistributionChart(
+  "Distribution of total riders passed on the road",
+  "total_passed_riders_race",
+  "Riders passed",
+  starterTypeData,
+  width
+))
 ```
 
 ```js
-display(Plot.plot({
-  title: "Distribution of total times passed by others on the road",
-  marginLeft: 60,
-  width: width,
-  x: { label: "Times passed by" },
-  y: { label: "Count", grid: true },
-  fx: { label: null },
-  marks: [
-    Plot.rectY(starterTypeData, Plot.binX({ y: "count" }, { x: "total_passed_by_riders_race", fill: rideBlue, fillOpacity: 0.7, fx: "starter_type" })),
-    Plot.ruleY([0]),
-  ]
-}))
+display(passDistributionChart(
+  "Distribution of total times passed by others on the road",
+  "total_passed_by_riders_race",
+  "Times passed by",
+  starterTypeData,
+  width
+))
 ```
 
 ## Real vs simulated: how much did wave non-compliance cost?
@@ -808,24 +750,7 @@ const simCompMelted = simCompStats.flatMap(d => [
 Each unique overtake between two riders counts as one event. If all ${raceData_100.filter(d => d.year == 2024 && (d.is_early_starter === "True" || d.is_late_starter === "True")).length.toLocaleString()} non-compliant riders had started in their correct wave, the total pass events across the field would fall from **${realTotalPasses.toLocaleString()}** to **${simTotalPasses.toLocaleString()}** — a reduction of **${(realTotalPasses - simTotalPasses).toLocaleString()} events (${((realTotalPasses - simTotalPasses) / realTotalPasses * 100).toFixed(1)}%)**.
 
 ```js
-display(Plot.plot({
-  title: "Average pass events per rider: actual vs simulated, by start group",
-  width: width,
-  marginLeft: 60,
-  fx: { label: null, domain: ["On Time", "Early", "Late"] },
-  x: { label: null, axis: null },
-  y: { label: "Avg pass events per rider", grid: true },
-  color: { legend: true, domain: ["Actual", "Simulated"], range: ["steelblue", "tomato"] },
-  marks: [
-    Plot.barY(simCompMelted, {
-      x: "scenario",
-      y: "value",
-      fill: "scenario",
-      fx: "starter_type",
-    }),
-    Plot.ruleY([0]),
-  ]
-}))
+display(actualVsSimPassesChart(simCompMelted, width))
 ```
 
 The on-time group shows almost no change between actual and simulated — as expected, since their start times are unchanged. The largest gaps appear in the early and late starter groups, where incorrect wave placement directly drives excess passing interactions.
@@ -854,28 +779,7 @@ const proportionMelted = proportionStats.flatMap(d => [
 ```
 
 ```js
-display(Plot.plot({
-  title: "Share of riders vs share of pass events, by start group",
-  width: width,
-  marginLeft: 60,
-  fx: { label: null, domain: ["On Time", "Early", "Late"] },
-  x: { label: null, axis: null },
-  y: { label: "Share of total (%)", grid: true },
-  color: {
-    legend: true,
-    domain: ["Share of riders", "Share of passes"],
-    range: ["#aaa", "steelblue"],
-  },
-  marks: [
-    Plot.barY(proportionMelted, {
-      x: "series",
-      y: "value",
-      fill: "series",
-      fx: "starter_type",
-    }),
-    Plot.ruleY([0]),
-  ]
-}))
+display(shareRidersPassesChart(proportionMelted, width))
 ```
 
 ---

@@ -20,7 +20,7 @@ theme: "air"
 ## Introduction
 In case you're not in know, Ride London is (was?) a cycling festival that takes place yearly in London over the weekend of the May public holiday in the UK, during which roads are closed from Central London to Essex for cycling use only.
 
-Professional events are featured over the weekend, as well as a series of spotifs and a casual 'free-ride' around the city for all abilities on the Sunday. The most popular event being the 100 mile route, which was also part of the [London Classics](https://www.thelondonclassics.co.uk/).
+Professional events are featured over the weekend, as well as a series of sportives and a casual 'free-ride' around the city for all abilities on the Sunday. The most popular event being the 100 mile route, which was also part of the [London Classics](https://www.thelondonclassics.co.uk/).
 
 On the 11th of September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event.
 
@@ -38,7 +38,6 @@ So let's pay our respects to our fallen event by digging into the data and seein
   const raceData_60 = FileAttachment("./data/parsed_I60_data.csv").csv({typed: true});
   const raceData_30 = FileAttachment("./data/parsed_I30_data.csv").csv({typed: true});
   const raceSimData = FileAttachment("./data/race_sim_data.csv").csv();
-  const rideBlue = '#060549'
   const rideTotals = [
     {year: "2024", distance: "100", num_riders: 17887},
     {year: "2024", distance: "60", num_riders: 2378},
@@ -54,6 +53,14 @@ So let's pay our respects to our fallen event by digging into the data and seein
 ```
 
 ```js
+import * as aq from "npm:arquero"
+```
+
+```js
+import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointKm } from "./components/constants.js";
+```
+
+```js
 const combinedRaceData = [
     ...raceData_100.map(item => ({ ...item, raceLength: '100' })),
     ...raceData_60.map(item => ({ ...item, raceLength: '60' })),
@@ -61,21 +68,6 @@ const combinedRaceData = [
   ];
 ```
 
-```js
-function formatRaceTime(timeDecimal) {
-  var hours = Math.floor(timeDecimal)
-  var minutes = Math.round((timeDecimal % 1) * 60)
-  return `${hours}:${minutes.toString().padStart(2, '0')}`;
-}
-```
-
-```js
-const raceColors = {
-    "100": rideBlue,
-    "60": "#efb118",
-    "30": "#ff725c",
-  }
-```
 
 ---
 
@@ -84,18 +76,10 @@ const raceColors = {
 A total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023. However, this is the number of riders who completed the race, rather than registrations. The conditions of the race in 2023 were much better, which may have led to less people choosing to hit the road in 2024.
 
 ```js
-const groupedYearlyData = Object.values(
-combinedRaceData.reduce((acc, { year, raceLength }) => {
-  const key = `${year}-${raceLength}`;
-  
-  if (!acc[key]) {
-    acc[key] = { year, raceLength, riders: 0 };
-  }
-
-  acc[key].riders++;
-  return acc;
-}, {})
-);
+const groupedYearlyData = aq.from(combinedRaceData)
+  .groupby("year", "raceLength")
+  .rollup({ riders: aq.op.count() })
+  .objects();
 
 groupedYearlyData.push(
   {year: 2022, raceLength: "100", riders: 20432},
@@ -251,18 +235,11 @@ Despite the weather however, the shorter events aimed at beginners had considera
 At 4,088 total female riders, fewer women rode in the Ride London events than since 2022. Continuing the declining trend of female participation even when the event grew in total attendance 2023.
 
 ```js
-const groupedFemaleData = Object.values(
-  combinedRaceData.filter(d => d.sex == 'W').reduce((acc, { year, raceLength }) => {
-    const key = `${year}-${raceLength}`;
-    
-    if (!acc[key]) {
-      acc[key] = { year, raceLength, riders: 0 };
-    }
-
-    acc[key].riders++;
-    return acc;
-  }, {})
-);
+const groupedFemaleData = aq.from(combinedRaceData)
+  .filter(aq.escape(d => d.sex === 'W'))
+  .groupby("year", "raceLength")
+  .rollup({ riders: aq.op.count() })
+  .objects();
 
 groupedFemaleData.push(
   {year: 2022, raceLength: "100", riders: 4502},
@@ -565,80 +542,6 @@ We can see that the 100 mile race was split into 5 starting waves with the follo
 5) **8:15am** - Rider no. numbers between 123,000 and 129,000  
 
 ```js
-const startLines = [
-  {
-    x: "2024-05-26 06:00:00",
-    y1: 101000,
-    y2: 103500,
-  },
-  {
-    x: "2024-05-26 06:03:00",
-    y1: 103700,
-    y2: 109500,
-  },
-  {
-    x: "2024-05-26 06:45:00",
-    y1: 110000,
-    y2: 116000,
-  },
-  {
-    x: "2024-05-26 07:37:00",
-    y1: 117000,
-    y2: 122000,
-  },
-  {
-    x: "2024-05-26 08:15:00",
-    y1: 123000,
-    y2: 129000,
-  },
-]
-
-const startLabels = [
-  {
-    x: "2024-05-26 06:00:00",
-    y: 103500,
-    label: 'Wave 1',
-  },
-  {
-    x: "2024-05-26 06:03:00",
-    y: 109500,
-    label: "Wave 2",
-  },
-  {
-    x: "2024-05-26 06:45:00",
-    y: 116000,
-    label: "Wave 3",
-  },
-  {
-    x: "2024-05-26 07:37:00",
-    y: 122000,
-    label: "Wave 4",
-  },
-  {
-    x: "2024-05-26 08:15:00",
-    y: 129000,
-    label: "Wave 5",
-  },
-]
-
-const endLines = [
-  {
-    x: "2024-05-26 06:45:00",
-    y1: 103700,
-    y2: 109500,
-  },
-  {
-    x: "2024-05-26 07:37:00",
-    y1: 110000,
-    y2: 116000,
-  },
-  {
-    x: "2024-05-26 08:15:00",
-    y1: 117000,
-    y2: 122000,
-  },
-]
-
 display(
     Plot.plot({
         inset: 6,
@@ -943,31 +846,23 @@ display(
 ```
 
 ```js
-  const leaveCategoryRaceData = combinedRaceData.filter(d => d.year == 2024).map(item => {
-  let leave_type = "On-Time";
-  if (item.is_early_starter == "True") {
-    leave_type = "Early";
-  } else if (item.is_late_starter == "True") {
-    leave_type = "Late";
-  }
+  const leaveCategoryTable = aq.from(combinedRaceData)
+  .filter(aq.escape(d => d.year == 2024))
+  .derive({
+    leave_type: aq.escape(d =>
+      d.is_early_starter === "True" ? "Early" :
+      d.is_late_starter  === "True" ? "Late"  :
+      "On-Time"
+    )
+  })
 
-  return {
-    ...item,
-    leave_type,
-  };
-});
+const leaveCategoryRaceData = leaveCategoryTable.objects()
 
-const total = leaveCategoryRaceData.length;
-const grouped = leaveCategoryRaceData.reduce((acc, item) => {
-  acc[item.leave_type] = (acc[item.leave_type] || 0) + 1;
-  return acc;
-}, {});
-
-const leaveProportions = Object.entries(grouped).map(([type, count]) => ({
-  leave_type: type,
-  count,
-  proportion: count / total
-}));
+const leaveProportions = leaveCategoryTable
+  .groupby("leave_type")
+  .rollup({ count: aq.op.count() })
+  .derive({ proportion: d => d.count / aq.op.sum("count") })
+  .objects();
 
 display(
   Plot.plot({
@@ -1094,9 +989,9 @@ raceSimData.forEach(item => {
 const raceSimFiltered = raceSimData
 
 const riderDistributionLong = raceSimFiltered.flatMap(d => [
-  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "regular", riders: +d.regular_riders },
-  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "early", riders: +d.early_starters },
-  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "late", riders: +d.late_starters },
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "Correct Wave", riders: +d.regular_riders },
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "Early", riders: +d.early_starters },
+  { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "Late", riders: +d.late_starters },
   { hour: +d.hour, bucket: d.estimated_distance_bucket, type: "total_riders", riders: +d.total_riders }
 ])
 
@@ -1206,13 +1101,19 @@ function raceSimGraph(data) {
 }
 ```
 
-### 7AM
+### 7AM - The early waves depart
+
+By 7AM, the first two waves have departed. The earliest wave is made up of the most die hard riders, with very few riders assigned to later waves beginning this early (marked as early riders). 
 
 ```js
   raceSimGraph(riderDistributionLong.filter(d => 7 == d.hour))
 ```
 
-### 8AM
+The second wave departing in the 0-5 mile bucket, contains some of the wave 1 riders who weren't prepared to wake up at 5am and started late. However, 800 riders designated to begin in this wave do not depart on time, instead opting to start the race later.
+
+### 8AM - A peak develops
+
+Wave
 
 ```js
   raceSimGraph(riderDistributionLong.filter(d => 8 == d.hour))
@@ -1244,9 +1145,436 @@ function raceSimGraph(data) {
 
 This crowding in the 3rd and 4th waves led to some significant moments of overcrowding during the beginning of the day. Most notably:
 
- 
+```js
+  const linkData = raceData_100.filter(d => d.year == 2024)
+  const highlightedData = raceData_100.filter(d => d.year == 2024 && d.rider_no == 126410)
+  const highlightedData2 = raceData_100.filter(d => d.year == 2024 && d.rider_no == 120605)
+```
 
+```js
+  Plot.plot({
+    width: width,
+    height: 900,
+    x: {
+      axis: "top",
+      label: "miles",
+      domain: [0, 100],
+      ticks: Object.values(checkpointKm),
+      tickFormat: (d) => `${d}mi`,
+    },
+    y: { 
+      axis: null,
+      reverse: true 
+    },
+    marks: [
+      ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
+        Plot.link(linkData, { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.2, strokeWidth: 0.2}),
+        Plot.link(highlightedData, { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato"}),
+      ]),
+    ]
+  })
+```
 
+```js
+  Plot.plot({
+    width: width / 4,
+    height: 900,
+    x: {
+      axis: "top",
+      type: "point",
+      domain: ["rider_pos_start", "rider_pos_finish",],
+      padding: 0,
+      label: null
+    },
+    y: { 
+      axis: null,
+      reverse: true 
+    },
+    marks: [
+      Plot.link(linkData, { x1: d => "rider_pos_start", x2: d => "rider_pos_finish", y1: "rider_pos_start", y2: "rider_pos_finish", opacity: 0.2, strokeWidth: 0.2}),
+      Plot.link(highlightedData, { x1: d => "rider_pos_start", x2: d => "rider_pos_finish", y1: "rider_pos_start", y2: "rider_pos_finish", stroke: "tomato"}),
+    ]
+  })
+```
+
+---
+
+## Passes by start-time compliance
+
+Did riders who jumped the gun (or started too late) cause more disruption on the road?
+
+```js
+const starterTypeTable = aq.from(raceData_100.filter(d => d.year == 2024))
+  .derive({
+    starter_type: aq.escape(d =>
+      d.is_early_starter === "True" ? "Early" :
+      d.is_late_starter  === "True" ? "Late"  :
+      "On Time"
+    )
+  })
+
+const starterTypeStats = starterTypeTable
+  .groupby("starter_type")
+  .rollup({
+    avg_passed:         aq.op.mean("total_passed_riders_race"),
+    avg_passed_by:      aq.op.mean("total_passed_by_riders_race"),
+    count:              aq.op.count(),
+  })
+  .objects()
+
+const starterTypeData = starterTypeTable.objects()
+
+const avgMelted = starterTypeStats.flatMap(d => [
+  { starter_type: d.starter_type, metric: "Riders passed",    value: d.avg_passed    },
+  { starter_type: d.starter_type, metric: "Passed by riders", value: d.avg_passed_by },
+])
+```
+
+```js
+display(Plot.plot({
+  title: "Average passes by start-time group",
+  marginLeft: 60,
+  width: width,
+  x: { label: null },
+  y: { label: "Average passes", grid: true },
+  color: { legend: true },
+  marks: [
+    Plot.barY(avgMelted, {
+      x: "starter_type",
+      y: "value",
+      fill: "metric",
+      fx: "metric",
+    }),
+    Plot.ruleY([0]),
+  ]
+}))
+```
+
+```js
+display(Plot.plot({
+  title: "Distribution of total riders passed on the road",
+  marginLeft: 60,
+  width: width,
+  x: { label: "Riders passed" },
+  y: { label: "Count", grid: true },
+  fx: { label: null },
+  marks: [
+    Plot.rectY(starterTypeData, Plot.binX({ y: "count" }, { x: "total_passed_riders_race", fill: rideBlue, fillOpacity: 0.7, fx: "starter_type" })),
+    Plot.ruleY([0]),
+  ]
+}))
+```
+
+```js
+display(Plot.plot({
+  title: "Distribution of total times passed by others on the road",
+  marginLeft: 60,
+  width: width,
+  x: { label: "Times passed by" },
+  y: { label: "Count", grid: true },
+  fx: { label: null },
+  marks: [
+    Plot.rectY(starterTypeData, Plot.binX({ y: "count" }, { x: "total_passed_by_riders_race", fill: rideBlue, fillOpacity: 0.7, fx: "starter_type" })),
+    Plot.ruleY([0]),
+  ]
+}))
+```
+
+## Real vs simulated: how much did wave non-compliance cost?
+
+To quantify the disruption caused by early and late starters, we can compare each rider's actual pass counts against the simulation — where every non-compliant rider is placed back into their correct wave, but their speed is held constant.
+
+```js
+const simCompTable = aq.from(raceData_100.filter(d => d.year == 2024))
+  .derive({
+    starter_type: aq.escape(d =>
+      d.is_early_starter === "True" ? "Early" :
+      d.is_late_starter  === "True" ? "Late"  : "On Time"
+    ),
+    real_pass_events: aq.escape(d => +d.total_passed_riders_race + +d.total_passed_by_riders_race),
+    sim_pass_events:  aq.escape(d => +d.sim_total_passed_riders_race + +d.sim_total_passed_by_riders_race),
+  })
+
+const simCompStats = simCompTable
+  .groupby("starter_type")
+  .rollup({
+    avg_real: aq.op.mean("real_pass_events"),
+    avg_sim:  aq.op.mean("sim_pass_events"),
+    count:    aq.op.count(),
+  })
+  .objects()
+
+const realTotalPasses = d3.sum(raceData_100.filter(d => d.year == 2024), d => +d.total_passed_riders_race)
+const simTotalPasses  = d3.sum(raceData_100.filter(d => d.year == 2024), d => +d.sim_total_passed_riders_race)
+
+const simCompMelted = simCompStats.flatMap(d => [
+  { starter_type: d.starter_type, scenario: "Actual",    value: d.avg_real },
+  { starter_type: d.starter_type, scenario: "Simulated", value: d.avg_sim  },
+])
+```
+
+Each unique overtake between two riders counts as one event. If all ${raceData_100.filter(d => d.year == 2024 && (d.is_early_starter === "True" || d.is_late_starter === "True")).length.toLocaleString()} non-compliant riders had started in their correct wave, the total pass events across the field would fall from **${realTotalPasses.toLocaleString()}** to **${simTotalPasses.toLocaleString()}** — a reduction of **${(realTotalPasses - simTotalPasses).toLocaleString()} events (${((realTotalPasses - simTotalPasses) / realTotalPasses * 100).toFixed(1)}%)**.
+
+```js
+display(Plot.plot({
+  title: "Average pass events per rider: actual vs simulated, by start group",
+  width: width,
+  marginLeft: 60,
+  fx: { label: null, domain: ["On Time", "Early", "Late"] },
+  x: { label: null, axis: null },
+  y: { label: "Avg pass events per rider", grid: true },
+  color: { legend: true, domain: ["Actual", "Simulated"], range: ["steelblue", "tomato"] },
+  marks: [
+    Plot.barY(simCompMelted, {
+      x: "scenario",
+      y: "value",
+      fill: "scenario",
+      fx: "starter_type",
+    }),
+    Plot.ruleY([0]),
+  ]
+}))
+```
+
+The on-time group shows almost no change between actual and simulated — as expected, since their start times are unchanged. The largest gaps appear in the early and late starter groups, where incorrect wave placement directly drives excess passing interactions.
+
+Are early and late starters responsible for a disproportionate share of pass events relative to their size in the field?
+
+```js
+const totalRiders2024 = raceData_100.filter(d => d.year == 2024).length
+
+const proportionStats = simCompTable
+  .groupby("starter_type")
+  .rollup({
+    count:           aq.op.count(),
+    real_pass_total: aq.op.sum("total_passed_riders_race"),
+  })
+  .derive({
+    pct_riders:      aq.escape(d => d.count / totalRiders2024 * 100),
+    pct_real_passes: aq.escape(d => d.real_pass_total / realTotalPasses * 100),
+  })
+  .objects()
+
+const proportionMelted = proportionStats.flatMap(d => [
+  { starter_type: d.starter_type, series: "Share of riders",  value: d.pct_riders      },
+  { starter_type: d.starter_type, series: "Share of passes",  value: d.pct_real_passes },
+])
+```
+
+```js
+display(Plot.plot({
+  title: "Share of riders vs share of pass events, by start group",
+  width: width,
+  marginLeft: 60,
+  fx: { label: null, domain: ["On Time", "Early", "Late"] },
+  x: { label: null, axis: null },
+  y: { label: "Share of total (%)", grid: true },
+  color: {
+    legend: true,
+    domain: ["Share of riders", "Share of passes"],
+    range: ["#aaa", "steelblue"],
+  },
+  marks: [
+    Plot.barY(proportionMelted, {
+      x: "series",
+      y: "value",
+      fill: "series",
+      fx: "starter_type",
+    }),
+    Plot.ruleY([0]),
+  ]
+}))
+```
+
+---
+
+## An outlier: the rider who passed almost everyone
+
+```js
+const andrewRider = raceData_100.find(d => d.rider_no === 100273 && d.year === 2024)
+const andrewPassedRiders = raceData_100.filter(d =>
+  d.year === 2024 &&
+  +d.rider_pos_start < +andrewRider.rider_pos_start &&
+  +d.rider_pos_finish > +andrewRider.rider_pos_finish
+)
+const andrewPassedAvgMph = d3.mean(andrewPassedRiders, d => +d.mph_finish)
+const fieldAvgMph = d3.mean(raceData_100.filter(d => d.year === 2024), d => +d.mph_finish)
+```
+
+Meet **Andrew Habibi-Parker**. As a VIP entrant (rider #100273) he had his own start slot and rolled off the line at 08:32 — one of the very last to start, in the bottom 6% of riders by start time. By that point, the bulk of the field had been on the road for hours.
+
+What followed was one of the most disruptive rides in the race. Starting from position ${andrewRider.rider_pos_start.toLocaleString()} out of 17,893, Andrew spent the next 7 hours and 4 minutes cutting through the field, overtaking **${(+andrewRider.total_passed_riders_race).toLocaleString()} riders** on the open road — and being passed by just **${andrewRider.total_passed_by_riders_race}**.
+
+He finished in position ${andrewRider.rider_pos_finish.toLocaleString()}, climbing roughly 5,900 places through the field.
+
+The speed differential tells the whole story. Andrew averaged **${(+andrewRider.mph_finish).toFixed(1)} mph** across the course. The riders he overtook averaged just **${andrewPassedAvgMph.toFixed(1)} mph** — the field as a whole averaged ${fieldAvgMph.toFixed(1)} mph.
+
+```js
+display(Plot.plot({
+  title: "Andrew's mph vs riders he passed vs the full field",
+  width: width * 0.6,
+  height: 300,
+  marginLeft: 160,
+  x: { label: "Average mph (finish)", grid: true },
+  marks: [
+    Plot.barX(
+      [
+        { label: "Field average",       mph: fieldAvgMph },
+        { label: "Riders he passed",    mph: andrewPassedAvgMph },
+        { label: "Andrew Habibi-Parker", mph: +andrewRider.mph_finish },
+      ],
+      { x: "mph", y: "label", fill: rideBlue, sort: { y: "x" } }
+    ),
+    Plot.ruleX([0]),
+  ]
+}))
+```
+
+---
+
+## A different kind of disruption: the rider the field swallowed whole
+
+```js
+const jamesRider = raceData_100.find(d => d.rider_no === 102317 && d.year === 2024)
+const jamesPassedByRiders = raceData_100.filter(d =>
+  d.year === 2024 &&
+  +d.rider_pos_start > +jamesRider.rider_pos_start &&
+  +d.rider_pos_finish < +jamesRider.rider_pos_finish
+)
+const jamesPassedByAvgMph = d3.mean(jamesPassedByRiders, d => +d.mph_finish)
+
+const jamesPassData = [
+  { segment: "Start → 25mi",  type: "Road", passed: +jamesRider.passed_riders_tod_25_td_race,  passed_by: +jamesRider.passed_by_riders_tod_25_td_race },
+  { segment: "25 → 26mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_26_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_26_td_rest },
+  { segment: "26 → 53mi",     type: "Road", passed: +jamesRider.passed_riders_tod_53_td_race,  passed_by: +jamesRider.passed_by_riders_tod_53_td_race },
+  { segment: "53 → 54mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_54_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_54_td_rest },
+  { segment: "54 → 73mi",     type: "Road", passed: +jamesRider.passed_riders_tod_73_td_race,  passed_by: +jamesRider.passed_by_riders_tod_73_td_race },
+  { segment: "73 → 74mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_74_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_74_td_rest },
+  { segment: "74mi → Finish", type: "Road", passed: +jamesRider.passed_riders_tod_finish_td_race, passed_by: +jamesRider.passed_by_riders_tod_finish_td_race },
+]
+```
+
+Andrew's disruption came from speed — cutting through the field, one overtake at a time. **James Holloway**'s disruption worked in reverse. A Wave 1 starter, James was on the road by 06:01 — position ${jamesRider.rider_pos_start.toLocaleString()} out of 17,893, near the very front of the entire field.
+
+By the finish he was position ${jamesRider.rider_pos_finish.toLocaleString()}. The entire race had washed over him. He was passed by **${(+jamesRider.total_passed_by_riders_race).toLocaleString()} riders** on the open road, and overtook just **${jamesRider.total_passed_riders_race}** himself on the road. His finish time of ${(+jamesRider.ride_time_finish_decimal).toFixed(2)} hours — nearly 12 and a half hours — is ${((+jamesRider.ride_time_finish_decimal - d3.mean(raceData_100.filter(d => d.year === 2024), d => +d.ride_time_finish_decimal))).toFixed(1)} hours slower than the field average.
+
+But there's a twist. While James was barely moving on the road, he was one of the most efficient riders through the rest stops — passing **${(+jamesRider.total_passed_riders_rest).toLocaleString()} riders** at the feed stations, including ${+jamesRider.passed_riders_tod_54_td_rest} at the 53-54 mile stop alone. He'd roll in while others were lingering, and roll out before them. On the road he was a rock in a river; at the rest stops he was threading through standing water.
+
+The riders who streamed past him on the road averaged **${jamesPassedByAvgMph.toFixed(1)} mph**. James averaged **${(+jamesRider.mph_finish).toFixed(1)} mph** — a pace that, on a 100-mile course, tells its own story of a very tough day in the saddle.
+
+```js
+display(Plot.plot({
+  title: "James's mph vs riders who passed him vs the full field",
+  width: width * 0.6,
+  height: 300,
+  marginLeft: 160,
+  x: { label: "Average mph (finish)", grid: true },
+  marks: [
+    Plot.barX(
+      [
+        { label: "James Holloway",    mph: +jamesRider.mph_finish },
+        { label: "Field average",     mph: fieldAvgMph },
+        { label: "Riders who passed", mph: jamesPassedByAvgMph },
+      ],
+      { x: "mph", y: "label", fill: rideBlue, sort: { y: "x" } }
+    ),
+    Plot.ruleX([0]),
+  ]
+}))
+```
+
+```js
+display(Plot.plot({
+  title: "James's passes and times passed — by segment",
+  width: width,
+  height: 350,
+  marginLeft: 100,
+  x: { label: "Riders", grid: true },
+  y: { label: null },
+  color: { legend: true, domain: ["Passed", "Passed by"], range: [rideBlue, "tomato"] },
+  marks: [
+    Plot.barX(jamesPassData.flatMap(d => [
+      { segment: d.segment, type: d.type, metric: "Passed",    value:  d.passed    },
+      { segment: d.segment, type: d.type, metric: "Passed by", value: -d.passed_by },
+    ]), {
+      x: "value",
+      y: "segment",
+      fill: "metric",
+      rx: 2,
+    }),
+    Plot.ruleX([0]),
+    Plot.text(jamesPassData, {
+      x: 0,
+      y: "segment",
+      text: d => d.type,
+      textAnchor: "middle",
+      dy: -10,
+      fontSize: 10,
+      fill: d => d.type === "Rest" ? "darkorange" : "grey",
+    }),
+  ]
+}))
+```
+
+Four riders define the extremes of this chart.
+
+At the top, **Andrew Habibi-Parker** cut from the back of Wave 2 into the top third of the field — the most passes made. Alongside him, **Csaba Csenge** achieved the single biggest position gain of the entire race: starting from ${csabaRider.rider_pos_start.toLocaleString()} and finishing at ${csabaRider.rider_pos_finish.toLocaleString()}, a climb of **${(+csabaRider.rider_pos_start - +csabaRider.rider_pos_finish).toLocaleString()} places**. He averaged **${(+csabaRider.mph_finish).toFixed(1)} mph** — **${((+csabaRider.mph_finish) - fieldAvgMph).toFixed(1)} mph** faster than the field — and was passed by no one.
+
+At the bottom, **James Holloway** and **Kelly-Ann Plummer** both started in position ${jamesRider.rider_pos_start.toLocaleString()} and sank to the very end of the field. Kelly-Ann's drop of **17,060 places** is the largest in the race. She averaged **${(+kellyRider.mph_finish).toFixed(1)} mph** — **${(fieldAvgMph - +kellyRider.mph_finish).toFixed(1)} mph** slower than the field average.
+
+```js
+const kellyRider  = raceData_100.find(d => d.rider_no === 102316 && d.year === 2024)
+const csabaRider  = raceData_100.find(d => d.rider_no === 102302 && d.year === 2024)
+```
+
+```js
+{
+  const andrewHighlight = raceData_100.filter(d => d.year == 2024 && d.rider_no === 100273)
+  const jamesHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102317)
+  const kellyHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102316)
+  const csabaHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102302)
+
+  display(Plot.plot({
+    width: width,
+    height: 900,
+    x: {
+      axis: "top",
+      label: "miles",
+      domain: [0, 100],
+      ticks: Object.values(checkpointKm),
+      tickFormat: (d) => `${d}mi`,
+    },
+    y: { axis: null, reverse: true },
+    marks: [
+      ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
+        Plot.link(linkData,         { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.15, strokeWidth: 0.2 }),
+        Plot.link(andrewHighlight,  { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato",    strokeWidth: 2 }),
+        Plot.link(csabaHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "seagreen",  strokeWidth: 2 }),
+        Plot.link(jamesHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "steelblue", strokeWidth: 2 }),
+        Plot.link(kellyHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "goldenrod", strokeWidth: 2 }),
+      ]),
+    ]
+  }))
+}
+```
+
+<span style="color: tomato">―</span> **Andrew Habibi-Parker** — most riders passed &nbsp;&nbsp; <span style="color: seagreen">―</span> **Csaba Csenge** — most positions gained (+11,952) &nbsp;&nbsp; <span style="color: steelblue">―</span> **James Holloway** — most passed by &nbsp;&nbsp; <span style="color: goldenrod">―</span> **Kelly-Ann Plummer** — most positions lost (−17,060)
+
+---
+
+## The most disruptive rider overall
+
+Andrew passed almost everyone he met. James was an obstacle for almost the entire field. But when you count both directions — passes made and passes received — neither of them tops the list.
+
+That distinction belongs to **Bryn Hassan**, with **${(+raceData_100.find(d => d.rider_no === 101061 && d.year === 2024).total_passed_riders_race + +raceData_100.find(d => d.rider_no === 101061 && d.year === 2024).total_passed_by_riders_race).toLocaleString()} total on-road disruption events**.
+
+```js
+const brynRider = raceData_100.find(d => d.rider_no === 101061 && d.year === 2024)
+```
+
+Like James, Bryn started in Wave 1 — on the road by 06:02, position ${brynRider.rider_pos_start.toLocaleString()} out of 17,893. He passed ${(+brynRider.total_passed_riders_race).toLocaleString()} riders himself, but was overtaken by ${(+brynRider.total_passed_by_riders_race).toLocaleString()} — a combined ${(+brynRider.total_passed_riders_race + +brynRider.total_passed_by_riders_race).toLocaleString()} overtaking events on the open road. He finished at position ${brynRider.rider_pos_finish.toLocaleString()}.
+
+Andrew's dominance flowed in one direction; James was almost entirely a passive obstacle. Bryn was genuinely two-way — active enough to pass thousands, but still slow enough relative to his start position that the bulk of the field eventually streamed past him too.
 
 <!-- We can see that our early starters more often than not fall into the upper final timezones in the correlation, whereas the late starters are quicker than their waves.
 

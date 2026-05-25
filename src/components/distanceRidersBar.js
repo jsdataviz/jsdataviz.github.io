@@ -9,7 +9,7 @@ export function distanceRidersBar(distance, rideTotals, width) {
     marginLeft: 50,
     marginTop: 25,
     x: { label: null, type: "band" },
-    y: { label: "Number of Riders", domain: [0, 2500], grid: true },
+    y: { label: "Number of Riders", grid: true },
     marks: [
       Plot.barY(rideTotals.filter(d => d.distance == distance), {
         x: "year",

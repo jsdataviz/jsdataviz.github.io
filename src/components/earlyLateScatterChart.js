@@ -11,7 +11,6 @@ export function earlyLateScatterChart(data, width) {
     grid: true,
     y: { label: "Rider Number", grid: true },
     x: { label: "Start Time of Day", type: "time" },
-    color: { scheme: "viridis" },
     marks: [
       Plot.dot(data, {
         x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
@@ -31,7 +30,7 @@ export function earlyLateScatterChart(data, width) {
         y1: "y1",
         y2: "y2",
         strokeWidth: 2,
-        strokeDash: 0.5,
+        strokeDasharray: "4 2",
       }),
     ],
   });

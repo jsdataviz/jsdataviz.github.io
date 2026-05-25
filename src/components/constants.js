@@ -35,12 +35,17 @@ export const endLines = [
 ];
 
 export const raceCheckpoints = [
-  "rider_pos_start", "rider_pos_25", "rider_pos_26",
-  "rider_pos_53", "rider_pos_54", "rider_pos_73",
-  "rider_pos_74", "rider_pos_finish",
+  "rider_pos_start",
+  "rider_pos_25",
+  "rider_pos_26",
+  "rider_pos_53",
+  "rider_pos_54",
+  "rider_pos_73",
+  "rider_pos_74",
+  "rider_pos_finish",
 ];
 
-export const checkpointKm = {
+export const checkpointMiles = {
   rider_pos_start: 0,
   rider_pos_25: 25,
   rider_pos_26: 26,

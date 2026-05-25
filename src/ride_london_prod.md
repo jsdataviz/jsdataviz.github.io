@@ -57,7 +57,7 @@ import * as aq from "npm:arquero"
 ```
 
 ```js
-import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointKm } from "./components/constants.js";
+import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointMiles } from "./components/constants.js";
 ```
 
 ```js
@@ -1159,7 +1159,7 @@ This crowding in the 3rd and 4th waves led to some significant moments of overcr
       axis: "top",
       label: "miles",
       domain: [0, 100],
-      ticks: Object.values(checkpointKm),
+      ticks: Object.values(checkpointMiles),
       tickFormat: (d) => `${d}mi`,
     },
     y: { 
@@ -1168,8 +1168,8 @@ This crowding in the 3rd and 4th waves led to some significant moments of overcr
     },
     marks: [
       ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
-        Plot.link(linkData, { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.2, strokeWidth: 0.2}),
-        Plot.link(highlightedData, { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato"}),
+        Plot.link(linkData, { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.2, strokeWidth: 0.2}),
+        Plot.link(highlightedData, { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato"}),
       ]),
     ]
   })
@@ -1541,17 +1541,17 @@ const csabaRider  = raceData_100.find(d => d.rider_no === 102302 && d.year === 2
       axis: "top",
       label: "miles",
       domain: [0, 100],
-      ticks: Object.values(checkpointKm),
+      ticks: Object.values(checkpointMiles),
       tickFormat: (d) => `${d}mi`,
     },
     y: { axis: null, reverse: true },
     marks: [
       ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
-        Plot.link(linkData,         { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.15, strokeWidth: 0.2 }),
-        Plot.link(andrewHighlight,  { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato",    strokeWidth: 2 }),
-        Plot.link(csabaHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "seagreen",  strokeWidth: 2 }),
-        Plot.link(jamesHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "steelblue", strokeWidth: 2 }),
-        Plot.link(kellyHighlight,   { x1: () => checkpointKm[cp], x2: () => checkpointKm[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "goldenrod", strokeWidth: 2 }),
+        Plot.link(linkData,         { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.15, strokeWidth: 0.2 }),
+        Plot.link(andrewHighlight,  { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato",    strokeWidth: 2 }),
+        Plot.link(csabaHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "seagreen",  strokeWidth: 2 }),
+        Plot.link(jamesHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "steelblue", strokeWidth: 2 }),
+        Plot.link(kellyHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "goldenrod", strokeWidth: 2 }),
       ]),
     ]
   }))

@@ -1,7 +1,7 @@
 import * as Plot from "npm:@observablehq/plot";
 
 const withoutRestStops = Array.from({ length: 20 }, (_, i) => String(i * 5));
-const withRestStops = withoutRestStops
+export const withRestStops = withoutRestStops
   .toSpliced(6, 0, "Stop 25")
   .toSpliced(12, 0, "Stop 53")
   .toSpliced(17, 0, "Stop 73");

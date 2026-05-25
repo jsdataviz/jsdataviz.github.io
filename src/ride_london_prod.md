@@ -72,7 +72,7 @@ import { waveStatsTable } from "./components/waveStatsTable.js";
 import { earlyLateScatterChart } from "./components/earlyLateScatterChart.js";
 import { leaveProportionsChart } from "./components/leaveProportionsChart.js";
 import { waveStartBar } from "./components/waveStartBar.js";
-import { raceSimGraph } from "./components/raceSimGraph.js";
+import { raceSimGraph, withRestStops } from "./components/raceSimGraph.js";
 ```
 
 ```js

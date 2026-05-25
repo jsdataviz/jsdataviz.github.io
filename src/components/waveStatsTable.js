@@ -8,7 +8,7 @@ const aggregatedColumns = [
 ];
 
 const aggregatedHeaders = {
-  wave: "Mov. Month",
+  wave: "Wave",
   count: "Riders",
   median: "Median",
   avg: "Mean",

@@ -887,7 +887,12 @@ const csabaHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no ==
 ```
 
 ```js
-display(fullBumpChart(linkData, andrewHighlight, csabaHighlight, jamesHighlight, kellyHighlight, width))
+display(fullBumpChart(linkData, [
+  { data: andrewHighlight, stroke: "tomato" },
+  { data: csabaHighlight,  stroke: "seagreen" },
+  { data: jamesHighlight,  stroke: "steelblue" },
+  { data: kellyHighlight,  stroke: "goldenrod" },
+], width))
 ```
 
 <span style="color: tomato">―</span> **Andrew Habibi-Parker** — most riders passed &nbsp;&nbsp; <span style="color: seagreen">―</span> **Csaba Csenge** — most positions gained (+11,952) &nbsp;&nbsp; <span style="color: steelblue">―</span> **James Holloway** — most passed by &nbsp;&nbsp; <span style="color: goldenrod">―</span> **Kelly-Ann Plummer** — most positions lost (−17,060)
@@ -1174,7 +1179,7 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
 However, there was a much wider distribution of finish times in the 100 mile race when compared to the 2023 ride, with people generally taking longer to finish the race.
 
 ```js
-display(yearHistogramsChart(combinedRaceData, width))
+display(yearHistogramsChart(combinedRaceData.filter(d => d.raceLength == "100"), width))
 ```
 
 ## Did the poor weather lead to lower times overall?

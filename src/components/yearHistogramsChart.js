@@ -15,7 +15,7 @@ export function yearHistogramsChart(data, width) {
     x: { label: "Ride Time Hours" },
     marks: [
       Plot.rectY(
-        data.filter(d => d.raceLength == "100"),
+        data,
         Plot.binX({ y2: "count" }, { x: "final_time_decimal", fill: "year", mixBlendMode: "multiply" })
       ),
       Plot.ruleY([0]),

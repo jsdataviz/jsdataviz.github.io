@@ -79,6 +79,10 @@ import { avgPassesChart } from "./components/avgPassesChart.js";
 import { passDistributionChart } from "./components/passDistributionChart.js";
 import { actualVsSimPassesChart } from "./components/actualVsSimPassesChart.js";
 import { shareRidersPassesChart } from "./components/shareRidersPassesChart.js";
+import { riderMphComparison } from "./components/riderMphComparison.js";
+import { jamesSegmentPassesChart } from "./components/jamesSegmentPassesChart.js";
+import { fullBumpChart } from "./components/fullBumpChart.js";
+import { yearHistogramsChart } from "./components/yearHistogramsChart.js";
 ```
 
 ```js
@@ -805,24 +809,15 @@ He finished in position ${andrewRider.rider_pos_finish.toLocaleString()}, climbi
 The speed differential tells the whole story. Andrew averaged **${(+andrewRider.mph_finish).toFixed(1)} mph** across the course. The riders he overtook averaged just **${andrewPassedAvgMph.toFixed(1)} mph** — the field as a whole averaged ${fieldAvgMph.toFixed(1)} mph.
 
 ```js
-display(Plot.plot({
-  title: "Andrew's mph vs riders he passed vs the full field",
-  width: width * 0.6,
-  height: 300,
-  marginLeft: 160,
-  x: { label: "Average mph (finish)", grid: true },
-  marks: [
-    Plot.barX(
-      [
-        { label: "Field average",       mph: fieldAvgMph },
-        { label: "Riders he passed",    mph: andrewPassedAvgMph },
-        { label: "Andrew Habibi-Parker", mph: +andrewRider.mph_finish },
-      ],
-      { x: "mph", y: "label", fill: rideBlue, sort: { y: "x" } }
-    ),
-    Plot.ruleX([0]),
-  ]
-}))
+display(riderMphComparison(
+  "Andrew's mph vs riders he passed vs the full field",
+  [
+    { label: "Field average",        mph: fieldAvgMph },
+    { label: "Riders he passed",     mph: andrewPassedAvgMph },
+    { label: "Andrew Habibi-Parker", mph: +andrewRider.mph_finish },
+  ],
+  width
+))
 ```
 
 ---
@@ -858,57 +853,19 @@ But there's a twist. While James was barely moving on the road, he was one of th
 The riders who streamed past him on the road averaged **${jamesPassedByAvgMph.toFixed(1)} mph**. James averaged **${(+jamesRider.mph_finish).toFixed(1)} mph** — a pace that, on a 100-mile course, tells its own story of a very tough day in the saddle.
 
 ```js
-display(Plot.plot({
-  title: "James's mph vs riders who passed him vs the full field",
-  width: width * 0.6,
-  height: 300,
-  marginLeft: 160,
-  x: { label: "Average mph (finish)", grid: true },
-  marks: [
-    Plot.barX(
-      [
-        { label: "James Holloway",    mph: +jamesRider.mph_finish },
-        { label: "Field average",     mph: fieldAvgMph },
-        { label: "Riders who passed", mph: jamesPassedByAvgMph },
-      ],
-      { x: "mph", y: "label", fill: rideBlue, sort: { y: "x" } }
-    ),
-    Plot.ruleX([0]),
-  ]
-}))
+display(riderMphComparison(
+  "James's mph vs riders who passed him vs the full field",
+  [
+    { label: "James Holloway",    mph: +jamesRider.mph_finish },
+    { label: "Field average",     mph: fieldAvgMph },
+    { label: "Riders who passed", mph: jamesPassedByAvgMph },
+  ],
+  width
+))
 ```
 
 ```js
-display(Plot.plot({
-  title: "James's passes and times passed — by segment",
-  width: width,
-  height: 350,
-  marginLeft: 100,
-  x: { label: "Riders", grid: true },
-  y: { label: null },
-  color: { legend: true, domain: ["Passed", "Passed by"], range: [rideBlue, "tomato"] },
-  marks: [
-    Plot.barX(jamesPassData.flatMap(d => [
-      { segment: d.segment, type: d.type, metric: "Passed",    value:  d.passed    },
-      { segment: d.segment, type: d.type, metric: "Passed by", value: -d.passed_by },
-    ]), {
-      x: "value",
-      y: "segment",
-      fill: "metric",
-      rx: 2,
-    }),
-    Plot.ruleX([0]),
-    Plot.text(jamesPassData, {
-      x: 0,
-      y: "segment",
-      text: d => d.type,
-      textAnchor: "middle",
-      dy: -10,
-      fontSize: 10,
-      fill: d => d.type === "Rest" ? "darkorange" : "grey",
-    }),
-  ]
-}))
+display(jamesSegmentPassesChart(jamesPassData, width))
 ```
 
 Four riders define the extremes of this chart.
@@ -923,34 +880,14 @@ const csabaRider  = raceData_100.find(d => d.rider_no === 102302 && d.year === 2
 ```
 
 ```js
-{
-  const andrewHighlight = raceData_100.filter(d => d.year == 2024 && d.rider_no === 100273)
-  const jamesHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102317)
-  const kellyHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102316)
-  const csabaHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102302)
+const andrewHighlight = raceData_100.filter(d => d.year == 2024 && d.rider_no === 100273);
+const jamesHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102317);
+const kellyHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102316);
+const csabaHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102302);
+```
 
-  display(Plot.plot({
-    width: width,
-    height: 900,
-    x: {
-      axis: "top",
-      label: "miles",
-      domain: [0, 100],
-      ticks: Object.values(checkpointMiles),
-      tickFormat: (d) => `${d}mi`,
-    },
-    y: { axis: null, reverse: true },
-    marks: [
-      ...raceCheckpoints.slice(0, -1).flatMap((cp, i) => [
-        Plot.link(linkData,         { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], opacity: 0.15, strokeWidth: 0.2 }),
-        Plot.link(andrewHighlight,  { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "tomato",    strokeWidth: 2 }),
-        Plot.link(csabaHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "seagreen",  strokeWidth: 2 }),
-        Plot.link(jamesHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "steelblue", strokeWidth: 2 }),
-        Plot.link(kellyHighlight,   { x1: () => checkpointMiles[cp], x2: () => checkpointMiles[raceCheckpoints[i + 1]], y1: cp, y2: raceCheckpoints[i + 1], stroke: "goldenrod", strokeWidth: 2 }),
-      ]),
-    ]
-  }))
-}
+```js
+display(fullBumpChart(linkData, andrewHighlight, csabaHighlight, jamesHighlight, kellyHighlight, width))
 ```
 
 <span style="color: tomato">―</span> **Andrew Habibi-Parker** — most riders passed &nbsp;&nbsp; <span style="color: seagreen">―</span> **Csaba Csenge** — most positions gained (+11,952) &nbsp;&nbsp; <span style="color: steelblue">―</span> **James Holloway** — most passed by &nbsp;&nbsp; <span style="color: goldenrod">―</span> **Kelly-Ann Plummer** — most positions lost (−17,060)
@@ -1237,26 +1174,7 @@ const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulativ
 However, there was a much wider distribution of finish times in the 100 mile race when compared to the 2023 ride, with people generally taking longer to finish the race.
 
 ```js
-display(
-    Plot.plot({
-        inset: 6,
-        height: 650,
-        width: width,
-        marginLeft: 60,
-        color: {
-            scheme: "tableau10",
-            type: "categorical",
-            legend: true,
-        },
-        y: { label: "Number of Riders", grid: true },
-        x: { label: "Ride Time Hours" },
-        marks: [
-            Plot.rectY(combinedRaceData.filter(d => d.raceLength == '100'),
-                Plot.binX({y2: "count"}, {x: "final_time_decimal", fill: "year", mixBlendMode: "multiply"})),
-            Plot.ruleY([0]),
-        ]
-        })
-)
+display(yearHistogramsChart(combinedRaceData, width))
 ```
 
 ## Did the poor weather lead to lower times overall?

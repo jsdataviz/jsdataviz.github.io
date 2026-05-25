@@ -128,3 +128,11 @@ It's a job title I've held since 2023 that sums up my role best. I enjoy solving
 .c2 { animation: chevron-fade 1.4s ease-in-out 0.22s infinite; }
 
 </style>
+
+<script>
+  function onScroll() {
+    document.getElementById('scroll-indicator').classList.add('hidden');
+    window.removeEventListener('scroll', onScroll);
+  }
+  window.addEventListener('scroll', onScroll);
+</script>

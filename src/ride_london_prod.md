@@ -65,6 +65,14 @@ import { femaleRatioBars } from "./components/femaleRatioBars.js";
 import { londonClassicsChart } from "./components/londonClassicsChart.js";
 import { startTimeScatterChart } from "./components/startTimeScatterChart.js";
 import { riderNoScatterSimpleChart } from "./components/riderNoScatterSimpleChart.js";
+import { riderNoScatterWavesChart } from "./components/riderNoScatterWavesChart.js";
+import { waveTimeHistogramChart } from "./components/waveTimeHistogramChart.js";
+import { waveBoxPlotChart } from "./components/waveBoxPlotChart.js";
+import { waveStatsTable } from "./components/waveStatsTable.js";
+import { earlyLateScatterChart } from "./components/earlyLateScatterChart.js";
+import { leaveProportionsChart } from "./components/leaveProportionsChart.js";
+import { waveStartBar } from "./components/waveStartBar.js";
+import { raceSimGraph } from "./components/raceSimGraph.js";
 ```
 
 ```js
@@ -292,41 +300,7 @@ We can see that the 100 mile race was split into 5 starting waves with the follo
 5) **8:15am** - Rider no. numbers between 123,000 and 129,000  
 
 ```js
-display(
-    Plot.plot({
-        inset: 6,
-        height: 650,
-        width: width,
-        marginLeft: 60,
-        marginTop: 50,
-        grid: true,
-        color: {
-          scheme: "viridis"
-        },
-        y: { label: "Rider Number", grid: true},
-        x: { label: "Start Time of Day", type: "time" },
-        marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "rider_no",
-                r: 2,
-                stroke: "assigned_wave_number", 
-            }),
-            Plot.ruleX(startLines, {
-              x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.x),
-              y1: "y1",
-              y2: "y2",
-              strokeWidth: 2,
-            }),
-            Plot.tip(startLabels, {
-              x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.x),
-              y: "y",
-              dy: -2,
-              title: "label",
-            })
-        ]
-        })
-)
+display(riderNoScatterWavesChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
 ```
 
 There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
@@ -426,58 +400,13 @@ Now we know where people alloted themselves, let's evaluate if people choose the
     };
     }
 
-  display(
-  Plot.plot({
-    marginRight: 50,
-    width: width * 0.66,
-    height: width * 0.75,
-    y: {
-      grid: true,
-      label: "Riders",
-    },
-    x: {
-      grid: true,
-      label: "Total Ride Time (Hours)",
-    },
-    fy: {axis: "right", label: null},
-    marks: [
-      Plot.rectY(raceData_2024.filter(d => d.assigned_wave_number != null && d.assigned_wave_number != 'VIP'), Plot.binX({y: "count"}, {
-        x: "ride_time_finish_decimal",
-        fy: "assigned_wave_number",
-        fill: rideBlue,
-      }
-      )),
-      Plot.ruleY([0])
-    ]
-  })
-)
+  display(waveTimeHistogramChart(raceData_2024, width))
 ```
 
 We can see that 
 
 ```js
-  display(
-    Plot.plot({
-    width: width,
-    height: width * 0.33,
-    marginLeft: 50,
-    y: {
-      label: null
-    },
-    x: {
-      grid: true,
-      inset: 6
-    },
-    marks: [
-      Plot.boxX(raceData_2024.filter(d => d.assigned_wave_number != null && d.assigned_wave_number != 'VIP'), {
-        x: "ride_time_finish_decimal", 
-        y: "assigned_wave_number",
-        fill: rideBlue,
-        fillOpacity: 0.3,
-      })
-    ]
-  })
-)
+  display(waveBoxPlotChart(raceData_2024, width))
 
 const waveStats = [
     {
@@ -506,93 +435,13 @@ const waveStats = [
     },
 ]
 
-const aggregatedColumns = [
-            "wave",
-            "count",
-            "median",
-            "avg",
-            "deviation",
-            "outliers",
-            "iqr",
-            "kurt",
-            "outliersPerc",
-            "percentile10",
-            "percentile20",
-            "percentile30",
-            "percentile40",
-            "percentile50",
-            "percentile60",
-            "percentile70",
-            "percentile80",
-            "percentile90",
-        ]
-const aggregatedHeaders = {
-            wave: "Mov. Month",
-            count: "Riders",
-            median: "Median",
-            avg: "Mean",
-            deviation: "Std. Dev.",
-            kurt: "Kurtosis",
-            percentile10: "10%",
-            percentile20: "20%",
-            percentile30: "30%",
-            percentile40: "40%",
-            percentile50: "50%",
-            percentile60: "60%",
-            percentile70: "70%",
-            percentile80: "80%",
-            percentile90: "90%",               
-        }
-
-display(
-        Inputs.table(waveStats, {
-            columns: aggregatedColumns,
-            header: aggregatedHeaders,
-            select: false,
-        })
-    )
+display(waveStatsTable(waveStats))
 ```
 
 We can *also* see that some riders, who based on their rider number and start time, either bumped into waves early than they should have had, or joined later than intended. Let's highlight those now.
 
 ```js
-display(
-    Plot.plot({
-        inset: 6,
-        height: 650,
-        width: width,
-        marginLeft: 60,
-        grid: true,
-        y: { label: "Rider Number", grid: true},
-        x: { label: "Start Time of Day", type: "time" },
-        color: {
-          scheme: "viridis"
-        },
-        marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "rider_no",
-                opacity: d => d.is_early_starter == "True" ? 1 : d.is_late_starter == "True" ? 1 : 0.3,
-                stroke: d => d.is_early_starter == "True" ? "lightcoral" : d.is_late_starter == "True" ? "lightBlue" : "lightGrey",
-                // stroke: "assigned_wave_number", 
-                r: 2,
-            }),
-            Plot.ruleX(startLines, {
-              x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.x),
-              y1: "y1",
-              y2: "y2",
-              strokeWidth: 2,
-            }),
-            Plot.ruleX(endLines, {
-              x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.x),
-              y1: "y1",
-              y2: "y2",
-              strokeWidth: 2,
-              strokeDash: 0.5,
-            }),
-        ]
-        })
-)
+display(earlyLateScatterChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
 ```
 
 ```js
@@ -614,53 +463,7 @@ const leaveProportions = leaveCategoryTable
   .derive({ proportion: d => d.count / aq.op.sum("count") })
   .objects();
 
-display(
-  Plot.plot({
-    width: width * 0.7,
-    height: width * 0.5,
-    marginLeft: 50,
-    marginTop: 25,
-    title: `22% of riders did not start in their alloted time.`,
-    y: {
-      grid: true,
-      domain: [0, 1],
-      label: "Perc. of Riders",
-      tickFormat: d => `${d3.format('.0%')(d)}`,
-    },
-    x: {
-      label: null,
-    },
-    color: {
-      domain: ['On-Time', 'Late',  'Early'],
-      range: [rideBlue, 'lightBlue', 'lightcoral'],
-    },
-    marks: [
-      Plot.barY(leaveProportions, {
-        x: "leave_type",
-        y: "proportion",
-        sort: {x: "y", reverse: true},
-        fill: "leave_type",
-      }),
-      Plot.text(leaveProportions, {
-        x: "leave_type",
-        y: "proportion",
-        textAnchor: "middle",
-        dy: -20,
-        text: d => ` ${d3.format('.0%')(d.proportion)}`,
-        sort: {x: "y", reverse: true}
-      }),
-      Plot.text(leaveProportions, {
-        x: "leave_type",
-        y: "proportion",
-        textAnchor: "middle",
-        dy: -8,
-        text: "count",
-        sort: {x: "y", reverse: true}
-      }),
-      Plot.ruleY([0])
-    ]
-  })
-)
+display(leaveProportionsChart(leaveProportions, width))
 ```
 
 If this assumption is true, that means that 12% of riders (2156) began the race earlier than specified and 15% (2704) began later than instructed. Meaning over a quarter of riders did not begin in their original starting wave.
@@ -675,48 +478,18 @@ However, there was an overlapping of people from wave 2 starting later in the da
 
 <div class="grid grid-cols-2">
   <div>
-    ${Plot.plot({
-      title: 'Riders Assigned Starts',
-      y: {grid: true, domain: [0, 6000]},
-      x: {label: 'Assigned Start Wave'},
-      height: width * 0.5,
-      marks: [
-        Plot.barY(raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'), Plot.groupX(
-          { y: "count" }, { 
-            x: "assigned_wave_number", 
-            fill: rideBlue
-          })),
-        Plot.text(raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'), Plot.groupX(
-          { y: "count" }, { 
-            x: "assigned_wave_number", 
-            dy: - 8,
-            text: d => d.length,
-          })),
-          Plot.ruleY([0]),
-      ]
-    })}
+    ${waveStartBar(
+      'Riders Assigned Starts', 'Assigned Start Wave',
+      raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'),
+      'assigned_wave_number', width
+    )}
   </div>
   <div>
-    ${Plot.plot({
-      title: 'Riders Actual Starts',
-      y: {grid: true, domain: [0, 6000]},
-      x: {label: 'Actual Start Wave'},
-      height: width * 0.5,
-      marks: [
-        Plot.barY(raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null), Plot.groupX(
-          { y: "count" }, { 
-            x: "assigned_start_wave", 
-            fill: rideBlue
-          })),
-        Plot.text(raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null), Plot.groupX(
-          { y: "count" }, { 
-            x: "assigned_start_wave", 
-            dy: -8,
-            text: d => d.length,
-          })),
-          Plot.ruleY([0]),
-      ]
-    })}
+    ${waveStartBar(
+      'Riders Actual Starts', 'Actual Start Wave',
+      raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null),
+      'assigned_start_wave', width
+    )}
   </div>
 </div>
 
@@ -749,8 +522,6 @@ const loopRaceSim = riderDistributionLong.filter(d => counter == d.hour)
 ```
 
 ```js
-const withoutRestStops = (d3.range(0, 100, 5)).map(String)
-const withRestStops = withoutRestStops.toSpliced(6, 0, "Stop 25").toSpliced(12, 0, "Stop 53").toSpliced(17, 0, "Stop 73")
 const startersRemaining = loopRaceSim.filter(d => d.estimated_distance_bucket == "Not Started")[0];
 const startersRemainingInt = 
   Number(startersRemaining?.regular_riders || 0) +
@@ -820,35 +591,6 @@ display(
 ```js
 const raceSim10 = riderDistributionLong.filter(d => 10 == d.hour)
 const raceSim12 = riderDistributionLong.filter(d => 12 == d.hour)
-
-
-function raceSimGraph(data) {
-  return Plot.plot({
-    width: width,
-    height: 0.44 * width,
-    y: {
-      grid: true,
-      label: "Number of Riders",
-      domain: [0, 3500]
-    },
-    x: {
-      domain: withRestStops,
-      type: "band",
-      label: "Distance (Miles)"
-    },
-    color: {
-      legend: true,
-    },
-    marks: [
-      Plot.barY(data.filter(d => d.type != 'total_riders'), {
-        x: "bucket",
-        y: "riders",
-        fill: "type",
-        stack: "y"
-      }),
-    ]
-  })
-}
 ```
 
 ### 7AM - The early waves depart
@@ -856,7 +598,7 @@ function raceSimGraph(data) {
 By 7AM, the first two waves have departed. The earliest wave is made up of the most die hard riders, with very few riders assigned to later waves beginning this early (marked as early riders). 
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 7 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 7 == d.hour), width))
 ```
 
 The second wave departing in the 0-5 mile bucket, contains some of the wave 1 riders who weren't prepared to wake up at 5am and started late. However, 800 riders designated to begin in this wave do not depart on time, instead opting to start the race later.
@@ -866,31 +608,31 @@ The second wave departing in the 0-5 mile bucket, contains some of the wave 1 ri
 Wave
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 8 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 8 == d.hour), width))
 ```
 
 ### 9AM
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 9 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 9 == d.hour), width))
 ```
 
 ### 10AM
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 10 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 10 == d.hour), width))
 ```
 
 ### 12PM
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 12.25 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 12.25 == d.hour), width))
 ```
 
 ### 1PM
 
 ```js
-  raceSimGraph(riderDistributionLong.filter(d => 13 == d.hour))
+  display(raceSimGraph(riderDistributionLong.filter(d => 13 == d.hour), width))
 ```
 
 This crowding in the 3rd and 4th waves led to some significant moments of overcrowding during the beginning of the day. Most notably:

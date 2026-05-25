@@ -59,6 +59,12 @@ import * as aq from "npm:arquero"
 ```js
 import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointMiles } from "./components/constants.js";
 import { ridersYearlyChart } from "./components/ridersYearlyChart.js";
+import { distanceRidersBar } from "./components/distanceRidersBar.js";
+import { femaleRidersTotalsChart } from "./components/femaleRidersTotalsChart.js";
+import { femaleRatioBars } from "./components/femaleRatioBars.js";
+import { londonClassicsChart } from "./components/londonClassicsChart.js";
+import { startTimeScatterChart } from "./components/startTimeScatterChart.js";
+import { riderNoScatterSimpleChart } from "./components/riderNoScatterSimpleChart.js";
 ```
 
 ```js
@@ -99,39 +105,7 @@ display(ridersYearlyChart(groupedYearlyData, width))
 The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the morning.
 
 ```js
-display(
-  Plot.plot({
-      title: "100 Miles",
-      width: width * 0.75,
-      height: width * 0.5,
-      marginLeft: 50,
-      marginTop: 25,
-      y: {
-        grid: true, 
-        label: "Riders",
-        nice: true,
-      },
-      x: {
-        label: 'Race Year', 
-        type: 'band', 
-      },
-      marks: [
-        Plot.barY(rideTotals.filter(d => d.distance == "100"), {
-          x: "year",
-          y: "num_riders",
-          fill: raceColors["100"],
-        }),
-        Plot.ruleY([0]),
-        Plot.text(rideTotals.filter(d => d.distance == "100"), {
-          x: "year",
-          y: "num_riders",
-          text: "num_riders",
-          dy: -6,
-          lineAnchor: "bottom",
-        })
-      ]
-    })
-)
+display(distanceRidersBar("100", rideTotals, width * 0.75))
 ```
 
 
@@ -139,60 +113,10 @@ Despite the weather however, the shorter events aimed at beginners had considera
 
 <div class="grid grid-cols-2">
   <div>
-    ${resize((width) =>   
-      Plot.plot({
-        title: "60 Miles",
-        height: width * 0.66,
-        width: width,
-        marginLeft: 50,
-        marginTop: 25,
-        x: {label: null, type: 'band'},
-        y: {label: "Number of Riders", domain: [0, 2500], grid: true,},
-        marks: [
-          Plot.barY(rideTotals.filter(d => d.distance == "60"), {
-            x: "year",
-            y: "num_riders",
-            fill: raceColors["60"],
-          }),
-          Plot.text(rideTotals.filter(d => d.distance == "60"), {
-            x: "year",
-            y: "num_riders",
-            text: "num_riders",
-            dy: -6,
-            lineAnchor: "bottom",
-          }),
-        Plot.ruleY([0]),
-        ]
-      }) 
-    )}
+    ${resize((width) => distanceRidersBar("60", rideTotals, width))}
   </div>
   <div>
-    ${resize((width) =>   
-    Plot.plot({
-        title: "30 Miles",
-        height: width * 0.66,
-        width: width,
-        marginLeft: 50,
-        marginTop: 25,
-        x: {label: null, type: 'band'},
-        y: {label: "Number of Riders", domain: [0, 2500], grid: true,},
-        marks: [
-          Plot.barY(rideTotals.filter(d => d.distance == "30"), {
-            x: "year",
-            y: "num_riders",
-            fill: raceColors["30"],
-          }),
-          Plot.text(rideTotals.filter(d => d.distance == "30"), {
-            x: "year",
-            y: "num_riders",
-            text: "num_riders",
-            dy: -6,
-            lineAnchor: "bottom",
-          }),
-        Plot.ruleY([0]),
-        ]
-      })
-    )}
+    ${resize((width) => distanceRidersBar("30", rideTotals, width))}
   </div>
 </div>
 
@@ -215,41 +139,7 @@ groupedFemaleData.push(
   {year: 2022, raceLength: "30", riders: 228},
 )
 
-display(
-Plot.plot({
-    width: width * 0.75,
-    height: width * 0.5,
-    marginLeft: 50,
-    marginTop: 25,
-    y: {
-      grid: true,
-      label: "Female Riders"
-    },
-    x: {
-      label: "Ride Year",
-      type: "band",
-    },
-    color: {
-      legend: true,
-      domain: Object.keys(raceColors), 
-      range: Object.values(raceColors),
-    },
-    marks: [
-      Plot.barY(groupedFemaleData, {
-        x: d => String(d.year), 
-        y: "riders", 
-        fill: "raceLength",
-      }),
-      Plot.text(groupedFemaleData, {
-        x: d => String(d.year), 
-        y: d => d3.sum(groupedFemaleData.filter(x => x.year == d.year).map(z => z.riders)),
-        text: d => d3.sum(groupedFemaleData.filter(x => x.year == d.year).map(z => z.riders)),
-        dy: -8,
-      }),
-      Plot.ruleY([0])
-    ]
-  })
-);
+display(femaleRidersTotalsChart(groupedFemaleData, width));
 ```
 
 ```js
@@ -301,35 +191,6 @@ Plot.plot({
       genderRatio: 0.552,
     },
     ]
-
-function femaleRatioBars(data, distance, width) {
-  const graphData = data.filter(d => d.raceDistance == distance)
-
-  return Plot.plot({
-        width: width,
-        height: 400,
-        marginLeft: 50,
-        marginTop: 25,
-        title: `${distance} miles`,
-        x: {label: null, type: 'band'},
-        y: {label: "Perc. of Female Riders", domain: [0, 1], grid: true, tickFormat: d => `${d * 100}%`},
-        marks: [
-          Plot.barY(graphData, {
-            x: d => String(d.year),
-            y: "genderRatio",
-            fill: d => raceColors[d.raceDistance],
-          }),
-          Plot.ruleY([0]),
-          Plot.text(graphData, {
-            x: d => String(d.year),
-            y: "genderRatio",
-            text: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
-            dy: -6,
-            lineAnchor: "bottom",
-          })
-        ]
-      });
-}
 ```
 
 The ratio of female to male riders has dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
@@ -378,30 +239,7 @@ When compared to the other two events in the London Classic series, the London m
     {year: "2024", genderRatio: 0.45594649607},
   ]
 
-  display(
-    Plot.plot({
-        marginLeft: 50,
-        marginTop: 25,
-        title: `Female Participants in London Classic events`,
-        x: {label: null, domain: ['Serpentine 2 Mile Swim', "London Marathon", "Ride London 100"]},
-        y: {label: "Perc. of Female Participants", domain: [0, 1], grid: true, tickFormat: d => `${d3.format(".0%")(d)}`},
-        marks: [
-          Plot.barY(londonClassicData, {
-            x: "year",
-            y: "genderRatio",
-            fill: rideBlue,
-          }),
-          Plot.ruleY([0]),
-          Plot.text(londonClassicData, {
-            x: "year",
-            y: "genderRatio",
-            text: d => `${d3.format(".0%")(d.genderRatio)}`,
-            dy: -6,
-            lineAnchor: "bottom",
-          })
-        ]
-      })
-    )
+  display(londonClassicsChart(londonClassicData, width))
 ```
 
 It was the only event where this proportion was declining.
@@ -421,43 +259,7 @@ This makes sense, in the perfect scenario the fastest riders would begin first s
 We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time.
 
 ```js
-display(
-    Plot.plot({
-        title: "Riders who were assigned earlier starts generally finished faster than later riders.",
-        inset: 6,
-        height: 650,
-        width: width,
-        marginLeft: 60,
-        grid: true,
-        y: { label: "Total Ride Time (hours)", grid: true},
-        x: { label: "Start Time of Day", type: "time" },
-        marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
-                stroke: rideBlue, 
-            }),
-            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "ride_time_finish_decimal",
-                stroke: "red", 
-            }),
-            Plot.link([1], {
-              x1: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 06:00:04'),
-              x2: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 09:45:04'),
-              y1: 12.90,
-              y2: 9.10,
-              strokeDasharray: 4,
-              stroke: 'black',
-            }),
-            Plot.tip(["The dreaded sweeper bus that collects any riders who have not fished by 6pm sets the upper limit of how long riders can take throughout the day."], {
-              x: d3.timeParse("%Y-%m-%d %H:%M:%S")('2024-05-26 08:00:04'),
-              y: 11,
-              frameAnchor: "bottom",
-            }),
-        ]
-        })
-)
+display(startTimeScatterChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
 ```
 Generally, riders who began riding earlier in the day did complete the race quicker. However the high amount of variance in the finish trend shows there was definitely room for improvement.
 
@@ -478,27 +280,7 @@ Often we can infer information contained in the data by looking at the way IDs a
 In our case, we can plot the each rider's designated race number against the time they began the race.
 
 ```js
-display(
-    Plot.plot({
-        inset: 6,
-        height: 650,
-        marginTop: 50,
-        width: width,
-        marginLeft: 60,
-        grid: true,
-        y: { label: "Rider Number", grid: true},
-        x: { label: "Start Time of Day", type: "time" },
-        marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
-                x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
-                y: "rider_no",
-                stroke: rideBlue, 
-                opacity: 0.5,
-                r: 2,
-            })
-        ]
-        })
-)
+display(riderNoScatterSimpleChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
 ```
 
 We can see that the 100 mile race was split into 5 starting waves with the following starting times:

@@ -8,3 +8,6 @@ yarn-error.log
 /.ipynb_checkpoints
 /data_scrape/web_data/.ipynb_checkpoints
 Untitled.ipynb
+.superpowers/
+**/backups/
+docs/superpowers/

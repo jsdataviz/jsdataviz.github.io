@@ -4,8 +4,8 @@ import { raceColors } from "./constants.js";
 
 export function femaleRidersTotalsChart(groupedFemaleData, width) {
   return Plot.plot({
-    width: width * 0.75,
-    height: width * 0.5,
+    width: width,
+    height: width * 0.66,
     marginLeft: 50,
     marginTop: 25,
     y: { grid: true, label: "Female Riders" },

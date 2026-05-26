@@ -36,12 +36,95 @@ It's a job title I've held since 2023 that sums up my role best. I enjoy solving
   <div class="card">
     <h1>Scraping and Infrastructure</h1>
   </div>
-</div>  
+</div>
+
+---
+
+### Experience
+
+<div class="timeline">
+
+  <div class="timeline-entry">
+    <div class="timeline-date">
+      <span class="timeline-years">2023 — Now</span>
+      <div class="timeline-role">Full Stack Data Specialist</div>
+      <div class="timeline-company">Company Name</div>
+    </div>
+    <div class="timeline-aside">
+      <div class="timeline-dot"></div>
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-content">
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+    </div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">
+      <span class="timeline-years">2021 — 2023</span>
+      <div class="timeline-role">Senior Data Analyst</div>
+      <div class="timeline-company">Company Name</div>
+    </div>
+    <div class="timeline-aside">
+      <div class="timeline-dot"></div>
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-content">
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+    </div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">
+      <span class="timeline-years">2019 — 2021</span>
+      <div class="timeline-role">Data Analyst</div>
+      <div class="timeline-company">Company Name</div>
+    </div>
+    <div class="timeline-aside">
+      <div class="timeline-dot"></div>
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-content">
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+      <p class="timeline-desc">End-to-end ownership of data infrastructure and analytics products. Designed and maintained ETL pipelines ingesting from public APIs and internal sources, built interactive dashboards for senior stakeholders, and led a small team of analysts.</p>
+    </div>
+  </div>
+
+  <div class="timeline-entry">
+    <div class="timeline-date">
+      <span class="timeline-years">2017 — 2019</span>
+      <div class="timeline-role">Junior Data Analyst</div>
+      <div class="timeline-company">Company Name</div>
+    </div>
+    <div class="timeline-aside">
+      <div class="timeline-dot"></div>
+      <div class="timeline-line"></div>
+    </div>
+    <div class="timeline-content">
+      <p class="timeline-desc">First role in data. Maintained dashboards, performed ad-hoc analysis in Excel and early Python, and supported the senior team on quarterly business reviews.</p>
+    </div>
+  </div>
+
+</div>
 
 ---
 
 
 <style>
+
+#observablehq-center {
+  margin-top: 0;
+}
+
+#observablehq-main {
+  margin-top: 0;
+  font-family: var(--sans-serif);
+}
 
 .hero {
   display: flex;
@@ -50,6 +133,8 @@ It's a job title I've held since 2023 that sums up my role best. I enjoy solving
   justify-content: center;
   font-family: var(--sans-serif);
   min-height: 100dvh;
+  box-sizing: border-box;
+  padding-bottom: 6rem;
   position: relative;
   text-wrap: balance;
   text-align: center;
@@ -108,7 +193,6 @@ It's a job title I've held since 2023 that sums up my role best. I enjoy solving
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-family: var(--sans-serif);
   color: var(--theme-foreground-muted);
 }
 
@@ -127,12 +211,98 @@ It's a job title I've held since 2023 that sums up my role best. I enjoy solving
 .c1 { animation: chevron-fade 1.4s ease-in-out infinite; }
 .c2 { animation: chevron-fade 1.4s ease-in-out 0.22s infinite; }
 
+/* ── Timeline ─────────────────────────────────────────── */
+
+.timeline {
+  max-width: 680px;
+  margin: 2rem 0;
+}
+
+.timeline-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.timeline-date {
+  position: sticky;
+  top: 1.5rem;
+  width: 160px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.timeline-years {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--theme-foreground-muted);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.timeline-aside {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.timeline-dot {
+  --size: 8px;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--theme-foreground-muted);
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.timeline-line {
+  flex-grow: 1;
+  width: 1px;
+  min-height: 1.5rem;
+  margin: 6px 0;
+  background: var(--theme-foreground-faintest);
+}
+
+.timeline-content {
+  padding-bottom: 2.5rem;
+}
+
+.timeline-role {
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 1.3;
+  margin-top: 0.3rem;
+  margin-bottom: 0.15rem;
+  color: var(--theme-foreground);
+}
+
+.timeline-company {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  color: var(--theme-foreground-focus);
+}
+
+.timeline-desc {
+  font-size: 0.875rem;
+  color: var(--theme-foreground-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
 </style>
 
-<script>
-  function onScroll() {
+```js
+{
+  const onScroll = () => {
     document.getElementById('scroll-indicator').classList.add('hidden');
     window.removeEventListener('scroll', onScroll);
-  }
+  };
   window.addEventListener('scroll', onScroll);
-</script>
+}
+```

@@ -4,17 +4,18 @@ import { raceColors } from "./constants.js";
 
 export function ridersYearlyChart(groupedYearlyData, width) {
   return Plot.plot({
-    marginLeft: 55,
+    width: width,
+    height: width * 0.66,
+    marginLeft: 50,
     marginTop: 25,
-    width: width * 0.75,
-    height: width * 0.5,
+    marginBottom: 20,
     color: {
       legend: true,
       domain: Object.keys(raceColors),
       range: Object.values(raceColors),
     },
     y: { grid: true, label: "Riders", nice: true },
-    x: { label: "Race Year", type: "band" },
+    x: { type: "band" , label: null,},
     marks: [
       Plot.barY(groupedYearlyData, {
         x: d => String(d.year),

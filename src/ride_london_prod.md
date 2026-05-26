@@ -10,27 +10,40 @@ theme: "air"
 <div class="hero">
   <h1>Ride London Wrap-up</h1>
   <h2>As the future of Ride London is a little murky at the moment, let's concentrate on the good times by diving into last year's data.</h2>
+  <div id="scroll-indicator">
+    <span class="scroll-label">scroll</span>
+    <div class="chevron-stack">
+      <svg class="c1" width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="1,1 8,8 15,1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <svg class="c2" width="16" height="9" viewBox="0 0 16 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="1,1 8,8 15,1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
 </div>
 
 ---
 
 <div class="grid grid-cols-2">
-<div>
+  <div>
 
-## Introduction
-In case you're not in know, Ride London is (was?) a cycling festival that takes place yearly in London over the weekend of the May public holiday in the UK, during which roads are closed from Central London to Essex for cycling use only.
+  ## Introduction
+  In case you're not in know, Ride London was a cycling festival created post the 2012 London Olympics games that took place yearly in London over the weekend of the late May public holiday in the UK. During the event roads were closed from Central London to Essex for cycling use only.
 
-Professional events are featured over the weekend, as well as a series of sportives and a casual 'free-ride' around the city for all abilities on the Sunday. The most popular event being the 100 mile route, which was also part of the [London Classics](https://www.thelondonclassics.co.uk/).
+  Professional events were featured over the weekend, as well as a series of sportives and a casual 'free-ride' around the city for all abilities on the Sunday. The most popular of these sportives being the 100 mile route, in which 500,000 people had ridden and raised over £85m for charity since 2013.
 
-On the 11th of September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event.
+  The 100 mile event was also part of the [London Classics](https://www.thelondonclassics.co.uk/) - a kind of mega London triathlon, in which you would complete the RideLondon 100 cycle, the London marathon and the Hyde Park swim serpentine event in the same year.
 
-So let's pay our respects to our fallen event by digging into the data and seeing what we can learn about how the event was organized and how it was ridden. 🫡
+  In September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event. In February of 2026, Ride London was placed on "indefinite pause" by the 
 
-</div>
+  So what happened to our beloved cycling festival? The answer unfortunately comes down to declining participation numbers, organisational issues and route planning disputes between TFL and London Marathon events. Let's get into it.
 
-<div>
-<iframe src="https://ridewithgps.com/embeds?type=route&id=46770285&sampleGraph=true&distanceMarkers=true&hideSurface=true" style="width: 1px; min-width: 100%; height: 700px; border: none;" scrolling="no"></iframe>
-</div>
+  </div>
+
+  <div>
+  <iframe src="https://ridewithgps.com/embeds?type=route&id=46770285&sampleGraph=true&distanceMarkers=true&hideSurface=true" style="width: 1px; min-width: 100%; height: 700px; border: none;" scrolling="no"></iframe>
+  </div>
 </div>
 
 ```js
@@ -92,11 +105,9 @@ const combinedRaceData = [
     ...raceData_30.map(item => ({ ...item, raceLength: '30' }))
   ];
 ```
-
-
 ---
 
-# How many people rode?
+# How popular was Ride London?
 
 A total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023. However, this is the number of riders who completed the race, rather than registrations. The conditions of the race in 2023 were much better, which may have led to less people choosing to hit the road in 2024.
 
@@ -113,19 +124,17 @@ groupedYearlyData.push(
 )
 ```
 
-```js
+<!-- ```js
 display(ridersYearlyChart(groupedYearlyData, width))
-```
-
-<br>
+``` -->
+<div>
+${resize((width) => ridersYearlyChart(groupedYearlyData, width > 568 ? 568 : width))}
+</div>
 
 ### Less people rode the 100, but the shorter rides were growing in popularity
 The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the morning.
 
-```js
-display(distanceRidersBar("100", rideTotals, width * 0.75))
-```
-
+${resize((width) => distanceRidersBar("100", rideTotals, width > 568 ? 568 : width))}
 
 Despite the weather however, the shorter events aimed at beginners had considerably more riders than previous years. With the 60 mile race having an increase of 11% between 2024 & 2023, and the 30 mile race more than doubling to 832 riders in 2024. Up from 395 in 2023.
 
@@ -155,60 +164,35 @@ groupedFemaleData.push(
   {year: 2022, raceLength: "100", riders: 4502},
   {year: 2022, raceLength: "60", riders: 429},
   {year: 2022, raceLength: "30", riders: 228},
-)
-
-display(femaleRidersTotalsChart(groupedFemaleData, width));
+  )
 ```
 
+${resize((width) => femaleRidersTotalsChart(groupedFemaleData, width > 640 ? 640 : width))}
+
 ```js
-  // to-do: reduce this data in a better way
+  const races = [
+    { raceDistance: "100", data: raceData_100 },
+    { raceDistance: "60",  data: raceData_60 },
+    { raceDistance: "30",  data: raceData_30 },
+  ];
+
+  const hardcoded2022 = { "100": 0.22, "60": 0.309523, "30": 0.552 };
+
   const femaleRatioData = [
-    {
-      year: "2024",
-      raceDistance: "100",
-      genderRatio: raceData_100.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_100.filter(d => d.year == 2024).length,
-    },
-    {      
-      year: "2024",
-      raceDistance: "60",
-      genderRatio: raceData_60.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_60.filter(d => d.year == 2024).length,
-    },
-    {
-      year: "2024",
-      raceDistance: "30",
-      genderRatio: raceData_30.filter(d => d.sex == 'W' && d.year == 2024).length / raceData_30.filter(d => d.year == 2024).length,
-    },
-    {
-      year: "2023",
-      raceDistance: "100",
-      genderRatio: raceData_100.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_100.filter(d => d.year == 2023).length,
-    },
-    {      
-      year: "2023",
-      raceDistance: "60",
-      genderRatio: raceData_60.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_60.filter(d => d.year == 2023).length,
-    },
-    {
-      year: "2023",
-      raceDistance: "30",
-      genderRatio: raceData_30.filter(d => d.sex == 'W' && d.year == 2023).length / raceData_30.filter(d => d.year == 2023).length,
-    },
-    {
+    ...[2024, 2023].flatMap(year =>
+      races.map(({ raceDistance, data }) => ({
+        year: String(year),
+        raceDistance,
+        genderRatio: data.filter(d => d.sex == 'W' && d.year == year).length /
+                     data.filter(d => d.year == year).length,
+      }))
+    ),
+    ...races.map(({ raceDistance }) => ({
       year: "2022",
-      raceDistance: "100",
-      genderRatio: 0.22,
-    },
-    {      
-      year: "2022",
-      raceDistance: "60",
-      genderRatio: 0.309523,
-    },
-    {
-      year: "2022",
-      raceDistance: "30",
-      genderRatio: 0.552,
-    },
-    ]
+      raceDistance,
+      genderRatio: hardcoded2022[raceDistance],
+    })),
+  ]
 ```
 
 The ratio of female to male riders has dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
@@ -257,7 +241,7 @@ When compared to the other two events in the London Classic series, the London m
     {year: "2024", genderRatio: 0.45594649607},
   ]
 
-  display(londonClassicsChart(londonClassicData, width))
+  display(resize((width) => londonClassicsChart(londonClassicData, width > 640 ? 640 : width)))
 ```
 
 It was the only event where this proportion was declining.
@@ -1212,8 +1196,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   font-family: var(--sans-serif);
-  margin: 2rem 0 2rem;
+  min-height: 100dvh;
+  box-sizing: border-box;
+  padding-bottom: 4rem;
+  position: relative;
   text-wrap: balance;
   text-align: center;
   font-weight: bold;
@@ -1223,11 +1211,11 @@ body {
   margin: 1rem 0;
   padding: 1rem 0;
   max-width: none;
-  font-size: 11vw;
-  font-weight: 600;
+  font-size: clamp(3rem, 14vw, 120px);
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: -0.02em;
   color: #060549;
-
 }
 
 #name {
@@ -1238,19 +1226,62 @@ body {
 }
 
 .hero h2 {
-  margin: 0rem 0 0rem;
-  max-width: 34em;
-  font-size: 2vw;
+  margin: 0;
+  max-width: 28em;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   font-style: initial;
   font-weight: 500;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--theme-foreground-muted);
 }
 
-@media (min-width: 640px) {
-  .hero h1 {
-    font-size: 90px;
-  }
+
+#scroll-indicator {
+  position: absolute;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.4s ease;
 }
 
+#scroll-indicator.hidden {
+  opacity: 0;
+}
+
+.scroll-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--theme-foreground-muted);
+}
+
+.chevron-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+@keyframes chevron-fade {
+  0%, 100% { opacity: 0.15; }
+  50%       { opacity: 0.9; }
+}
+
+.c1 { animation: chevron-fade 1.4s ease-in-out infinite; }
+.c2 { animation: chevron-fade 1.4s ease-in-out 0.22s infinite; }
+
 </style>
+
+```js
+{
+  const onScroll = () => {
+    document.getElementById('scroll-indicator').classList.add('hidden');
+    window.removeEventListener('scroll', onScroll);
+  };
+  window.addEventListener('scroll', onScroll);
+}
+```

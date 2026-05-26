@@ -9,7 +9,7 @@ theme: "air"
 
 <div class="hero">
   <h1>Ride London Wrap-up</h1>
-  <h2>As the future of Ride London is a little murky at the moment, let's concentrate on the good times by diving into last year's data.</h2>
+  <h2>With Ride London being officially cancelled, let's dig into the data to see what happened and how we got here.</h2>
   <div id="scroll-indicator">
     <span class="scroll-label">scroll</span>
     <div class="chevron-stack">
@@ -107,9 +107,9 @@ const combinedRaceData = [
 ```
 ---
 
-# How popular was Ride London?
+# Ride London was becoming less popular
 
-A total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023. However, this is the number of riders who completed the race, rather than registrations. The conditions of the race in 2023 were much better, which may have led to less people choosing to hit the road in 2024.
+A total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023. However, this is the number of riders who completed the race, rather than registrations. Conditions were poor in the morning of the 2024 which may have led to less riders participating but the event did not sell out as in previous years.
 
 ```js
 const groupedYearlyData = aq.from(combinedRaceData)
@@ -124,9 +124,6 @@ groupedYearlyData.push(
 )
 ```
 
-<!-- ```js
-display(ridersYearlyChart(groupedYearlyData, width))
-``` -->
 <div>
 ${resize((width) => ridersYearlyChart(groupedYearlyData, width > 568 ? 568 : width))}
 </div>

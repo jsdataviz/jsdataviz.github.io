@@ -5,7 +5,7 @@ import { raceColors } from "./constants.js";
 export function ridersYearlyChart(groupedYearlyData, width) {
   return Plot.plot({
     width: width,
-    height: width * 0.66,
+    height: width < 568 ? 400 : width * 0.66,
     marginLeft: 50,
     marginTop: 25,
     marginBottom: 20,

@@ -1,11 +1,11 @@
 import * as Plot from "npm:@observablehq/plot";
 import * as d3 from "npm:d3";
-import { raceColors } from "./constants.js";
+import { raceColors, barChartHeightRatio } from "./constants.js";
 
 export function ridersYearlyChart(groupedYearlyData, width) {
   return Plot.plot({
     width: width,
-    height: width < 568 ? 400 : width * 0.66,
+    height: width * barChartHeightRatio,
     marginLeft: 50,
     marginTop: 25,
     marginBottom: 20,

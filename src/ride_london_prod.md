@@ -42,11 +42,13 @@ theme: "air"
   </div>
 
   <div>
-  <iframe src="https://ridewithgps.com/embeds?type=route&id=46770285&sampleGraph=true&distanceMarkers=true&hideSurface=true" style="width: 1px; min-width: 100%; height: 700px; border: none;" scrolling="no"></iframe>
+  ${introRouteMap(introRouteGeoJSON)}
   </div>
 </div>
 
 ```js
+  const allRoutesGeoJSON = FileAttachment("./data/rl_routes.geojson").json();
+  const londonBridges = FileAttachment("./data/london_road_bridges.json").json();
   const raceData_100 = FileAttachment("./data/parsed_I_data.csv").csv({typed: true});
   const raceData_60 = FileAttachment("./data/parsed_I60_data.csv").csv({typed: true});
   const raceData_30 = FileAttachment("./data/parsed_I30_data.csv").csv({typed: true});
@@ -70,32 +72,34 @@ import * as aq from "npm:arquero"
 ```
 
 ```js
-import { rideBlue, raceColors, formatRaceTime, startLines, startLabels, endLines, raceCheckpoints, checkpointMiles } from "./components/constants.js";
+const _r = name => ({ type: "FeatureCollection", features: [allRoutesGeoJSON.features.find(f => f.properties.name === name)] });
+const introRouteGeoJSON = _r('Route A');
+const routeB            = _r('Route B');
+const routeBLine        = _r('Route B Line');
+const routeC            = _r('Route C');
+const routeD            = _r('Route D');
+const routeE            = _r('Route E');
+const routeF            = _r('Route F');
+```
+
+```js
+import { rideBlue, raceColors, formatRaceTime, waveStartLines, endLines, startLabels } from "./components/constants.js";
 import { ridersYearlyChart } from "./components/ridersYearlyChart.js";
-import { distanceRidersBar } from "./components/distanceRidersBar.js";
 import { femaleRidersTotalsChart } from "./components/femaleRidersTotalsChart.js";
-import { femaleRatioBars } from "./components/femaleRatioBars.js";
-import { londonClassicsChart } from "./components/londonClassicsChart.js";
 import { startTimeScatterChart } from "./components/startTimeScatterChart.js";
-import { riderNoScatterSimpleChart } from "./components/riderNoScatterSimpleChart.js";
-import { riderNoScatterWavesChart } from "./components/riderNoScatterWavesChart.js";
-import { waveTimeHistogramChart } from "./components/waveTimeHistogramChart.js";
+import { riderStartScatterChart } from "./components/riderStartScatterChart.js";
 import { waveBoxPlotChart } from "./components/waveBoxPlotChart.js";
+import { verticalBarChart } from "./components/verticalBarChart.js";
+import { restStopAvgTable } from "./components/restStopAvgTable.js";
 import { waveStatsTable } from "./components/waveStatsTable.js";
-import { earlyLateScatterChart } from "./components/earlyLateScatterChart.js";
-import { leaveProportionsChart } from "./components/leaveProportionsChart.js";
-import { waveStartBar } from "./components/waveStartBar.js";
+import { waveChordChart } from "./components/waveChordChart.js";
 import { raceSimGraph, withRestStops } from "./components/raceSimGraph.js";
 import { riderPathsSingleChart } from "./components/riderPathsSingleChart.js";
 import { riderPathsSimplifiedChart } from "./components/riderPathsSimplifiedChart.js";
-import { avgPassesChart } from "./components/avgPassesChart.js";
-import { passDistributionChart } from "./components/passDistributionChart.js";
-import { actualVsSimPassesChart } from "./components/actualVsSimPassesChart.js";
-import { shareRidersPassesChart } from "./components/shareRidersPassesChart.js";
-import { riderMphComparison } from "./components/riderMphComparison.js";
-import { jamesSegmentPassesChart } from "./components/jamesSegmentPassesChart.js";
-import { fullBumpChart } from "./components/fullBumpChart.js";
 import { yearHistogramsChart } from "./components/yearHistogramsChart.js";
+import { introRouteMap } from "./components/introRouteMap.js";
+import { silvertonRouteMap } from "./components/silvertonRouteMap.js";
+import { routeMap } from "./components/routeMap.js";
 ```
 
 ```js
@@ -104,6 +108,8 @@ const combinedRaceData = [
     ...raceData_60.map(item => ({ ...item, raceLength: '60' })),
     ...raceData_30.map(item => ({ ...item, raceLength: '30' }))
   ];
+
+const raceData_2024_100 = raceData_100.filter(d => d.year == 2024);
 ```
 ---
 
@@ -125,22 +131,43 @@ groupedYearlyData.push(
 ```
 
 <div>
-${resize((width) => ridersYearlyChart(groupedYearlyData, width > 568 ? 568 : width))}
+${resize((width) => ridersYearlyChart(groupedYearlyData, width > 640 ? 640 : width))}
 </div>
 
 ### Less people rode the 100, but the shorter rides were growing in popularity
 The number of total 100 riders dropped by 11% between 2024 and 2023. Which had better conditions when the race started and throughout the morning.
 
-${resize((width) => distanceRidersBar("100", rideTotals, width > 568 ? 568 : width))}
+${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "100"), width > 640 ? 640 : width, {
+  title: "100 Miles",
+  x: "year",
+  y: "num_riders",
+  fill: raceColors["100"],
+  yLabel: "Number of Riders",
+  label: d => d.num_riders,
+}))}
 
 Despite the weather however, the shorter events aimed at beginners had considerably more riders than previous years. With the 60 mile race having an increase of 11% between 2024 & 2023, and the 30 mile race more than doubling to 832 riders in 2024. Up from 395 in 2023.
 
 <div class="grid grid-cols-2">
   <div>
-    ${resize((width) => distanceRidersBar("60", rideTotals, width))}
+    ${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "60"), width > 640 ? 640 : width, {
+      title: "60 Miles",
+      x: "year",
+      y: "num_riders",
+      fill: raceColors["60"],
+      yLabel: "Number of Riders",
+      label: d => d.num_riders,
+    }))}
   </div>
   <div>
-    ${resize((width) => distanceRidersBar("30", rideTotals, width))}
+    ${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "30"), width > 640 ? 640 : width, {
+      title: "30 Miles",
+      x: "year",
+      y: "num_riders",
+      fill: raceColors["30"],
+      yLabel: "Number of Riders",
+      label: d => d.num_riders,
+    }))}
   </div>
 </div>
 
@@ -198,19 +225,40 @@ It's also worth noting the decline in the most beginner friendly race category o
 
 <div class="grid grid-cols-3">
   <div>
-    ${resize((width) =>   
-      femaleRatioBars(femaleRatioData, "100", width)
-    )}
+    ${resize((width) => verticalBarChart(femaleRatioData.filter(d => d.raceDistance == "100"), width > 640 ? 640 : width, {
+      title: "100 miles",
+      x: d => String(d.year),
+      y: "genderRatio",
+      fill: raceColors["100"],
+      yLabel: "Perc. of Female Riders",
+      yDomain: [0, 1],
+      yTickFormat: d => `${d * 100}%`,
+      label: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
+    }))}
   </div>
   <div>
-    ${resize((width) =>   
-      femaleRatioBars(femaleRatioData, "60", width)
-    )}
+    ${resize((width) => verticalBarChart(femaleRatioData.filter(d => d.raceDistance == "60"), width > 640 ? 640 : width, {
+      title: "60 miles",
+      x: d => String(d.year),
+      y: "genderRatio",
+      fill: raceColors["60"],
+      yLabel: "Perc. of Female Riders",
+      yDomain: [0, 1],
+      yTickFormat: d => `${d * 100}%`,
+      label: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
+    }))}
   </div>
   <div>
-    ${resize((width) =>   
-      femaleRatioBars(femaleRatioData, "30", width)
-    )}
+    ${resize((width) => verticalBarChart(femaleRatioData.filter(d => d.raceDistance == "30"), width > 640 ? 640 : width, {
+      title: "30 miles",
+      x: d => String(d.year),
+      y: "genderRatio",
+      fill: raceColors["30"],
+      yLabel: "Perc. of Female Riders",
+      yDomain: [0, 1],
+      yTickFormat: d => `${d * 100}%`,
+      label: d => `${d3.format(".0f")(d.genderRatio * 100)}%`,
+    }))}
   </div>
 </div>
 <br>
@@ -238,7 +286,16 @@ When compared to the other two events in the London Classic series, the London m
     {year: "2024", genderRatio: 0.45594649607},
   ]
 
-  display(resize((width) => londonClassicsChart(londonClassicData, width > 640 ? 640 : width)))
+  display(resize((width) => verticalBarChart(londonClassicData, width > 640 ? 640 : width, {
+    title: "Female Participants in London Classic events",
+    x: "year",
+    xDomain: ["Serpentine 2 Mile Swim", "London Marathon", "Ride London 100"],
+    y: "genderRatio",
+    yLabel: "Perc. of Female Participants",
+    yDomain: [0, 1],
+    yTickFormat: d => `${d3.format(".0%")(d)}`,
+    label: d => `${d3.format(".0%")(d.genderRatio)}`,
+  })))
 ```
 
 It was the only event where this proportion was declining.
@@ -255,12 +312,12 @@ When entering into the Ride London events, riders are asked to give an estimated
 
 This makes sense, in the perfect scenario the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
 
-We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time.
+We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time (excluding any official stops).
 
 ```js
-display(startTimeScatterChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
+display(startTimeScatterChart(raceData_2024_100, width))
 ```
-Generally, riders who began riding earlier in the day did complete the race quicker. However the high amount of variance in the finish trend shows there was definitely room for improvement.
+Generally, riders who began riding earlier in the day did complete the race quicker. However the high amount of variance in the correlation shows there was definitely room for improvement.
 
 Let's review how well the "quickest rider first" system was implemented.
 
@@ -270,17 +327,23 @@ For this system to work, two main things need to be true:
 
 - **Riders actually begin at their designated starting time.**  If riders choose to leave at a different time than their alloted wave, they will potentially be passing slower riders, or being passed by faster ones.
 
-To evaluate these how often these occurred we'll need to know what waves each rider was assigned, unfortunately that isn't available in the Ride London published data but we might need be able to infer it from the data structure.
+- **Riders all take similar breaks at the rest stops**  If faster riders take long breaks, they will end up behind slower riders which will lead to more passing overall.
+
+To evaluate the first two points, we'll need to know what starting waves riders were assigned to and when they departed. Since this information is not publicly available, we'll have to try and infer it from the data itself.
+
+<br>
 
 ## Can we tell which wave each rider was assigned to?
 
-Often we can infer information contained in the data by looking at the way IDs are structured. This was famously used in WW2, when the allies estimated the number of German Panther tanks being produced per month by analysing the serial numbers of captured or destroyed tanks in the field (known as the [German tank problem](https://en.wikipedia.org/wiki/German_tank_problem)).
+Often we can infer information contained in the data by looking at the way the IDs are structured. This was famously used in WW2, when the allies estimated the number of German Panther tanks being produced per month by analysing the serial numbers of captured or destroyed tanks in the field (known as the [German tank problem](https://en.wikipedia.org/wiki/German_tank_problem)).
 
 In our case, we can plot the each rider's designated race number against the time they began the race.
 
 ```js
-display(riderNoScatterSimpleChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
+display(riderStartScatterChart(raceData_2024_100, width, { stroke: rideBlue, opacity: 0.5 }))
 ```
+
+Just by eye-balling this, we can see that rider numbers were assigned into blocks of departing times.
 
 We can see that the 100 mile race was split into 5 starting waves with the following starting times:
 
@@ -291,10 +354,30 @@ We can see that the 100 mile race was split into 5 starting waves with the follo
 5) **8:15am** - Rider no. numbers between 123,000 and 129,000  
 
 ```js
-display(riderNoScatterWavesChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
+display(riderStartScatterChart(raceData_2024_100, width, {
+  stroke: "assigned_wave_number",
+  opacity: 0.5,
+  colorScheme: "viridis",
+  ruleLines: [{ data: waveStartLines }],
+  tipData: startLabels,
+}))
 ```
 
 There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
+
+We can also bucket all the rider's who didn't start in the correct wave here, as early or late starters. Let's say as a general rule, if a rider started before their assigned wave start they were an early starter and if they began the race after the subsequent wave start then they are a late starter. 
+
+Since between wave 1 & 2 there is only ~5 minutes, we'll only classify riders who started during wave 3's time window as a later starter, as getting all riders on the road in 5 minutes is quite a task.
+
+See our early and late starters below:
+
+```js
+display(riderStartScatterChart(raceData_2024_100, width, {
+  stroke: d => d.is_early_starter == "True" ? "lightcoral" : d.is_late_starter == "True" ? "lightBlue" : "lightGrey",
+  opacity: d => d.is_early_starter == "True" ? 1 : d.is_late_starter == "True" ? 1 : 0.3,
+  ruleLines: [{ data: waveStartLines }, { data: endLines, dashed: true }],
+}))
+```
 
 With this information, we can now analyse how well the race was managed.
 
@@ -305,27 +388,6 @@ With this information, we can now analyse how well the race was managed.
 Now we know where people alloted themselves, let's evaluate if people choose the appropriate race time for their ability. To do this, let's breakdown  the distribution of total ride times for each wave.
 
 ```js
-  const raceData_2024 = combinedRaceData.filter(d => d.year == 2024)
-
-  function calculateKurtosis(data) {
-    const n = data.length;
-    // Calculate the mean
-    const mean = data.reduce((sum, value) => sum + value, 0) / n;
-
-    // Calculate the standard deviation
-    const variance = data.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / n;
-    const standardDeviation = Math.sqrt(variance);
-
-    // Calculate the fourth moment
-    const fourthMoment = data.reduce((sum, value) => sum + Math.pow(value - mean, 4), 0) / n;
-
-    // Calculate the kurtosis
-    const kurtosis = fourthMoment / Math.pow(standardDeviation, 4);
-
-    return kurtosis;
-
-    }
-
     function aggregateWaveTimes(value, timesData) {
     if (timesData.length === 0) {
         return {
@@ -358,15 +420,6 @@ Now we know where people alloted themselves, let's evaluate if people choose the
     const percentile70 = d3.quantile(times, 0.7);
     const percentile80 = d3.quantile(times, 0.8);
     const percentile90 = d3.quantile(times, 0.9);
-    const q1 = d3.quantile(times, 0.25);
-    const q2 = d3.quantile(times, 0.50);
-    const q3 = d3.quantile(times, 0.75);
-    const iqrValue = q3 - q1;
-    const r0 = Math.max(minValue, q1 - iqrValue * 1.5)
-    const r1 = Math.min(maxValue, q3 + iqrValue * 1.5);
-    const outliersValues = times.filter(v => v < r0 || v > r1).length
-    const percOutliersValue = times.filter(v => v < r0 || v > r1).length / times.length
-    const kurtValue = calculateKurtosis(times)
     
     return {
         min: minValue,
@@ -375,10 +428,6 @@ Now we know where people alloted themselves, let's evaluate if people choose the
         avg: avgValue,
         count: count,
         deviation: devValue,
-        iqr: iqrValue,
-        kurt: kurtValue,
-        outliers: outliersValues,
-        outliersPerc: percOutliersValue,
         percentile10: percentile10,
         percentile20: percentile20,
         percentile30: percentile30,
@@ -390,38 +439,34 @@ Now we know where people alloted themselves, let's evaluate if people choose the
         percentile90: percentile90
     };
     }
-
-  display(waveTimeHistogramChart(raceData_2024, width))
 ```
 
-We can see that 
-
 ```js
-  display(waveBoxPlotChart(raceData_2024, width))
+  display(waveBoxPlotChart(raceData_2024_100, width))
 
 const waveStats = [
     {
         wave: 'Wave 1',
-        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024.filter(d => d.assigned_wave_number == "Wave 1")),
+        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024_100.filter(d => d.assigned_wave_number == "Wave 1")),
     },
     {
         wave: 'Wave 2',
-        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024.filter(d => d.assigned_wave_number == "Wave 2")),
+        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024_100.filter(d => d.assigned_wave_number == "Wave 2")),
 
     },
     {
         wave: 'Wave 3',
-        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024.filter(d => d.assigned_wave_number == "Wave 3")),
+        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024_100.filter(d => d.assigned_wave_number == "Wave 3")),
 
     },
     {
         wave: 'Wave 4',
-        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024.filter(d => d.assigned_wave_number == "Wave 4")),
+        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024_100.filter(d => d.assigned_wave_number == "Wave 4")),
 
     },
     {
         wave: 'Wave 5',
-        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024.filter(d => d.assigned_wave_number == "Wave 5")),
+        ...aggregateWaveTimes("ride_time_finish_decimal", raceData_2024_100.filter(d => d.assigned_wave_number == "Wave 5")),
 
     },
 ]
@@ -429,15 +474,18 @@ const waveStats = [
 display(waveStatsTable(waveStats))
 ```
 
-We can *also* see that some riders, who based on their rider number and start time, either bumped into waves early than they should have had, or joined later than intended. Let's highlight those now.
+We can see that riders did generally well at picking appropriate race lengths for themselves, as the median/mean ride time increased for each subsequent wave. 
+
+Interestingly, the deviation of the waves also decreases for each wave, especially from wave 1 to wave 2. Indicating that perhaps riders who entered a particular short time were more likely to over estimate their abilities.
+
+<br>
+
+## Did begin when were supposed to?
+
+We previously labelled the riders who started the race earlier or later than their alloted time slots. Let's look into how this effected the race, starting with how large of a proportion of riders were late or early.
 
 ```js
-display(earlyLateScatterChart(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), width))
-```
-
-```js
-  const leaveCategoryTable = aq.from(combinedRaceData)
-  .filter(aq.escape(d => d.year == 2024))
+  const leaveCategoryTable = aq.from(raceData_2024_100)
   .derive({
     leave_type: aq.escape(d =>
       d.is_early_starter === "True" ? "Early" :
@@ -446,49 +494,68 @@ display(earlyLateScatterChart(combinedRaceData.filter(d => d.raceLength == '100'
     )
   })
 
-const leaveCategoryRaceData = leaveCategoryTable.objects()
-
 const leaveProportions = leaveCategoryTable
   .groupby("leave_type")
   .rollup({ count: aq.op.count() })
-  .derive({ proportion: d => d.count / aq.op.sum("count") })
+  .derive({ proportion: d => d.count / aq.op.sum(d.count) })
   .objects();
-
-display(leaveProportionsChart(leaveProportions, width))
 ```
 
-If this assumption is true, that means that 12% of riders (2156) began the race earlier than specified and 15% (2704) began later than instructed. Meaning over a quarter of riders did not begin in their original starting wave.
+${resize((width) => verticalBarChart(leaveProportions, width > 640 ? 640 : width, {
+  title: "Over a third of riders did not start in their alloted time.",
+  x: "leave_type",
+  xDomain: ["Early", "On-Time", "Late"],
+  y: "proportion",
+  fill: "leave_type",
+  color: { domain: ["Early", "On-Time", "Late"], range: ["lightcoral", rideBlue, "lightBlue"] },
+  yLabel: "Perc. of Riders",
+  yDomain: [0, 1],
+  yTickFormat: d => `${d3.format(".0%")(d)}`,
+  label: d => ` ${d3.format(".0%")(d.proportion)}`,
+  secondaryLabel: "count",
+}))}
 
----
+If our rough estimation based on assigned waves is true, that means that 12% of riders (2,224) began the race earlier than specified and 17% (2,992) began later than instructed. Meaning over a third of riders did not begin in their original starting wave. 
 
-## How did this effect the race?
+Of the waves, riders in wave 2 and wave 5 had the highest proportion of riders who did not start in their allocated wave.
 
-From our riders assigned waves, we can see that the intended starting process was to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave.
+The chord diagram below shows the net migration from each rider's **assigned wave** to their **actual start wave**. We can see that the flow of early starters and late leavers generally moved from waves 2 and 5 into waves 3 and 4.
 
-However, there was an overlapping of people from wave 2 starting later in the day, and wave 5 starting earlier. With over 55% of the total race riders (or ~10,000 people) leaving in waves 3 and 4.
+
+${waveChordChart(raceData_2024_100, width)}
+
+
+By plotting the amount of riders in each assigned wave, we can see that the intended starting process was to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave. However, due to the rider behavior seen above, wave 3 and wave 4 had a much higher number of riders. 
+
+This led to wave 4 being especially concentrated, with an extra 1,446 riders leaving in the wave than planned (37% more than intended).
 
 <div class="grid grid-cols-2">
   <div>
-    ${waveStartBar(
-      'Riders Assigned Starts', 'Assigned Start Wave',
-      raceData_100.filter(d => d.year == 2024 && d.assigned_wave_number != 'VIP'),
-      'assigned_wave_number', width
-    )}
+    ${resize((width) => verticalBarChart(
+      raceData_2024_100.filter(d => d.assigned_wave_number != 'VIP'), width > 640 ? 640 : width,
+      { title: 'Riders Assigned Starts', xLabel: 'Assigned Start Wave', x: 'assigned_wave_number', yDomain: [0, 6000], group: true }
+    ))}
   </div>
   <div>
-    ${waveStartBar(
-      'Riders Actual Starts', 'Actual Start Wave',
-      raceData_100.filter(d => d.year == 2024 && d.assigned_start_wave != null),
-      'assigned_start_wave', width
-    )}
+    ${resize((width) => verticalBarChart(
+      raceData_2024_100.filter(d => d.assigned_start_wave != null), width > 640 ? 640 : width,
+      { title: 'Riders Actual Starts', xLabel: 'Actual Start Wave', x: 'assigned_start_wave', yDomain: [0, 6000], group: true }
+    ))}
   </div>
 </div>
 
+This meant that over 55% of the race (around 10,000 riders) left in two waves. 
+
+
 ### How did this effect the flow of the race?
 
-Due to people not starting in their designated waves, a large portion of the race began in two waves rather than evenly distributed across the morning. But how did that effect the *~flow~* of the race?
+Due to people not starting in their designated waves, a large portion of the race began in wave 3 and 4 rather than evenly distributed across the morning. But how did that effect the *~flow~* of the race?
 
-To analyse this, I've simulated each rider's position on the course at 15 minute intervals by taking their average speed measured at each time gate along the course (you can see the code for this simulation here).
+To analyse this, I've simulated the flow of the race by splitting the 100 mile course into 5 mile buckets and the rest stops. Using the rider's average time that is calculated at each time gate, we can measure the estimated position of each rider on the road at 15 minute increments across the race day.
+
+We can then group our riders by bucket and loop across the entire day to analyse the concentration of riders due to early and late starters.
+
+The simulation for the 100 mile race looks like this. You can see the code for this simulation here.
 
 ```js
 raceSimData.forEach(item => {
@@ -549,14 +616,17 @@ const formattedTime =
   `${(hours % 12) || 12}:${String(minutes).padStart(2, '0')} ${hours < 12 ? 'AM' : 'PM'}`;
 ```
 
-Time: ${formattedTime}
-Remaining starting riders: ${startersRemainingInt}
-Finished riders: ${ridersFinishedInt}
+### ${formattedTime}
 ```js
 display(
-  Plot.plot({
+  (() => {
+    const mobile = width < 600;
+    const marginBottom = mobile ? 80 : 30;
+    const heightRatio = mobile ? 0.58 : 0.44;
+    return Plot.plot({
     width: width,
-    height: 0.44 * width,
+    height: heightRatio * width + (mobile ? marginBottom - 30 : 0),
+    marginBottom,
     y: {
       grid: true,
       label: "Number of Riders",
@@ -565,7 +635,8 @@ display(
     x: {
       domain: withRestStops,
       type: "band",
-      label: "Distance (Miles)"
+      label: "Distance (Miles)",
+      tickRotate: mobile ? -45 : 0
     },
     marks: [
       Plot.barY(loopRaceSim.filter(d => d.type == 'total_riders'), {
@@ -575,7 +646,8 @@ display(
         stack: "y"
       }),
     ]
-  })
+    });
+  })()
 )
 ```
 
@@ -586,52 +658,121 @@ const raceSim12 = riderDistributionLong.filter(d => 12 == d.hour)
 
 ### 7AM - The early waves depart
 
-By 7AM, the first two waves have departed. The earliest wave is made up of the most die hard riders, with very few riders assigned to later waves beginning this early (marked as early riders). 
+By 7AM, the first three waves have departed. The earliest wave is made up of the most die hard riders, with very few riders assigned to later waves beginning this early (marked as early riders). 
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 7 == d.hour), width))
 ```
 
-The second wave departing in the 0-5 mile bucket, contains some of the wave 1 riders who weren't prepared to wake up at 5am and started late. However, 800 riders designated to begin in this wave do not depart on time, instead opting to start the race later.
+The early part of the race is relatively quiet as wave 2 is smaller than expected, with a peak at the start of the course as wave 3 departs with extra riders from other waves.
 
-### 8AM - A peak develops
+### 8AM - Rider starts converge
 
-Wave
+At 8am, wave 4 is in full swing. This wave has the highest ratio of riders who departed in their assigned wave, as well as largest amount of early and late riders migrating from waves 2, 3 and 5. This together leads of a huge peak of riders on the first five miles of the course.
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 8 == d.hour), width))
 ```
 
-### 9AM
+### 9AM - Two waves merge
+
+By 9AM, the late leavers who are generally quicker than the early starters and wave 4 riders start to overtake the field and the wave 3 departures merge with the large rider peak seen at 8am.
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 9 == d.hour), width))
 ```
 
-### 10AM
+This leads to there be two larger groups of riders, the quicker wave 1 & 2 riders who departed mostly on time at the 30 mile mark, and a large clump of riders who did not start in their assigned waves in a congested period at the beginning of the course before the first stop.
+
+### 10AM - Things begin to settle
+
+As the race continues and later riders from wave 2 pass the wave 3 and early wave 4 starts, the field starts to even out across the course. Only one major group of ultra late starts at around the 20 mile mark.
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 10 == d.hour), width))
 ```
 
-### 12PM
+Part of why that early congestion flattens out is that faster riders skip the rest stops at a lower rate than slower ones - so as the quicker end of the field reaches these points, they mostly ride straight through rather than bunching up. The race has three official rest stops, at roughly mile 25, mile 50 and mile 73. Here's the share of each assigned wave who actually stopped (5+ minutes) at each one:
+
+```js
+const stopDefs = [
+  { stop: "Mile 25", before: "ride_time_25_decimal", after: "ride_time_26_decimal" },
+  { stop: "Mile 50", before: "ride_time_53_decimal", after: "ride_time_54_decimal" },
+  { stop: "Mile 73", before: "ride_time_73_decimal", after: "ride_time_74_decimal" },
+];
+const waveOrder = ["Wave 1", "Wave 2", "Wave 3", "Wave 4", "Wave 5"];
+
+const restStopStats = stopDefs.flatMap(({ stop, before, after }) =>
+  waveOrder.map(wave => {
+    const restMinutes = raceData_2024_100
+      .filter(d => d.assigned_wave_number == wave)
+      .map(d => (d[after] - d[before]) * 60)
+      .filter(m => !Number.isNaN(m));
+    const stopped = restMinutes.filter(m => m >= 5);
+    const cappedStopped = stopped.filter(m => m <= 60);
+    return {
+      stop,
+      wave,
+      pctStopped: restMinutes.length ? (stopped.length / restMinutes.length) * 100 : null,
+      avgStopMinutes: cappedStopped.length ? d3.mean(cappedStopped) : null,
+    };
+  })
+);
+```
+
+${resize((width) => verticalBarChart(restStopStats.filter(d => d.stop == "Mile 25"), width > 640 ? 640 : width, {
+  x: "wave", xDomain: waveOrder, y: "pctStopped", yLabel: "Riders who stopped", yDomain: [0, 100],
+  yTickFormat: d => `${d}%`,
+  label: d => d.pctStopped == null ? "" : `${Math.round(d.pctStopped)}%`,
+}))}
+
+### 12PM - The Lunchpocalypse
+
+The final point of major congestion in the day comes at lunch time, at which point there was over 2,600 people in the 50 mile rest zone. As someone who was here during this time, it certainly felt like it.
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 12.25 == d.hour), width))
 ```
 
-### 1PM
+That's the mile 50 stop specifically, so here's how each wave's stopping rate looked there:
+
+${resize((width) => verticalBarChart(restStopStats.filter(d => d.stop == "Mile 50"), width > 640 ? 640 : width, {
+  x: "wave", xDomain: waveOrder, y: "pctStopped", yLabel: "Riders who stopped", yDomain: [0, 100],
+  yTickFormat: d => `${d}%`,
+  label: d => d.pctStopped == null ? "" : `${Math.round(d.pctStopped)}%`,
+}))}
+
+### 1PM - Steady flow
+
+However, one good effect of the large amount of people taking a break at mile 50 is it gives a good opportunity for those late starters to pass and overtake our slower riders. On the day of the ride, it acted as an unofficial reset point for the order of riders.
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 13 == d.hour), width))
 ```
 
-This crowding in the 3rd and 4th waves led to some significant moments of overcrowding during the beginning of the day. Most notably:
+So riders not beginning in their allotted waves led to some over-crowding in the morning of the race, but this did clear up throughout the day.
+
+The last of the three official rest stops comes at mile 73:
+
+${resize((width) => verticalBarChart(restStopStats.filter(d => d.stop == "Mile 73"), width > 640 ? 640 : width, {
+  x: "wave", xDomain: waveOrder, y: "pctStopped", yLabel: "Riders who stopped", yDomain: [0, 100],
+  yTickFormat: d => `${d}%`,
+  label: d => d.pctStopped == null ? "" : `${Math.round(d.pctStopped)}%`,
+}))}
+
+And the average time spent at each of the three stops, among riders who actually stopped (5-60 minutes, to exclude outliers):
 
 ```js
-  const linkData = raceData_100.filter(d => d.year == 2024)
-  const highlightedData = raceData_100.filter(d => d.year == 2024 && d.rider_no == 126410)
+display(restStopAvgTable(restStopStats))
 ```
+
+```js
+  const linkData = raceData_2024_100
+  const highlightedData = raceData_2024_100.filter(d => d.rider_no == 126410)
+```
+
+<!-- ## Did congestion make the race more dangerous?
+
 
 ```js
 display(riderPathsSingleChart(linkData, highlightedData, width))
@@ -639,16 +780,16 @@ display(riderPathsSingleChart(linkData, highlightedData, width))
 
 ```js
 display(riderPathsSimplifiedChart(linkData, highlightedData, width))
-```
+``` -->
 
 ---
 
-## Passes by start-time compliance
+<!-- ## Passes by start-time compliance
 
 Did riders who jumped the gun (or started too late) cause more disruption on the road?
 
 ```js
-const starterTypeTable = aq.from(raceData_100.filter(d => d.year == 2024))
+const starterTypeTable = aq.from(raceData_2024_100)
   .derive({
     starter_type: aq.escape(d =>
       d.is_early_starter === "True" ? "Early" :
@@ -674,225 +815,80 @@ const avgMelted = starterTypeStats.flatMap(d => [
 ])
 ```
 
-```js
-display(avgPassesChart(avgMelted, width))
-```
+${resize((width) => verticalBarChart(avgMelted, width > 640 ? 640 : width, {
+  title: "Average passes by start-time group",
+  x: "starter_type",
+  y: "value",
+  yLabel: "Average passes",
+  fill: "metric",
+  fx: "metric",
+  color: { legend: true },
+  marginLeft: 60,
+}))}
 
 ```js
-display(passDistributionChart(
-  "Distribution of total riders passed on the road",
-  "total_passed_riders_race",
-  "Riders passed",
-  starterTypeData,
-  width
-))
-```
-
-```js
-display(passDistributionChart(
-  "Distribution of total times passed by others on the road",
-  "total_passed_by_riders_race",
-  "Times passed by",
-  starterTypeData,
-  width
-))
-```
-
-## Real vs simulated: how much did wave non-compliance cost?
-
-To quantify the disruption caused by early and late starters, we can compare each rider's actual pass counts against the simulation — where every non-compliant rider is placed back into their correct wave, but their speed is held constant.
-
-```js
-const simCompTable = aq.from(raceData_100.filter(d => d.year == 2024))
-  .derive({
-    starter_type: aq.escape(d =>
-      d.is_early_starter === "True" ? "Early" :
-      d.is_late_starter  === "True" ? "Late"  : "On Time"
-    ),
-    real_pass_events: aq.escape(d => +d.total_passed_riders_race + +d.total_passed_by_riders_race),
-    sim_pass_events:  aq.escape(d => +d.sim_total_passed_riders_race + +d.sim_total_passed_by_riders_race),
-  })
-
-const simCompStats = simCompTable
-  .groupby("starter_type")
+const segmentPassTotals = aq.from(raceData_2024_100)
   .rollup({
-    avg_real: aq.op.mean("real_pass_events"),
-    avg_sim:  aq.op.mean("sim_pass_events"),
-    count:    aq.op.count(),
+    passed_riders_tod_25_td_race:     aq.op.sum('passed_riders_tod_25_td_race'),
+    passed_riders_tod_53_td_race:     aq.op.sum('passed_riders_tod_53_td_race'),
+    passed_riders_tod_73_td_race:     aq.op.sum('passed_riders_tod_73_td_race'),
+    passed_riders_tod_finish_td_race: aq.op.sum('passed_riders_tod_finish_td_race'),
+  })
+  .fold(aq.all())
+  .rename({ key: 'segment', value: 'passes' })
+  .derive({
+    label: aq.escape(d => ({
+      passed_riders_tod_25_td_race:     'Start → 25mi',
+      passed_riders_tod_53_td_race:     '26 → 53mi',
+      passed_riders_tod_73_td_race:     '54 → 73mi',
+      passed_riders_tod_finish_td_race: '74mi → Finish',
+    })[d.segment]),
   })
   .objects()
-
-const realTotalPasses = d3.sum(raceData_100.filter(d => d.year == 2024), d => +d.total_passed_riders_race)
-const simTotalPasses  = d3.sum(raceData_100.filter(d => d.year == 2024), d => +d.sim_total_passed_riders_race)
-
-const simCompMelted = simCompStats.flatMap(d => [
-  { starter_type: d.starter_type, scenario: "Actual",    value: d.avg_real },
-  { starter_type: d.starter_type, scenario: "Simulated", value: d.avg_sim  },
-])
 ```
 
-Each unique overtake between two riders counts as one event. If all ${raceData_100.filter(d => d.year == 2024 && (d.is_early_starter === "True" || d.is_late_starter === "True")).length.toLocaleString()} non-compliant riders had started in their correct wave, the total pass events across the field would fall from **${realTotalPasses.toLocaleString()}** to **${simTotalPasses.toLocaleString()}** — a reduction of **${(realTotalPasses - simTotalPasses).toLocaleString()} events (${((realTotalPasses - simTotalPasses) / realTotalPasses * 100).toFixed(1)}%)**.
-
 ```js
-display(actualVsSimPassesChart(simCompMelted, width))
-```
-
-The on-time group shows almost no change between actual and simulated — as expected, since their start times are unchanged. The largest gaps appear in the early and late starter groups, where incorrect wave placement directly drives excess passing interactions.
-
-Are early and late starters responsible for a disproportionate share of pass events relative to their size in the field?
-
-```js
-const totalRiders2024 = raceData_100.filter(d => d.year == 2024).length
-
-const proportionStats = simCompTable
-  .groupby("starter_type")
-  .rollup({
-    count:           aq.op.count(),
-    real_pass_total: aq.op.sum("total_passed_riders_race"),
-  })
+const riderPositions = aq.from(raceData_2024_100)
   .derive({
-    pct_riders:      aq.escape(d => d.count / totalRiders2024 * 100),
-    pct_real_passes: aq.escape(d => d.real_pass_total / realTotalPasses * 100),
+    net_positions: d => d.total_passed_riders_race - d.total_passed_by_riders_race,
+    speed: d => 100 / d.final_time_decimal,
   })
+
+const topNetRider = riderPositions
+  .orderby(aq.desc('net_positions'))
+  .slice(0, 1)
+  .objects()[0]
+
+const avgSpeedOfRidersBeforeTop = riderPositions
+  .filter(aq.escape(d => d.start_tod && d.start_tod < topNetRider.start_tod))
+  .rollup({ avg_speed: aq.op.mean('speed') })
+  .objects()[0].avg_speed
+```
+
+```js
+const topPositionGainers = aq.from(raceData_2024_100)
+  .derive({
+    positions_gained: d => d.rider_pos_start - d.rider_pos_finish,
+    actual_wave: aq.escape(d => {
+      if (!d.start_tod) return null;
+      if (d.start_tod < "2024-05-26 06:45:00") return "Wave 1/2";
+      if (d.start_tod < "2024-05-26 07:37:00") return "Wave 3";
+      if (d.start_tod < "2024-05-26 08:15:00") return "Wave 4";
+      return "Wave 5";
+    }),
+  })
+  .orderby(aq.desc('positions_gained'))
+  .slice(0, 20)
+  .select(
+    'rider_pos_start', 'rider_pos_finish', 'positions_gained',
+    'total_passed_riders_race',
+    'assigned_wave_number', 'actual_wave',
+    'mph_25', 'mph_53', 'mph_73', 'mph_finish',
+    'ride_time_finish', 'final_time'
+  )
   .objects()
+``` -->
 
-const proportionMelted = proportionStats.flatMap(d => [
-  { starter_type: d.starter_type, series: "Share of riders",  value: d.pct_riders      },
-  { starter_type: d.starter_type, series: "Share of passes",  value: d.pct_real_passes },
-])
-```
-
-```js
-display(shareRidersPassesChart(proportionMelted, width))
-```
-
----
-
-## An outlier: the rider who passed almost everyone
-
-```js
-const andrewRider = raceData_100.find(d => d.rider_no === 100273 && d.year === 2024)
-const andrewPassedRiders = raceData_100.filter(d =>
-  d.year === 2024 &&
-  +d.rider_pos_start < +andrewRider.rider_pos_start &&
-  +d.rider_pos_finish > +andrewRider.rider_pos_finish
-)
-const andrewPassedAvgMph = d3.mean(andrewPassedRiders, d => +d.mph_finish)
-const fieldAvgMph = d3.mean(raceData_100.filter(d => d.year === 2024), d => +d.mph_finish)
-```
-
-Meet **Andrew Habibi-Parker**. As a VIP entrant (rider #100273) he had his own start slot and rolled off the line at 08:32 — one of the very last to start, in the bottom 6% of riders by start time. By that point, the bulk of the field had been on the road for hours.
-
-What followed was one of the most disruptive rides in the race. Starting from position ${andrewRider.rider_pos_start.toLocaleString()} out of 17,893, Andrew spent the next 7 hours and 4 minutes cutting through the field, overtaking **${(+andrewRider.total_passed_riders_race).toLocaleString()} riders** on the open road — and being passed by just **${andrewRider.total_passed_by_riders_race}**.
-
-He finished in position ${andrewRider.rider_pos_finish.toLocaleString()}, climbing roughly 5,900 places through the field.
-
-The speed differential tells the whole story. Andrew averaged **${(+andrewRider.mph_finish).toFixed(1)} mph** across the course. The riders he overtook averaged just **${andrewPassedAvgMph.toFixed(1)} mph** — the field as a whole averaged ${fieldAvgMph.toFixed(1)} mph.
-
-```js
-display(riderMphComparison(
-  "Andrew's mph vs riders he passed vs the full field",
-  [
-    { label: "Field average",        mph: fieldAvgMph },
-    { label: "Riders he passed",     mph: andrewPassedAvgMph },
-    { label: "Andrew Habibi-Parker", mph: +andrewRider.mph_finish },
-  ],
-  width
-))
-```
-
----
-
-## A different kind of disruption: the rider the field swallowed whole
-
-```js
-const jamesRider = raceData_100.find(d => d.rider_no === 102317 && d.year === 2024)
-const jamesPassedByRiders = raceData_100.filter(d =>
-  d.year === 2024 &&
-  +d.rider_pos_start > +jamesRider.rider_pos_start &&
-  +d.rider_pos_finish < +jamesRider.rider_pos_finish
-)
-const jamesPassedByAvgMph = d3.mean(jamesPassedByRiders, d => +d.mph_finish)
-
-const jamesPassData = [
-  { segment: "Start → 25mi",  type: "Road", passed: +jamesRider.passed_riders_tod_25_td_race,  passed_by: +jamesRider.passed_by_riders_tod_25_td_race },
-  { segment: "25 → 26mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_26_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_26_td_rest },
-  { segment: "26 → 53mi",     type: "Road", passed: +jamesRider.passed_riders_tod_53_td_race,  passed_by: +jamesRider.passed_by_riders_tod_53_td_race },
-  { segment: "53 → 54mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_54_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_54_td_rest },
-  { segment: "54 → 73mi",     type: "Road", passed: +jamesRider.passed_riders_tod_73_td_race,  passed_by: +jamesRider.passed_by_riders_tod_73_td_race },
-  { segment: "73 → 74mi",     type: "Rest", passed: +jamesRider.passed_riders_tod_74_td_rest,  passed_by: +jamesRider.passed_by_riders_tod_74_td_rest },
-  { segment: "74mi → Finish", type: "Road", passed: +jamesRider.passed_riders_tod_finish_td_race, passed_by: +jamesRider.passed_by_riders_tod_finish_td_race },
-]
-```
-
-Andrew's disruption came from speed — cutting through the field, one overtake at a time. **James Holloway**'s disruption worked in reverse. A Wave 1 starter, James was on the road by 06:01 — position ${jamesRider.rider_pos_start.toLocaleString()} out of 17,893, near the very front of the entire field.
-
-By the finish he was position ${jamesRider.rider_pos_finish.toLocaleString()}. The entire race had washed over him. He was passed by **${(+jamesRider.total_passed_by_riders_race).toLocaleString()} riders** on the open road, and overtook just **${jamesRider.total_passed_riders_race}** himself on the road. His finish time of ${(+jamesRider.ride_time_finish_decimal).toFixed(2)} hours — nearly 12 and a half hours — is ${((+jamesRider.ride_time_finish_decimal - d3.mean(raceData_100.filter(d => d.year === 2024), d => +d.ride_time_finish_decimal))).toFixed(1)} hours slower than the field average.
-
-But there's a twist. While James was barely moving on the road, he was one of the most efficient riders through the rest stops — passing **${(+jamesRider.total_passed_riders_rest).toLocaleString()} riders** at the feed stations, including ${+jamesRider.passed_riders_tod_54_td_rest} at the 53-54 mile stop alone. He'd roll in while others were lingering, and roll out before them. On the road he was a rock in a river; at the rest stops he was threading through standing water.
-
-The riders who streamed past him on the road averaged **${jamesPassedByAvgMph.toFixed(1)} mph**. James averaged **${(+jamesRider.mph_finish).toFixed(1)} mph** — a pace that, on a 100-mile course, tells its own story of a very tough day in the saddle.
-
-```js
-display(riderMphComparison(
-  "James's mph vs riders who passed him vs the full field",
-  [
-    { label: "James Holloway",    mph: +jamesRider.mph_finish },
-    { label: "Field average",     mph: fieldAvgMph },
-    { label: "Riders who passed", mph: jamesPassedByAvgMph },
-  ],
-  width
-))
-```
-
-```js
-display(jamesSegmentPassesChart(jamesPassData, width))
-```
-
-Four riders define the extremes of this chart.
-
-At the top, **Andrew Habibi-Parker** cut from the back of Wave 2 into the top third of the field — the most passes made. Alongside him, **Csaba Csenge** achieved the single biggest position gain of the entire race: starting from ${csabaRider.rider_pos_start.toLocaleString()} and finishing at ${csabaRider.rider_pos_finish.toLocaleString()}, a climb of **${(+csabaRider.rider_pos_start - +csabaRider.rider_pos_finish).toLocaleString()} places**. He averaged **${(+csabaRider.mph_finish).toFixed(1)} mph** — **${((+csabaRider.mph_finish) - fieldAvgMph).toFixed(1)} mph** faster than the field — and was passed by no one.
-
-At the bottom, **James Holloway** and **Kelly-Ann Plummer** both started in position ${jamesRider.rider_pos_start.toLocaleString()} and sank to the very end of the field. Kelly-Ann's drop of **17,060 places** is the largest in the race. She averaged **${(+kellyRider.mph_finish).toFixed(1)} mph** — **${(fieldAvgMph - +kellyRider.mph_finish).toFixed(1)} mph** slower than the field average.
-
-```js
-const kellyRider  = raceData_100.find(d => d.rider_no === 102316 && d.year === 2024)
-const csabaRider  = raceData_100.find(d => d.rider_no === 102302 && d.year === 2024)
-```
-
-```js
-const andrewHighlight = raceData_100.filter(d => d.year == 2024 && d.rider_no === 100273);
-const jamesHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102317);
-const kellyHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102316);
-const csabaHighlight  = raceData_100.filter(d => d.year == 2024 && d.rider_no === 102302);
-```
-
-```js
-display(fullBumpChart(linkData, [
-  { data: andrewHighlight, stroke: "tomato" },
-  { data: csabaHighlight,  stroke: "seagreen" },
-  { data: jamesHighlight,  stroke: "steelblue" },
-  { data: kellyHighlight,  stroke: "goldenrod" },
-], width))
-```
-
-<span style="color: tomato">―</span> **Andrew Habibi-Parker** — most riders passed &nbsp;&nbsp; <span style="color: seagreen">―</span> **Csaba Csenge** — most positions gained (+11,952) &nbsp;&nbsp; <span style="color: steelblue">―</span> **James Holloway** — most passed by &nbsp;&nbsp; <span style="color: goldenrod">―</span> **Kelly-Ann Plummer** — most positions lost (−17,060)
-
----
-
-## The most disruptive rider overall
-
-Andrew passed almost everyone he met. James was an obstacle for almost the entire field. But when you count both directions — passes made and passes received — neither of them tops the list.
-
-That distinction belongs to **Bryn Hassan**, with **${(+raceData_100.find(d => d.rider_no === 101061 && d.year === 2024).total_passed_riders_race + +raceData_100.find(d => d.rider_no === 101061 && d.year === 2024).total_passed_by_riders_race).toLocaleString()} total on-road disruption events**.
-
-```js
-const brynRider = raceData_100.find(d => d.rider_no === 101061 && d.year === 2024)
-```
-
-Like James, Bryn started in Wave 1 — on the road by 06:02, position ${brynRider.rider_pos_start.toLocaleString()} out of 17,893. He passed ${(+brynRider.total_passed_riders_race).toLocaleString()} riders himself, but was overtaken by ${(+brynRider.total_passed_by_riders_race).toLocaleString()} — a combined ${(+brynRider.total_passed_riders_race + +brynRider.total_passed_by_riders_race).toLocaleString()} overtaking events on the open road. He finished at position ${brynRider.rider_pos_finish.toLocaleString()}.
-
-Andrew's dominance flowed in one direction; James was almost entirely a passive obstacle. Bryn was genuinely two-way — active enough to pass thousands, but still slow enough relative to his start position that the bulk of the field eventually streamed past him too.
 
 <!-- We can see that our early starters more often than not fall into the upper final timezones in the correlation, whereas the late starters are quicker than their waves.
 
@@ -909,7 +905,7 @@ display(
         y: { label: "Total Ride Time (hours)", grid: true},
         x: { label: "Start Time of Day", type: "time" },
         marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+            Plot.dot(raceData_2024_100, {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(d.start_tod),
                 y: "final_time_decimal",
                 stroke: d => d.is_early_starter == "True" ? "red" : d.is_late_starter == "True" ? "green" : rideBlue, 
@@ -954,13 +950,13 @@ display(
         y: { label: "Total Ride Time (hours)", grid: true},
         x: { label: "Start Time of Day", type: "time" },
         marks: [
-            Plot.dot(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+            Plot.dot(raceData_2024_100, {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(is_sim_data ? d.simulated_start_dt : d.start_tod),
                 y: "final_time_decimal",
                 stroke: rideBlue, 
                 opacity: d => d.is_early_starter == "True" ? 0.8 : d.is_late_starter == "True" ? 0.8 : 0.2, 
             }),
-            Plot.linearRegressionY(combinedRaceData.filter(d => d.raceLength == '100' && d.year == 2024), {
+            Plot.linearRegressionY(raceData_2024_100, {
                 x: d => d3.timeParse("%Y-%m-%d %H:%M:%S")(is_sim_data ? d.simulated_start_dt : d.start_tod),
                 y: "final_time_decimal",
                 stroke: "red", 
@@ -1170,23 +1166,149 @@ Add wind impact analysis.
 
  -->
 
-## Basic Ride Facts
-- How many people raced ✅ 
-- What the makeup of riders was ✅
-- Percentiles and fun facts. ✅
-- Wind speed factor
+## Why did the route need to be altered?
+<div class="grid grid-cols-2">
+  <div>
+
+  The central London portion of the route had riders congregate at Buckingham Palace before heading down the Mall and starting along the Thames River Embankment. 
+
+  The route then avoided the docklands by using the Limehouse Link Tunnel, before cutting North via the A12.
+
+  After heading out to Essex and back, the ride returned via the same route, ending with a sprint finish across Tower Bridge.
+
+  By following this route, disruption on traffic flow across London as kept to a minimum. Traffic could move from the South across the river via the multiple tunnels and bridges as the ride progressed along the Embankment, and from the East via A13, and the roads passing under the A12.
+  </div>
+  <div>
+    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.5085, -0.0485], zoom: 11.8, mobileZoom: 11.0, width })}
+    <div class="muted">Open bridges and tunnel marked in green, closed in red.</div>
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div>
+  
+  In April 2025, the Silvertown tunnel opened linking the Royal Docks and Canary Wharf with north Greenwich. The tunnel was intended to reduce pressure on the heavily congested Dartford crossing and Blackwater Tunnel. Cyclists who wish to use the tunnel need to phone for a dedicated shuttle bus to pick them up.
+
+  If the previous route was to be used, the Silvertown tunnel would have to close between 4am and 7pm on the day of the event. Will Norman, London's cycling and walking commissioner at the time of planning described this described this as an “absolute no”.
+
+  This left the London Marathon Group with a monumental re-planning effort, having to find a way to keep the Silvertown tunnel open without causing large scale disruption to central London.
+
+  </div>
+  <div>
+    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.501594787700675, 0.011805819341940176], zoom: 13.4, width })}
+    <div class="muted">Silvertown tunnel marked in red.</div>
+  </div>
+</div>
+
+---
+
+## The proposed 2025 routes
+
+<div class="grid grid-cols-2">
+  <div>
+
+  ### Avoid East London Entirely
+  By turning the route Northbound off of the Embankment at Tower bridge the docklands can be avoided entirely, meaning that the Silvertown tunnel could operate without disruption.
+  
+  The route would continue up the A10 via Dalston and out to Essex. Returning via the A104, cutting through Victoria Park onto the A11 and maintaining the finish on Tower Bridge.
+
+  This however, would cause a huge amount of disruption to central London. The route contains no major bridges or overpasses meaning the traffic control would have to be conducted throughout the day. 
+
+  The inbound and outbound road closures would also overlap 8am to 11am, essentially creating a 'landlocked' zone for a period of the day.
+
+  </div>
+  <div>
+    ${routeMap(routeB, londonBridges, "#7b2fa0", width, { polygon: true, bridgeKey: 'b', lineGeojson: routeBLine })}
+    <div class="muted">"Landlocked" area shaded in red.</div>
+  </div>
+</div>
+<br>
+
+<div class="grid grid-cols-2">
+  <div>
+
+  ### Avoid Central London Entirely
+  By starting the event at the Queen Elizabeth Olympic Park and heading East, this proposed route requires no major river crossing to be closed for the full duration of the day.
+
+  The returning route would cut Westerly across North London before heading South through Camden Town, switching to a new ending location of The Mall. 
+
+  This route would create significant disruption Camden Town, one of London's busiest areas. It was also noted that for an event touted as Ride London, riders would see a very small amount of London Landmarks during their ride.
+
+  </div>
+  <div>
+    ${routeMap(routeC, londonBridges, "#060549", width, { bridgeKey: 'c' })}
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div>
+
+  ### Only close the Silvertown Tunnel for the morning
+  By keeping the start of the ride on the Embankment , the route can maintain it's original low-disruption outward leg which involves a high amount of London landmarks. 
+  
+  This would however cause the Silvertown tunnel to have close until at least 11am and still require a very large amount disruption to Camden Town as this part of the adjusted route would still need to be used to allow the tunnel to reopen.
+
+  </div>
+  <div>
+    ${routeMap(routeF, londonBridges, "#e07b39", width, { bridgeKey: 'f' })}
+  </div>
+</div>
+
+<div class="grid grid-cols-2">
+  <div>
+
+  ### Avoid the Silvertown tunnel specifically
+  By starting the route in South East London, progressing up the Thames and beginning on the Southbank, Before turning North after Blackfriars Bridge onto the A11 and heading North East out of London on A104.
+
+  The riders would again, return by cutting West across North London, then head South via Camden for an ending at the Mall.
+
+  This route attempts to give Riders more visable London landmarks in the morning, while keeping the Silvertown tunnel open throughout the day.
+
+  However, in attempting to solve each issue it also inherits all of issues from the other routes. A departing route via East London leaves no way for traffic to flow into central London from West to East, and a Southern route via Camden means major disruption 
+
+  </div>
+  <div>
+    ${routeMap(routeD, londonBridges, "#37e1d5", width, { bridgeKey: 'd' })}
+  </div>
+</div>
+<br>
+
+This all does not begin to get into the knock-on effect that these London based route changes would have, any distance lost in the City of London would have to be made up in Essex. Considering the event was already controversial, with [petitions created](https://www.change.org/p/stop-the-ride-london-essex-cycling-event-from-disrupting-ongar) appealing to stop the ride in Ongar and Tony Blackburn suggesting that Ride London should be replaced by an ["event for car owners"](https://road.cc/content/news/tony-blackburn-calls-car-event-replace-ridelondon-301527), shutting more roads in Essex may not have been a viable option either.
 
 
-## How was the event run?
-- Start time waves  ✅ 
-- Did the weather cause a crowded start? / Did people choose to start later due to the rain?
-- Number of breaks / Most popular spots
-- Least break time spot
+# Cancelling the event
+<br>
+
+## The 2024 hiatus
+When planning the 2025 edition of Ride London, two major events happened. TFL demanded a major re-routing of the event to keep the Silvertown tunnel open for the full duration of the event day. This was a huge undertaking for the route planning staff at LME.
+
+The women's professional race, the London-Surrey Classic, was also dropped during this period when the UCI moved the dates of the race to the same day as the Trooping the Colour. 
+
+According to [an FAQ](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html) sent to major stakeholders (such as theEssex Council), this meant that no revenue from sponsorships or broadcasting rights could be obtained for funding the organisation of the event. 
+
+With rider numbers for the longest route were consistently declining year over year and major routing and funding issues, the decision was made to place the 2025 event on hiatus and attempt to solve issues in the intervening year. 
+
+<br>
+
+## Why was the race cancelled permanently?
+
+The 2024 Ride London event was a fairly well run event. Riders generally set appropriate times for themselves, with faster riders leaving in earlier waves on average. 
+
+However, about 29% of riders didn't leave in their intended block, overpopulating waves 3 and 4, leading to a large area of congestion in the morning of the race. This led to some extreme events where extremely fast riders passed a large number of slower riders throughout the day.
+
+This congestion cleared after the lunch rush at the 50 mile rest point, **with slower riders opting to take longer breaks for lunch**, and the rest of the day had a fairly evenly distributed number of riders.
+
+Considering the epic levels of organisation the event requires, with over 3,000 stewards, 100 support vehicles and 450km of road closures, London Marathon Events also expressed that they would not be able to maintain the subsidy required for keep running the race.
 
 <style>
 
 body {
   font-family: var(--sans-serif);
+}
+
+.leaflet-tooltip {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
 }
 
 .hero {

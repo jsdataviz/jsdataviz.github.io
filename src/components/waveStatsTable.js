@@ -2,7 +2,6 @@ import * as Inputs from "npm:@observablehq/inputs";
 
 const aggregatedColumns = [
   "wave", "count", "median", "avg", "deviation",
-  "outliers", "iqr", "kurt", "outliersPerc",
   "percentile10", "percentile20", "percentile30", "percentile40",
   "percentile50", "percentile60", "percentile70", "percentile80", "percentile90",
 ];
@@ -12,8 +11,7 @@ const aggregatedHeaders = {
   count: "Riders",
   median: "Median",
   avg: "Mean",
-  deviation: "Std. Dev.",
-  kurt: "Kurtosis",
+  deviation: "Std. Deviation",
   percentile10: "10%",
   percentile20: "20%",
   percentile30: "30%",

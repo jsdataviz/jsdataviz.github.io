@@ -7,11 +7,18 @@ export const withRestStops = withoutRestStops
   .toSpliced(17, 0, "Stop 73");
 
 export function raceSimGraph(data, width) {
+  // Rotated tick labels need more room below the axis than a horizontal
+  // label does - push the plot area up (marginBottom) and grow the canvas
+  // by the same amount so the bars themselves don't get squished.
+  const mobile = width < 600;
+  const marginBottom = mobile ? 80 : 30;
+  const heightRatio = mobile ? 0.58 : 0.44;
   return Plot.plot({
     width: width,
-    height: 0.44 * width,
+    height: heightRatio * width + (mobile ? marginBottom - 30 : 0),
+    marginBottom,
     y: { grid: true, label: "Number of Riders", domain: [0, 3500] },
-    x: { domain: withRestStops, type: "band", label: "Distance (Miles)" },
+    x: { domain: withRestStops, type: "band", label: "Distance (Miles)", tickRotate: mobile ? -45 : 0 },
     color: { legend: true },
     marks: [
       Plot.barY(data.filter(d => d.type != "total_riders"), {

@@ -96,6 +96,7 @@ import { waveChordChart } from "./components/waveChordChart.js";
 import { raceSimGraph, withRestStops } from "./components/raceSimGraph.js";
 import { riderPathsSingleChart } from "./components/riderPathsSingleChart.js";
 import { riderPathsSimplifiedChart } from "./components/riderPathsSimplifiedChart.js";
+import { riderPathsCanvasChart } from "./components/riderPathsCanvasChart.js";
 import { yearHistogramsChart } from "./components/yearHistogramsChart.js";
 import { introRouteMap } from "./components/introRouteMap.js";
 import { silvertonRouteMap } from "./components/silvertonRouteMap.js";
@@ -769,6 +770,40 @@ display(restStopAvgTable(restStopStats))
 ```js
   const linkData = raceData_2024_100
   const highlightedData = raceData_2024_100.filter(d => d.rider_no == 126410)
+```
+
+## Did congestion make the race more dangerous? (canvas trial)
+
+Same chart as the commented-out `riderPathsSingleChart` below - every rider's position at each checkpoint, linked into a path - but drawn on a `<canvas>` with D3 scales instead of as ~126,000 individual SVG `<path>` elements, to see whether that's meaningfully faster to render.
+
+```js
+display(riderPathsCanvasChart(linkData, highlightedData, width))
+```
+
+### The big overall order swap (canvas trial)
+
+The same idea as above, but collapsed down to just start position vs. finish position - the canvas version of the old `riderPathsSimplifiedChart`.
+
+```js
+display(riderPathsCanvasChart(linkData, highlightedData, width / 4, { stages: ["rider_pos_start", "rider_pos_finish"] }))
+```
+
+### Exploration: equal-width stages
+
+Right now each stage's width is proportional to the actual miles between checkpoints, which squeezes the three rest stops (only a mile apart each) into an unreadable sliver - their tick labels even overlap ("2526mi", "5354mi", "7374mi"). Spacing every stage equally instead should make the passing that happens *during* a rest stop much easier to see.
+
+```js
+display(riderPathsCanvasChart(linkData, highlightedData, width, { equalWidth: true }))
+```
+
+### Exploration: without the rest stops
+
+The other option - drop the rest-stop checkpoints entirely and only plot the four distance-covering stages (start → 25 → 53 → 73 → finish), so the chart shows pure race-distance progression with none of the stop-related churn.
+
+```js
+display(riderPathsCanvasChart(linkData, highlightedData, width, {
+  stages: ["rider_pos_start", "rider_pos_25", "rider_pos_53", "rider_pos_73", "rider_pos_finish"],
+}))
 ```
 
 <!-- ## Did congestion make the race more dangerous?

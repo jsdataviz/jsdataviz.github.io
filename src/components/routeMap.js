@@ -16,10 +16,10 @@ const mapOpts = {
 
 // Renders one of the proposed 2025 routes against the London bridges/tunnels,
 // coloured green where open and red where closed under that route (`bridgeKey`).
-export function routeMap(geojson, londonBridges, color, width, { polygon = false, bridgeKey = null, lineGeojson = null } = {}) {
+export function routeMap(geojson, londonBridges, color, width, { polygon = false, bridgeKey = null, lineGeojson = null, cartoKey } = {}) {
   const el = createMapContainer(500);
   const m = L.map(el, { ...mapOpts, center: [51.51716739884005, -0.10521727417415214], zoom: width < 600 ? 11.0 : 11.8 });
-  addBaseTileLayer(m);
+  addBaseTileLayer(m, cartoKey);
   const drawBridges = (overRoute) => {
     for (const b of londonBridges.filter(b => b.is_over_route === overRoute)) {
       const available = bridgeKey !== null ? b[bridgeKey] : true;

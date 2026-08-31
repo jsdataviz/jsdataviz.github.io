@@ -6,8 +6,8 @@ const aggregatedColumns = [
   "percentile50", "percentile60", "percentile70", "percentile80", "percentile90",
 ];
 
-const aggregatedHeaders = {
-  wave: "Wave",
+const aggregatedHeaders = (groupLabel) => ({
+  wave: groupLabel,
   count: "Riders",
   median: "Median",
   avg: "Mean",
@@ -21,12 +21,12 @@ const aggregatedHeaders = {
   percentile70: "70%",
   percentile80: "80%",
   percentile90: "90%",
-};
+});
 
-export function waveStatsTable(waveStats) {
+export function waveStatsTable(waveStats, { groupLabel = "Wave" } = {}) {
   return Inputs.table(waveStats, {
     columns: aggregatedColumns,
-    header: aggregatedHeaders,
+    header: aggregatedHeaders(groupLabel),
     select: false,
   });
 }

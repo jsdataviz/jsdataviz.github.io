@@ -23,8 +23,12 @@ export function createMapContainer(height = 500) {
   return html`<div style="height:${height}px; border-radius:4px; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.08);"></div>`;
 }
 
-export function addBaseTileLayer(m) {
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+// CARTO now requires an API key on raster tile requests (free up to 5M
+// tiles/month) or the tiles render with a watermark. `cartoKey` comes from
+// the CARTO_KEY environment variable via the carto-key.json data loader
+// - see src/data/carto-key.json.js for how it gets there.
+export function addBaseTileLayer(m, cartoKey) {
+  L.tileLayer(`https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`, {
     maxZoom: 19, subdomains: "abcd"
   }).addTo(m);
   L.control.attribution({ prefix: false, position: "bottomright" })

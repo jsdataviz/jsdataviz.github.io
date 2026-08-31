@@ -2,7 +2,7 @@ import { L, ensureLeafletCSS, createMapContainer, addBaseTileLayer } from "./lea
 
 ensureLeafletCSS();
 
-export function introRouteMap(routeGeoJSON) {
+export function introRouteMap(routeGeoJSON, cartoKey) {
   const bounds = L.latLngBounds(L.latLng(51.48, -0.15), L.latLng(51.90, 0.52));
   const el = createMapContainer(700);
   const m = L.map(el, {
@@ -12,7 +12,7 @@ export function introRouteMap(routeGeoJSON) {
     scrollWheelZoom: false, boxZoom: false, keyboard: false,
     maxBounds: bounds, maxBoundsViscosity: 1.0
   });
-  addBaseTileLayer(m);
+  addBaseTileLayer(m, cartoKey);
   const latLngs = routeGeoJSON.features[0].geometry.coordinates.map(([lon, lat]) => [lat, lon]);
   L.polyline(latLngs, { color: "#060549", weight: 3, opacity: 0.9 }).addTo(m);
   requestAnimationFrame(() => { m.invalidateSize(); m.fitBounds(bounds); });

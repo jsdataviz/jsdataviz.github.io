@@ -1,8 +1,10 @@
 import * as d3 from "npm:d3";
-import { raceCheckpoints, checkpointMiles } from "./constants.js";
+import { raceCheckpoints, checkpointMiles, checkpointLabel, restStopCheckpointPairs, riderHighlightColor } from "./constants.js";
 
 const HEIGHT = 900;
-const MARGIN = { top: 30, right: 16, bottom: 10, left: 16 };
+// Extra top margin (vs. a single tick row) leaves room for the "Rest Stop N"
+// label sitting above the mile ticks on the full-checkpoint chart.
+const MARGIN = { top: 44, right: 16, bottom: 10, left: 16 };
 
 // Same chart as riderPathsSingleChart (every rider's position at each
 // checkpoint, linked into a path) but drawn on a <canvas> instead of as SVG.
@@ -24,8 +26,12 @@ const MARGIN = { top: 30, right: 16, bottom: 10, left: 16 };
 export function riderPathsCanvasChart(linkData, highlightedData, width, {
   stages = raceCheckpoints,
   equalWidth = false,
+  height = HEIGHT,
+  // Defaults to the same colour used for "the rider typed into the intro
+  // input" everywhere else on the page. Callers highlighting something else
+  // (e.g. a fixed case-study rider) can override it.
+  highlightColor = riderHighlightColor,
 } = {}) {
-  const height = HEIGHT;
   const dpr = typeof window !== "undefined" ? (window.devicePixelRatio || 1) : 1;
 
   const canvas = document.createElement("canvas");
@@ -75,6 +81,15 @@ export function riderPathsCanvasChart(linkData, highlightedData, width, {
     }
   };
 
+  // Rest-stop bands, shaded behind everything else, for any stop whose pair
+  // of bounding checkpoints is actually on this chart's axis.
+  const stopPairsShown = restStopCheckpointPairs.filter(([a, b]) => stages.includes(a) && stages.includes(b));
+  ctx.fillStyle = "rgba(0,0,0,0.035)";
+  for (const [a, b] of stopPairsShown) {
+    const xa = xForStage(a), xb = xForStage(b);
+    ctx.fillRect(xa, MARGIN.top, xb - xa, height - MARGIN.top - MARGIN.bottom);
+  }
+
   // Background: every rider, thin and faint.
   ctx.lineWidth = 0.16;
   ctx.strokeStyle = "rgba(0,0,0,0.2)";
@@ -82,10 +97,10 @@ export function riderPathsCanvasChart(linkData, highlightedData, width, {
 
   // Highlighted rider(s), solid, on top.
   ctx.lineWidth = 1.5;
-  ctx.strokeStyle = "tomato";
+  ctx.strokeStyle = highlightColor;
   strokePaths(ctx, highlightedData);
 
-  // Mile ticks along the top, mirroring the original's `axis: "top"`.
+  // Checkpoint ticks along the top, mirroring the original's `axis: "top"`.
   ctx.font = "10px system-ui, sans-serif";
   ctx.fillStyle = "#555";
   ctx.strokeStyle = "rgba(0,0,0,0.1)";
@@ -98,8 +113,16 @@ export function riderPathsCanvasChart(linkData, highlightedData, width, {
     ctx.moveTo(tx, MARGIN.top);
     ctx.lineTo(tx, height - MARGIN.bottom);
     ctx.stroke();
-    ctx.fillText(`${checkpointMiles[cp]}mi`, tx, MARGIN.top - 4);
+    ctx.fillText(checkpointLabel(cp), tx, MARGIN.top - 4);
   }
+
+  // "Rest Stop N" label, centred over its band, above the mile ticks.
+  ctx.font = "bold 10px system-ui, sans-serif";
+  ctx.fillStyle = "#888";
+  stopPairsShown.forEach(([a, b], i) => {
+    const cx = (xForStage(a) + xForStage(b)) / 2;
+    ctx.fillText(`Rest Stop ${i + 1}`, cx, MARGIN.top - 18);
+  });
 
   return canvas;
 }

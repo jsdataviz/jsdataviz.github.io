@@ -6,14 +6,14 @@ ensureLeafletCSS();
 // coloured green where open and red where closed under that route ("a").
 // Used twice on the page: once zoomed out over central London, once zoomed
 // in on the Silvertown tunnel itself - pass different `center`/`zoom` for each.
-export function silvertonRouteMap(routeGeoJSON, londonBridges, { center, zoom, mobileZoom = zoom, width } = {}) {
+export function silvertonRouteMap(routeGeoJSON, londonBridges, { center, zoom, mobileZoom = zoom, width, cartoKey } = {}) {
   const el = createMapContainer(500);
   const m = L.map(el, {
     ...staticMapOptions,
     center,
     zoom: width < 600 ? mobileZoom : zoom,
   });
-  addBaseTileLayer(m);
+  addBaseTileLayer(m, cartoKey);
   const latLngs = routeGeoJSON.features[0].geometry.coordinates.map(([lon, lat]) => [lat, lon]);
   for (const b of londonBridges.filter(b => b.name !== "Tower" && !b.is_over_route)) {
     L.polyline(b.coords, { color: b['a'] ? "#2dc653" : "#e31a1c", weight: 2, opacity: 0.8 }).addTo(m)

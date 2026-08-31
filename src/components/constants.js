@@ -1,4 +1,11 @@
+import * as d3 from "npm:d3";
+
 export const rideBlue = "#060549";
+
+// One colour for every mark that represents "the rider number typed into the
+// intro input", so it reads as the same identity wherever it shows up - the
+// scatter-chart dots, the wave-box-plot rule, and the canvas path highlight.
+export const riderHighlightColor = "crimson";
 
 // Shared height/width ratio for the page's bar charts, so they all sit
 // consistently regardless of container width (taken from the
@@ -16,6 +23,11 @@ export function formatRaceTime(timeDecimal) {
   const minutes = Math.round((timeDecimal % 1) * 60);
   return `${hours}:${minutes.toString().padStart(2, "0")}`;
 }
+
+// Shared start_tod parse/format - used anywhere a "You started at ..." tip
+// needs to turn the raw "2024-05-26 06:12:34" timestamp into a clock time.
+export const parseStartTod = d3.timeParse("%Y-%m-%d %H:%M:%S");
+export const formatClock = d3.timeFormat("%-I:%M %p");
 
 export const waveStartLines = [
   { x: "2024-05-26 06:00:00", y1: 101000, y2: 103500 },
@@ -61,3 +73,22 @@ export const checkpointMiles = {
   rider_pos_74: 74,
   rider_pos_finish: 100,
 };
+
+// Readable checkpoint label, used on the rider-path canvas charts instead of
+// a bare "25mi" tick - start/finish get named, everything else gets "Mile N".
+export function checkpointLabel(cp) {
+  if (cp === "rider_pos_start") return "Start";
+  if (cp === "rider_pos_finish") return "Finish";
+  return `Mile ${checkpointMiles[cp]}`;
+}
+
+// The three official rest stops, each bounded by a "before" and "after"
+// checkpoint a mile apart (e.g. mile 25 -> mile 26 brackets stop 1). Used to
+// shade and label the stop itself on the full-checkpoint rider-path chart,
+// since otherwise two consecutive mile ticks don't read as "a stop happened
+// here" on their own.
+export const restStopCheckpointPairs = [
+  ["rider_pos_25", "rider_pos_26"],
+  ["rider_pos_53", "rider_pos_54"],
+  ["rider_pos_73", "rider_pos_74"],
+];

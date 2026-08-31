@@ -1,6 +1,8 @@
 ---
 # toc: false
 theme: "air"
+toc: false
+sidebar: false
 ---
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,13 +44,47 @@ theme: "air"
   </div>
 
   <div>
-  ${introRouteMap(introRouteGeoJSON)}
+  ${introRouteMap(introRouteGeoJSON, cartoKey)}
   </div>
+</div>
+
+<div class="rider-callout">
+
+**See yourself in this data.** Enter your rider number below to have it highlighted throughout the charts on this page, wherever that's possible. If you don't know your rider number, you can find it by entering your name [here](https://results.ridelondon.co.uk/2024/).
+
+```js
+const riderInput = Inputs.text({placeholder: "Enter your rider number", type: "Number", value: 126410, label: "Your rider number"});
+// Only riders with the core fields every highlighted chart below actually
+// needs (start time, finish time, assigned + actual wave) - so whichever
+// number the button lands on is guaranteed to show up. Deduplicated since
+// rider_no isn't guaranteed unique across the raw rows.
+const validRiderPool = [...new Set(
+  raceData_2024_100
+    .filter(d => d.rider_no != null
+      && d.start_tod != null
+      && d.final_time_decimal != null
+      && d.assigned_wave_number != null
+      && d.assigned_start_wave != null)
+    .map(d => d.rider_no)
+)];
+const randomRiderButton = Inputs.button("Random Rider", {
+  reduce: () => {
+    riderInput.value = validRiderPool[Math.floor(Math.random() * validRiderPool.length)];
+    riderInput.dispatchEvent(new Event("input", { bubbles: true }));
+  },
+});
+display(html`<div style="display:flex; gap:0.75rem; align-items:end; flex-wrap:wrap;">${riderInput}${randomRiderButton}</div>`);
+const riderNo = Generators.input(riderInput);
+```
+
 </div>
 
 ```js
   const allRoutesGeoJSON = FileAttachment("./data/rl_routes.geojson").json();
   const londonBridges = FileAttachment("./data/london_road_bridges.json").json();
+  // CARTO now requires an API key on raster tile requests - see
+  // src/data/carto-key.json.js for where this comes from.
+  const cartoKey = FileAttachment("./data/carto-key.json").json().then(d => d.key);
   const raceData_100 = FileAttachment("./data/parsed_I_data.csv").csv({typed: true});
   const raceData_60 = FileAttachment("./data/parsed_I60_data.csv").csv({typed: true});
   const raceData_30 = FileAttachment("./data/parsed_I30_data.csv").csv({typed: true});
@@ -313,11 +349,14 @@ When entering into the Ride London events, riders are asked to give an estimated
 
 This makes sense, in the perfect scenario the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
 
-We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time (excluding any official stops).
+We can see the impact of this management by comparing the time of day each rider began the race, to their total ride time (including any official stops).
 
 ```js
-display(startTimeScatterChart(raceData_2024_100, width))
+display(startTimeScatterChart(raceData_2024_100, width, { highlightRiderNo: riderNo }))
 ```
+
+<figcaption>The graph above shows each rider plotted by the time of day they started vs the number of hours they took to finish the race (including rest breaks). Quicker riders generally left earlier.</figcaption>
+
 Generally, riders who began riding earlier in the day did complete the race quicker. However the high amount of variance in the correlation shows there was definitely room for improvement.
 
 Let's review how well the "quickest rider first" system was implemented.
@@ -341,8 +380,10 @@ Often we can infer information contained in the data by looking at the way the I
 In our case, we can plot the each rider's designated race number against the time they began the race.
 
 ```js
-display(riderStartScatterChart(raceData_2024_100, width, { stroke: rideBlue, opacity: 0.5 }))
+display(riderStartScatterChart(raceData_2024_100, width, { stroke: rideBlue, opacity: 0.5, filled: true, highlightRiderNo: riderNo }))
 ```
+
+<figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Clear groupings can be seen meaning that rider numbers are based on their assigned start time.</figcaption>
 
 Just by eye-balling this, we can see that rider numbers were assigned into blocks of departing times.
 
@@ -361,8 +402,13 @@ display(riderStartScatterChart(raceData_2024_100, width, {
   colorScheme: "viridis",
   ruleLines: [{ data: waveStartLines }],
   tipData: startLabels,
+  filled: true,
+  highlightRiderNo: riderNo,
+  highlightTitle: d => `With a rider number of ${d.rider_no}, you were assigned to ${d.assigned_wave_number}`,
 }))
 ```
+
+<figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Each rider's assigned wave is shown by colour.</figcaption>
 
 There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
 
@@ -377,8 +423,19 @@ display(riderStartScatterChart(raceData_2024_100, width, {
   stroke: d => d.is_early_starter == "True" ? "lightcoral" : d.is_late_starter == "True" ? "lightBlue" : "lightGrey",
   opacity: d => d.is_early_starter == "True" ? 1 : d.is_late_starter == "True" ? 1 : 0.3,
   ruleLines: [{ data: waveStartLines }, { data: endLines, dashed: true }],
+  filled: true,
+  highlightRiderNo: riderNo,
+  highlightTitle: d => {
+    const status = d.is_early_starter == "True" ? "early" : d.is_late_starter == "True" ? "late" : "on time";
+    const waveNum = w => w?.replace(/^Wave\s+/, "");
+    return status === "on time"
+      ? `You left on time in your assigned wave, wave ${waveNum(d.assigned_wave_number)}`
+      : `You left ${status} in wave ${waveNum(d.assigned_start_wave)}`;
+  },
 }))
 ```
+
+<figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Riders who started before their assigned wave's start time are marked as early starters, riders who started after the next wave's start time are marked as late starters.</figcaption>
 
 With this information, we can now analyse how well the race was managed.
 
@@ -443,7 +500,8 @@ Now we know where people alloted themselves, let's evaluate if people choose the
 ```
 
 ```js
-  display(waveBoxPlotChart(raceData_2024_100, width))
+  const riderWaveRow = raceData_2024_100.filter(d => d.rider_no == riderNo);
+  display(waveBoxPlotChart(raceData_2024_100, width, { highlightData: riderWaveRow }))
 
 const waveStats = [
     {
@@ -474,6 +532,8 @@ const waveStats = [
 
 display(waveStatsTable(waveStats))
 ```
+
+<figcaption>The graph above shows the distribution of total ride times (including rest breaks) for all riders in each <strong>assigned wave</strong>. Solid lines mark the median ride time of the wave. If you selected a rider number, their result is marked with a red line. The table displays detailed information, including distribution thresholds.</figcaption>
 
 We can see that riders did generally well at picking appropriate race lengths for themselves, as the median/mean ride time increased for each subsequent wave. 
 
@@ -524,6 +584,8 @@ The chord diagram below shows the net migration from each rider's **assigned wav
 
 
 ${waveChordChart(raceData_2024_100, width)}
+
+<figcaption>Arrows show the net migration of riders from the rider's <strong>assigned</strong> wave to their <strong>actual</strong> wave. Grey blocks show the proportion of riders who started in their correct wave.</figcaption>
 
 
 By plotting the amount of riders in each assigned wave, we can see that the intended starting process was to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave. However, due to the rider behavior seen above, wave 3 and wave 4 had a much higher number of riders. 
@@ -769,42 +831,216 @@ display(restStopAvgTable(restStopStats))
 
 ```js
   const linkData = raceData_2024_100
-  const highlightedData = raceData_2024_100.filter(d => d.rider_no == 126410)
+  const highlightedData = raceData_2024_100.filter(d => d.rider_no == riderNo)
 ```
 
 ## Did congestion make the race more dangerous? (canvas trial)
 
-Same chart as the commented-out `riderPathsSingleChart` below - every rider's position at each checkpoint, linked into a path - but drawn on a `<canvas>` with D3 scales instead of as ~126,000 individual SVG `<path>` elements, to see whether that's meaningfully faster to render.
+Every rider's start position vs. finish position, linked into a path and drawn on a `<canvas>` with D3 scales instead of as ~18,000 individual SVG `<path>` elements - the canvas version of the old `riderPathsSimplifiedChart`.
 
 ```js
-display(riderPathsCanvasChart(linkData, highlightedData, width))
-```
-
-### The big overall order swap (canvas trial)
-
-The same idea as above, but collapsed down to just start position vs. finish position - the canvas version of the old `riderPathsSimplifiedChart`.
-
-```js
-display(riderPathsCanvasChart(linkData, highlightedData, width / 4, { stages: ["rider_pos_start", "rider_pos_finish"] }))
-```
-
-### Exploration: equal-width stages
-
-Right now each stage's width is proportional to the actual miles between checkpoints, which squeezes the three rest stops (only a mile apart each) into an unreadable sliver - their tick labels even overlap ("2526mi", "5354mi", "7374mi"). Spacing every stage equally instead should make the passing that happens *during* a rest stop much easier to see.
-
-```js
-display(riderPathsCanvasChart(linkData, highlightedData, width, { equalWidth: true }))
-```
-
-### Exploration: without the rest stops
-
-The other option - drop the rest-stop checkpoints entirely and only plot the four distance-covering stages (start → 25 → 53 → 73 → finish), so the chart shows pure race-distance progression with none of the stop-related churn.
-
-```js
-display(riderPathsCanvasChart(linkData, highlightedData, width, {
-  stages: ["rider_pos_start", "rider_pos_25", "rider_pos_53", "rider_pos_73", "rider_pos_finish"],
+display(resize((containerWidth) => {
+  const mobile = containerWidth < 600;
+  const width = containerWidth > 640 ? 640 : containerWidth;
+  return riderPathsCanvasChart(linkData, highlightedData, width, {
+    stages: ["rider_pos_start", "rider_pos_finish"],
+    ...(mobile ? { height: window.innerHeight * 0.8 } : {}),
+  });
 }))
 ```
+
+<figcaption>The graph above shows each rider's start and end position in the race with a line plotted between the two points. If you selected a rider number, this will be shown in red.</figcaption>
+
+The same idea, but through every checkpoint rather than just start and finish, so the rest stops show up too. Each stage gets equal width here rather than being spaced proportionally to the actual miles between checkpoints - proportional spacing squeezes the three rest stops (only a mile apart each) into an unreadable sliver, so this uses a categorical axis instead.
+
+```js
+display(resize((containerWidth) => {
+  const mobile = containerWidth < 600;
+  const width = containerWidth > 640 ? 640 : containerWidth;
+  return riderPathsCanvasChart(linkData, highlightedData, width, {
+    equalWidth: true,
+    ...(mobile ? { height: window.innerHeight * 0.8 } : {}),
+  });
+}))
+```
+
+<figcaption>The graph above shows each rider's position at each timing checkpoint. With a line being drawn between the start race position and end race position for each time gate. Shaded bands mark the three official rest stops. If you selected a rider number, this will be shown in red.</figcaption>
+
+### How much passing actually happened?
+
+Across the 2024 100 mile field, riders passed each other **35.7 million times** in total over the four road segments (start→25mi, 26→53mi, 54→73mi, 74mi→finish - the rest stops themselves aren't counted here), for an average of **~1,997 passes per rider**. That's a *net reordering* count, not a literal headcount of physical overtaking manoeuvres - if rider A passes rider B, that's one pass for A and one "passed by" for B - but with ~18,000 riders reshuffling across five staggered waves over 100 miles, relative order changes a lot.
+
+Broken down by segment, passing was heaviest in the first half of the race and dropped off noticeably after the mile 50 stop:
+
+```js
+const segmentDefs = [
+  { field: "passed_riders_tod_25_td_race",     label: "Start → 25mi" },
+  { field: "passed_riders_tod_53_td_race",     label: "26 → 53mi" },
+  { field: "passed_riders_tod_73_td_race",     label: "54 → 73mi" },
+  { field: "passed_riders_tod_finish_td_race", label: "74mi → Finish" },
+];
+
+const segmentPassStats = segmentDefs.map(({ field, label }) => {
+  const values = raceData_2024_100.map(d => +d[field]).filter(v => !Number.isNaN(v));
+  return { label, total: d3.sum(values) };
+});
+```
+
+${resize((width) => verticalBarChart(segmentPassStats, width > 640 ? 640 : width, {
+  title: "Total passes by race segment",
+  x: "label",
+  xDomain: segmentDefs.map(d => d.label),
+  y: "total",
+  yLabel: "Total passes",
+  label: d => d3.format(",")(d.total),
+}))}
+
+The distribution per rider is heavily right-skewed: the median rider passed 1,696 others - well below the average - while the busiest 1% of riders passed over 6,263.
+
+```js
+display(resize((containerWidth) => {
+  const width = containerWidth > 640 ? 640 : containerWidth;
+  return Plot.plot({
+    width,
+    height: 400,
+    marginLeft: 60,
+    grid: true,
+    x: { label: "Riders passed over the race" },
+    y: { label: "Number of riders" },
+    marks: [
+      Plot.rectY(raceData_2024_100, Plot.binX({ y: "count" }, { x: "total_passed_riders_race", fill: rideBlue })),
+      Plot.ruleY([0]),
+    ],
+  });
+}))
+```
+
+### Did starting off-wave predict how much passing a rider did?
+
+We already know roughly a third of riders didn't leave in their assigned wave. Let's define a **wave diff** - the actual wave a rider started in, minus the wave they were assigned to. A rider assigned Wave 1 who actually left in Wave 5 has a wave diff of +4 (they started 4 waves later than expected); a rider assigned Wave 5 who left in Wave 1 has a wave diff of -4.
+
+The intuition is straightforward: a fast rider (early assigned wave) who starts unusually late should spend the day overtaking a lot of slower riders who set off before them - a strongly positive net passes count. A slow rider (late assigned wave) who jumps out early should get overtaken constantly by faster riders released later - strongly negative.
+
+```js
+const WAVE_NUM = { "Wave 1": 1, "Wave 2": 2, "Wave 3": 3, "Wave 4": 4, "Wave 5": 5 };
+
+const waveDiffData = raceData_2024_100
+  .filter(d => WAVE_NUM[d.assigned_wave_number] && WAVE_NUM[d.assigned_start_wave] && d.total_passed_riders_race != null && d.total_passed_by_riders_race != null)
+  .map(d => ({
+    ...d,
+    wave_diff: String(WAVE_NUM[d.assigned_start_wave] - WAVE_NUM[d.assigned_wave_number]),
+    net_passes: d.total_passed_riders_race - d.total_passed_by_riders_race,
+  }))
+  // The 4-waves-early group is only 2 riders and doesn't follow the trend
+  // the rest of the range shows - too small a sample to read anything into.
+  .filter(d => d.wave_diff !== "-4");
+
+const waveDiffDomain = d3.range(-3, 5).map(String);
+```
+
+```js
+const riderWaveDiffRow = waveDiffData.filter(d => d.rider_no == riderNo);
+display(waveBoxPlotChart(waveDiffData, width, {
+  category: "wave_diff",
+  categoryDomain: waveDiffDomain,
+  categoryTickFormat: d => {
+    const n = +d;
+    if (n === 0) return "Correct Wave";
+    const waves = Math.abs(n);
+    return n < 0 ? `${waves} Wave${waves === 1 ? "" : "s"} Early` : `${waves} Wave${waves === 1 ? "" : "s"} Late`;
+  },
+  value: "net_passes",
+  valueLabel: "Net Passes",
+  centerOnZero: true,
+  marginLeft: 110,
+  highlightData: riderWaveDiffRow,
+}))
+```
+
+```js
+const waveDiffStats = waveDiffDomain.map(diff => ({
+  wave: diff === "0" ? "Correct Wave" : `${Math.abs(+diff)} Wave${Math.abs(+diff) === 1 ? "" : "s"} ${diff < 0 ? "Early" : "Late"}`,
+  ...aggregateWaveTimes("net_passes", waveDiffData.filter(d => d.wave_diff === diff)),
+}));
+
+display(waveStatsTable(waveDiffStats, { groupLabel: "Wave Diff" }))
+```
+
+<figcaption>The graph above shows the distribution of total net passes made by each rider by how many waves they left early or late. Solid lines mark the median net passes of the group. If you selected a rider number, their result is marked with a red line. The table displays detailed information, including distribution thresholds.</figcaption>
+
+The relationship holds up cleanly and monotonically across the whole range, from a median net passes of -2,343 at wave diff -2 up to +2,174 at wave diff +2 - each extra wave a rider started off from their assignment shifts their net passing further in the matching direction. The ±3 and +4 groups are worth reading with some caution though: there are only 328/38 riders at +3/+4 and 45 at -3, versus 1,200-1,400+ in each of the ±1/±2 groups, so those tails are noisier estimates. The 4-waves-early group has been dropped entirely - just 2 riders, and the only point on the chart that didn't follow the trend.
+
+Two riders sit at the extreme ends of the wave-diff range:
+
+- **Rider 102302** - assigned Wave 1, started Wave 5 (4 waves late) - passed a net **8,490** riders, finishing in 4:52:42.
+- **Rider 128118** - assigned Wave 5, started Wave 2 (3 waves early) - passed a net **-14,333** riders (passed by 14,404, passing only 71), finishing in 10:17:00.
+
+```js
+const worstOffenderNos = [102302, 128118];
+const worstOffenderData = raceData_2024_100.filter(d => worstOffenderNos.includes(d.rider_no));
+```
+
+```js
+display(resize((containerWidth) => {
+  const mobile = containerWidth < 600;
+  const width = containerWidth > 640 ? 640 : containerWidth;
+  return riderPathsCanvasChart(linkData, worstOffenderData, width, {
+    equalWidth: true,
+    highlightColor: "tomato",
+    ...(mobile ? { height: window.innerHeight * 0.8 } : {}),
+  });
+}))
+```
+
+#### How fast were the riders involved?
+
+Position counts alone don't tell you how *unpleasant* those passes were - riders bunched closely in speed can swap positions constantly without anyone really noticing. What matters for safety is the speed gap: how much faster was one rider moving than the people physically around them? Riders in the same actual starting wave are, by definition, roughly the same people sharing the road at the same time - so comparing each rider's pace to their own wave's average pace over the same stretch is a more direct read on "how fast was everyone else around them going" than trying to infer specific passing pairs. Here it is across all four race segments.
+
+```js
+const legSpeed = (aField, bField, miles) => d => {
+  const ta = d[aField], tb = d[bField];
+  return (ta != null && tb != null && tb > ta) ? miles / (tb - ta) : null;
+};
+const legSpeed2653 = legSpeed("ride_time_26_decimal", "ride_time_53_decimal", 27);
+const legSpeed5473 = legSpeed("ride_time_54_decimal", "ride_time_73_decimal", 19);
+const legSpeedFinish = legSpeed("ride_time_74_decimal", "ride_time_finish_decimal", 26);
+
+const waveSpeedComparison = (riderNo, segment, speedFn) => {
+  const rider = raceData_2024_100.find(d => d.rider_no === riderNo);
+  const wave = rider.assigned_start_wave;
+  const waveSpeeds = raceData_2024_100
+    .filter(d => d.rider_no !== riderNo && d.assigned_start_wave === wave)
+    .map(speedFn)
+    .filter(v => v != null && !Number.isNaN(v));
+  const ownSpeed = speedFn(rider);
+  const waveAvg = d3.mean(waveSpeeds);
+  return {
+    "Rider": riderNo,
+    "Actual wave": wave,
+    "Segment": segment,
+    "Their mph": +ownSpeed.toFixed(1),
+    "Wave avg mph": +waveAvg.toFixed(1),
+    "Diff (mph)": +(ownSpeed - waveAvg).toFixed(1),
+  };
+};
+
+const raceSegments = [
+  { label: "Start → 25mi", speedFn: d => d.mph_25 },
+  { label: "26 → 53mi", speedFn: legSpeed2653 },
+  { label: "54 → 73mi", speedFn: legSpeed5473 },
+  { label: "74mi → Finish", speedFn: legSpeedFinish },
+];
+
+const waveSpeedStats = worstOffenderNos.flatMap(riderNo =>
+  raceSegments.map(({ label, speedFn }) => waveSpeedComparison(riderNo, label, speedFn))
+);
+```
+
+```js
+display(Inputs.table(waveSpeedStats, { select: false }))
+```
+
+The gap holds up across the whole race, not just the opening miles. Rider 102302 (who started Wave 5) stayed 6-7mph faster than the rest of Wave 5 in every single segment - from +6.3mph in the first 25 miles to +7.2mph between miles 54 and 73. Rider 128118 (who started Wave 2) is the mirror image, 6-8mph slower than the rest of Wave 2 the entire way, bottoming out at -8.0mph on the 54-73mi stretch. Neither rider ever "settled in" with the pack around them - the whole race was spent as an outlier relative to whoever they were actually sharing the road with. Someone moving 6+mph faster or slower than the pack they're riding within is not a gentle overtake - that's the kind of closing speed that makes rider-to-rider contact genuinely dangerous on a road shared with thousands of other cyclists.
 
 <!-- ## Did congestion make the race more dangerous?
 
@@ -1005,9 +1241,8 @@ display(
 
 Most people finished the ride within 6 hours and 40 minutes. See the ride time distributions below.
 
-Enter your ride number below to see where you place on the distribution, if you don't know your ride number you can find it by entering your name [here](https://results.ridelondon.co.uk/2024/).
+Using the rider number you entered at the top of the page, see where you place on the distribution below.
 ```js
-const riderNo = view(Inputs.text({placeholder: "Enter your rider number", type: "Number"}));
 const eventPicker = view(Inputs.select(["100", "60", "30"], {value: "100", label: "Race Length"}));
 const distroPicker = view(Inputs.select(["Distribution", "Histogram", "Cumulative Histogram"], {value: "Distribution", label: "Graph Type"}));
 ```
@@ -1214,7 +1449,7 @@ Add wind impact analysis.
   By following this route, disruption on traffic flow across London as kept to a minimum. Traffic could move from the South across the river via the multiple tunnels and bridges as the ride progressed along the Embankment, and from the East via A13, and the roads passing under the A12.
   </div>
   <div>
-    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.5085, -0.0485], zoom: 11.8, mobileZoom: 11.0, width })}
+    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.5085, -0.0485], zoom: 11.8, mobileZoom: 11.0, width, cartoKey })}
     <div class="muted">Open bridges and tunnel marked in green, closed in red.</div>
   </div>
 </div>
@@ -1230,7 +1465,7 @@ Add wind impact analysis.
 
   </div>
   <div>
-    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.501594787700675, 0.011805819341940176], zoom: 13.4, width })}
+    ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.501594787700675, 0.011805819341940176], zoom: 13.4, width, cartoKey })}
     <div class="muted">Silvertown tunnel marked in red.</div>
   </div>
 </div>
@@ -1253,7 +1488,7 @@ Add wind impact analysis.
 
   </div>
   <div>
-    ${routeMap(routeB, londonBridges, "#7b2fa0", width, { polygon: true, bridgeKey: 'b', lineGeojson: routeBLine })}
+    ${routeMap(routeB, londonBridges, "#7b2fa0", width, { polygon: true, bridgeKey: 'b', lineGeojson: routeBLine, cartoKey })}
     <div class="muted">"Landlocked" area shaded in red.</div>
   </div>
 </div>
@@ -1271,7 +1506,7 @@ Add wind impact analysis.
 
   </div>
   <div>
-    ${routeMap(routeC, londonBridges, "#060549", width, { bridgeKey: 'c' })}
+    ${routeMap(routeC, londonBridges, "#060549", width, { bridgeKey: 'c', cartoKey })}
   </div>
 </div>
 
@@ -1285,7 +1520,7 @@ Add wind impact analysis.
 
   </div>
   <div>
-    ${routeMap(routeF, londonBridges, "#e07b39", width, { bridgeKey: 'f' })}
+    ${routeMap(routeF, londonBridges, "#e07b39", width, { bridgeKey: 'f', cartoKey })}
   </div>
 </div>
 
@@ -1303,7 +1538,7 @@ Add wind impact analysis.
 
   </div>
   <div>
-    ${routeMap(routeD, londonBridges, "#37e1d5", width, { bridgeKey: 'd' })}
+    ${routeMap(routeD, londonBridges, "#37e1d5", width, { bridgeKey: 'd', cartoKey })}
   </div>
 </div>
 <br>
@@ -1344,6 +1579,23 @@ body {
 .leaflet-tooltip {
   font-family: 'Poppins', sans-serif;
   font-size: 0.75rem;
+}
+
+.rider-callout {
+  margin: 1.5rem 0;
+  padding: 0.9rem 1.25rem;
+  border-left: 3px solid var(--theme-foreground-focus);
+  background: var(--theme-background-alt);
+  border-radius: 0 6px 6px 0;
+}
+
+.rider-callout p {
+  margin: 0.4rem 0;
+}
+
+.rider-callout input,
+.rider-callout button {
+  margin-top: 0.4rem;
 }
 
 .hero {

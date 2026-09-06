@@ -29,7 +29,9 @@ export function riderPathsCanvasChart(linkData, highlightedData, width, {
   height = HEIGHT,
   // Defaults to the same colour used for "the rider typed into the intro
   // input" everywhere else on the page. Callers highlighting something else
-  // (e.g. a fixed case-study rider) can override it.
+  // (e.g. a fixed case-study rider) can override it with either a single
+  // colour, or a (rider) => colour function to give each highlighted rider
+  // their own colour (e.g. the two worst-offenders case study).
   highlightColor = riderHighlightColor,
 } = {}) {
   const dpr = typeof window !== "undefined" ? (window.devicePixelRatio || 1) : 1;
@@ -95,10 +97,19 @@ export function riderPathsCanvasChart(linkData, highlightedData, width, {
   ctx.strokeStyle = "rgba(0,0,0,0.2)";
   strokePaths(ctx, linkData);
 
-  // Highlighted rider(s), solid, on top.
+  // Highlighted rider(s), solid, on top. A function gets each rider stroked
+  // individually so they can each have their own colour; a plain colour
+  // strokes them all together in one pass (cheaper, and the common case).
   ctx.lineWidth = 1.5;
-  ctx.strokeStyle = highlightColor;
-  strokePaths(ctx, highlightedData);
+  if (typeof highlightColor === "function") {
+    for (const d of highlightedData) {
+      ctx.strokeStyle = highlightColor(d);
+      strokePaths(ctx, [d]);
+    }
+  } else {
+    ctx.strokeStyle = highlightColor;
+    strokePaths(ctx, highlightedData);
+  }
 
   // Checkpoint ticks along the top, mirroring the original's `axis: "top"`.
   ctx.font = "10px system-ui, sans-serif";

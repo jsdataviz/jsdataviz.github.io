@@ -35,13 +35,13 @@ sidebar: false
   ## Introduction
   In case you're not in know, Ride London was a cycling festival created post the 2012 London Olympics games that took place yearly in London over the weekend of the late May public holiday in the UK. During the event roads were closed from Central London to Essex for cycling use only.
 
-  The weekend opened with the [RideLondon Classique](https://en.wikipedia.org/wiki/RideLondon_Classique), a three day women's road race that was park of the UCI Women's World Tour as well as a series of sportives and a casual 'free-ride' around the closed roads in the center of London for all abilities on the Sunday.
+  The weekend opened with the [RideLondon Classique](https://en.wikipedia.org/wiki/RideLondon_Classique), a three day women's road race that was park of the UCI Women's World Tour as well as a series of challenge rides (or sportives) and a casual 'free-ride' around the closed roads in the center of London for all abilities on the Sunday.
 
-  The most popular of the sportives was the 100 mile route, in which 500,000 people had ridden and raised over £85m for charity since 2013.
+  The most popular of the challenge rides was the 100 mile route, in which 500,000 people had ridden and raised over £85m for charity since 2013.
 
-  In September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event. In February of 2026, Ride London was placed on ["indefinite pause" by the London Marathon Group](https://www.londonmarathonevents.co.uk/ridelondon).
+  In September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event. In February of 2026, Ride London was placed on ["indefinite pause" by the London Marathon Events](https://www.londonmarathonevents.co.uk/ridelondon).
 
-  So what happened to our beloved cycling festival? The answer unfortunately comes down to declining participation numbers, organisational issues and route planning disputes between TFL and London Marathon events. This analysis will get into how popular the event was, how well it was run and why planning disputes eventually led to it being cancelled indefinitely.
+  So what happened to our beloved cycling festival? The answer unfortunately comes down to declining participation numbers, organisational issues and route planning disputes between TFL and London Marathon events. This analysis will explore how the event was performing, how well it was run and why the event was eventually cancelled indefinitely.
 
   </div>
 
@@ -54,7 +54,7 @@ sidebar: false
 
 <h4>See yourself in the data</h4>
 
-If you rode in the 2024 RideLondon 100 event enter your rider number below to have it highlighted throughout the analysis. If you don't know your rider number, you can find it by entering your name [here](https://results.ridelondon.co.uk/2024/).
+If you rode in the 2024 RideLondon 100 mile event enter your rider number below to have it highlighted throughout the analysis. If you don't know your rider number, you can find it by entering your name [here](https://results.ridelondon.co.uk/2024/).
 
 ```js
 const riderInput = Inputs.text({placeholder: "Enter your rider number", type: "Number", value: 126410, label: "Your rider number"});
@@ -155,9 +155,9 @@ const raceData_2024_100 = raceData_100.filter(d => d.year == 2024);
 ```
 ---
 
-# Ride London was becoming less popular
+# How was Ride London performing?
 
-The first indication of trouble was that less rider's participated in the 2024 edition of Ride London than the previous two years.
+The first indication of trouble was that less riders participated in the 2024 edition of Ride London than the previous two years.
 
 In fact only a total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023.
 
@@ -181,7 +181,7 @@ ${resize((width) => ridersYearlyChart(groupedYearlyData, width > 640 ? 640 : wid
 </div>
 
 ### Less people rode the 100, but the shorter rides were growing in popularity
-The source of these declining numbers was in the most popular event, the 100 mile loop out to Essex and back. The total of numbers that departed dropped by 11%, more than 2000 entrants between 2024 and 2023.
+The source of these declining numbers was in the most popular event, the 100 mile loop out to Essex and back. The total of entrants that departed dropped by 11% year to year, more than 2000 entrants between 2024 and 2023.
 
 ${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "100"), width > 640 ? 640 : width, {
   title: "100 Miles",
@@ -221,9 +221,9 @@ Despite this, the shorter events aimed at beginners had considerably more riders
 
 ### However, fewer women raced than ever before, including beginners.
 
-With the Ride London Classique previously being part of the women's UCI world tour, it's disappointing that at 4,088 total female riders, fewer women rode in the Ride London events ever before.
+With the Ride London Classique previously being part of the women's UCI world tour, it's disappointing that fewer women took part in the Ride London challenge rides than ever before. Only 4,091 female riders took part in Ride London, a decrease of 709 riders year to year.
 
-This declining trend of female participation even occurred when the event grew in total attendance 2023.
+This declining trend of female participation even occurred when the event grew in total attendance 2023. Meaning the ratio of female to male riders has also been declining year over year.
 
 ```js
 const groupedFemaleData = aq.from(combinedRaceData)
@@ -377,15 +377,13 @@ Generally, riders who began riding earlier in the day did complete the race quic
 
 Let's review how well the "quickest rider first" system was implemented.
 
-For this system to work, three statements need to be true:
+For this system to work, these statement need to be true:
 
 - **Riders are realistic about their estimated finishing time.** If riders choose times that are too ambitious, they will be placed in earlier waves and then passed by faster riders.
 
 - **Riders actually begin at their designated starting time.**  If riders choose to leave at a different time than their alloted wave, they will potentially be passing slower riders, or being passed by faster ones.
 
-- **Riders all take similar breaks at the rest stops**  If faster riders take long breaks, they will end up behind slower riders which will lead to more passing overall.
-
-To evaluate the first two points, we'll need to know what starting waves riders were assigned to and when they departed. Since this information is not publicly available, we'll have to try and infer it from the data itself.
+To evaluate the these two points, we'll need to know what starting waves riders were assigned to and when they departed. Since this information is not publicly available, we'll have to try and infer it from the data itself.
 
 <br>
 
@@ -559,7 +557,7 @@ Interestingly, the deviation of the waves also decreases for each wave, especial
 
 <br>
 
-## Did begin when were supposed to?
+## Did riders begin in their assigned waves?
 
 We previously labelled the riders who started the race earlier or later than their alloted time slots. Let's look into how this effected the race, starting with how large of a proportion of riders were late or early.
 
@@ -1003,13 +1001,15 @@ These examples show how extreme wave jumping can lead to situations where riders
 
 ## Final thoughts
 
-Overall, the 100 mile option of Ride London 2024 was well run, a full 100 miles of roads were closed throughout the whole day, with over 3,000 stewards and 100 vehicles maintaining the course. London Marathon Events planned departure waves that were intended to allow faster riders to depart earlier. Most riders assigned themselves to appropriate waves which reduced the number of rider pass events and allowed the race to flow freely throughout the day. 
+Overall, Ride London 2024 was well run, over 3,000 stewards and 100 vehicles provided 100 miles of safely closed road from London to Essex throughout the day, which on it's own requires a huge level of planning. 
 
-However, due to around 29% of riders to actually starting in their assigned waves, the early sections of the route faced heavy congestion during wave 3 and 4s departure. This congestion eased over time with the assistance of slower riders stopping more frequently at the first two rest stops.
+London Marathon Events also planned departure waves that were intended to allow faster riders to depart earlier to keep the ride flowing freely. Most riders complied with these waves and assigned themselves to appropriate waves which reduced the number of rider pass events. 
 
-This congestion did make the early sections of the course more dangerous by introducing more passing events, especially in extreme cases where riders started over 2 waves early or late. In these extreme cases, large amounts of riders who left in the correct had to make high speed passes past very slow riders, or were passed by late leaving high speed riders.
+However, due to around 29% of riders to not starting in their assigned waves, the first 25 miles of the route faced heavy congestion during wave 3 and wave 4's departure. This congestion eased over the day with the assistance of slower riders stopping more frequently at the first two rest stops.
 
-With over 17,000 riders to manage at the start line, it would be very difficult to police a *madatory* start time, and there is always going to be a large number of pass events in an event of this size but I would recommend the following to increase rider safety and ride management:
+This early period of congestion did make the early sections of the course more dangerous by introducing more passing events, especially in extreme cases where riders started over 2 waves early or late. In these cases, large amounts of riders who left in the correct had to make high speed passes past very slow riders, or were passed by late leaving high speed riders.
+
+So how could this be improved? With over 17,000 riders to manage at the start line, it would be very difficult to enforce a *mandatory* start time for each rider without causing huge delays at the start as every rider is checked to ensure they're in the correct wave but I would recommend the following to increase rider safety and ride management:
 
 - Introduce a cutoff start/end time for riders in the first and last waves to reduce the occurrence of extreme levels of pass events.
 
@@ -1022,39 +1022,57 @@ With over 17,000 riders to manage at the start line, it would be very difficult 
 # Why was RideLondon Cancelled?
 <br>
 
+## The 2025 hiatus
+When planning the 2025 edition of Ride London, two major roadblocks presented themselves to organisational team at the London Marathon Events. 
+
+The first was that TFL was demanding a major re-routing of the event to keep the Silvertown tunnel open for the full duration of the event day. At the same time the women's professional race, the London-Surrey Classic, was also dropped during this period when the UCI moved the dates of the race to the same day as the tooping the colour.
+
+According to an FAQ sent to major stakeholders (such as the Essex County Council), this meant that no revenue to fund the organisation of the public sportives could be obtained from sponsorships or broadcasting rights for the UCI events.
+
+With overall rider numbers consistently declining year over year and major routing and funding issues, the decision was made to place the 2025 event on hiatus and attempt to solve issues in the intervening year.
+
+This decision was made in good faith, and the London Marathon Events did implement a roadmap for tackling these issues. Between September 2024 and April 2025 multiple sessions were conducted between LME, TFL and other stakeholders to attempt to resolve the routing and funding issues. The next two sections will investigate these problems in more detail.<br>
+<br>
+
+
 ## Why was it so hard to reroute Ride London?
 <div class="grid grid-cols-2">
   <div>
 
-  The central London portion of the route had riders congregate at Buckingham Palace before heading down the Mall and starting along the Thames River Embankment. 
+  To fully understand why rerouting the event was so challenging it's important to understand why the existing route worked so well and why closing the Silvertown tunnel become such a key issue. 
 
-  The route then avoided the docklands by using the Limehouse Link Tunnel, before cutting North via the A12.
+  The central London portion of the 2024 Ride London route had riders congregate at Buckingham Palace before heading down the Mall and starting along the Thames River Embankment. This route then avoided the docklands by using the Limehouse Link Tunnel, before cutting North via the A12 and heading out to Essex. The ride returned via the same route, ending with a sprint finish across Tower Bridge.
 
-  After heading out to Essex and back, the ride returned via the same route, ending with a sprint finish across Tower Bridge.
+  By following this route, cyclists could ride through central London via riverside embankment route from West to East. This kept disruption on traffic flow across London as kept to a minimum as Traffic could still move across the Thames via the multiple tunnels and bridges that passed below and above the embankment. Traffic could also move from the East London and Essex into Central London via A13, and the roads passing under the A12.
 
-  By following this route, disruption on traffic flow across London as kept to a minimum. Traffic could move from the South across the river via the multiple tunnels and bridges as the ride progressed along the Embankment, and from the East via A13, and the roads passing under the A12.
+  This route provided an easy, high volume route in and out London with minimal disruption to the standard weekend traffic that flows over the Thames river each day.
   </div>
   <div>
     ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.5085, -0.0485], zoom: 11.8, mobileZoom: 11.0, width, cartoKey })}
-    <div class="muted">Open bridges and tunnel marked in green, closed in red.</div>
+  <figcaption>Bridges and tunnels that could remain open using the 2022-2024 embankment route are marked in green, those that would have to closed are marked in red.</figcaption>
   </div>
 </div>
+<br>
 
+## The Silvertown Tunnel issue
 <div class="grid grid-cols-2">
   <div>
   
-  In April 2025, the Silvertown tunnel opened linking the Royal Docks and Canary Wharf with north Greenwich. The tunnel was intended to reduce pressure on the heavily congested Dartford crossing and Blackwater Tunnel. Cyclists who wish to use the tunnel need to phone for a dedicated shuttle bus to pick them up.
+  In April 2025, the Silvertown tunnel opened linking the Royal Docks and Canary Wharf with north Greenwich. The tunnel was intended to reduce pressure on the heavily congested Dartford crossing and Blackwater Tunnel.
 
-  If the previous route was to be used, the Silvertown tunnel would have to close between 4am and 7pm on the day of the event. Will Norman, London's cycling and walking commissioner at the time of planning described this described this as an “absolute no”.
+  If the previous Embankment route was to be used, the Silvertown tunnel would have to close between 4am and 7pm on the day of the event. However, Will Norman, London's cycling and walking commissioner at the time of planning described this described this as an “absolute no”.
 
-  This left the London Marathon Group with a monumental re-planning effort, having to find a way to keep the Silvertown tunnel open without causing large scale disruption to central London.
+  This left the London Marathon Events with a monumental re-planning effort, having to find a way to keep the Silvertown tunnel open and essentially ditching the tried and tested route following the Embankment without causing large scale disruption to central London.
+
+  Multiple new routes were proposed by the London Marathon Events during the hiatus period, however each came with significant difficulties and challenges compared to the existing course.
 
   </div>
   <div>
     ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.501594787700675, 0.011805819341940176], zoom: 13.4, width, cartoKey })}
-    <div class="muted">Silvertown tunnel marked in red.</div>
+  <figcaption>The map above shows the portion of the route that would cause the closure of the Silvertown tunnel (marked in red).</figcaption>
   </div>
 </div>
+<br>
 
 ---
 
@@ -1095,6 +1113,7 @@ With over 17,000 riders to manage at the start line, it would be very difficult 
     ${routeMap(routeC, londonBridges, "#060549", width, { bridgeKey: 'c', cartoKey })}
   </div>
 </div>
+<br>
 
 <div class="grid grid-cols-2">
   <div>
@@ -1109,6 +1128,7 @@ With over 17,000 riders to manage at the start line, it would be very difficult 
     ${routeMap(routeF, londonBridges, "#e07b39", width, { bridgeKey: 'f', cartoKey })}
   </div>
 </div>
+<br>
 
 <div class="grid grid-cols-2">
   <div>
@@ -1120,7 +1140,7 @@ With over 17,000 riders to manage at the start line, it would be very difficult 
 
   This route attempts to give Riders more visable London landmarks in the morning, while keeping the Silvertown tunnel open throughout the day.
 
-  However, in attempting to solve each issue it also inherits all of issues from the other routes. A departing route via East London leaves no way for traffic to flow into central London from West to East, and a Southern route via Camden means major disruption 
+  However, in attempting to solve each issue it also inherits all of issues from the other routes. A departing route via East London leaves no way for traffic to flow into central London from West to East, and introduces major disruption in Camden.
 
   </div>
   <div>
@@ -1129,29 +1149,35 @@ With over 17,000 riders to manage at the start line, it would be very difficult 
 </div>
 <br>
 
-This all does not begin to get into the knock-on effect that these London based route changes would have, any distance lost in the City of London would have to be made up in Essex. Considering the event was already controversial, with [petitions created](https://www.change.org/p/stop-the-ride-london-essex-cycling-event-from-disrupting-ongar) appealing to stop the ride in Ongar and Tony Blackburn suggesting that Ride London should be replaced by an ["event for car owners"](https://road.cc/content/news/tony-blackburn-calls-car-event-replace-ridelondon-301527), shutting more roads in Essex may not have been a viable option either.
+## Finding Funding
+According to internal documents, the cost of stewarding the challenge events was only growing, against declining rider numbers in the paid events and low interest from sponsors in what was described as a "challenging macro sponsorship environment".
 
+These facts combined with the lost revenue of the UCI Women's Event meant that the Ride London event would need to source significant amount of additional funding for a 2026 edition to be feasible. The LME documents available have specific information about funding amount redacted but confirm that LME would not be able to provide the level of subsidy needed to run the event in it's existing form.
 
-## The 2024 hiatus
-When planning the 2025 edition of Ride London, two major events happened. TFL demanded a major re-routing of the event to keep the Silvertown tunnel open for the full duration of the event day. This was a huge undertaking for the route planning staff at LME.
+On top of this, when the event was founded after the London Olympic Games in 2012, a commitment was made that Ride London would not be held at any cost to the GLA (Greater London Authority), TFL or the taxpayer. Meaning that the event would have to court major sponsorship funding and significantly grow the number of paid entrants to acquire the relevant funding needed to keep the event viable.
 
-The women's professional race, the London-Surrey Classic, was also dropped during this period when the UCI moved the dates of the race to the same day as the Trooping the Colour. 
+TFL's "Strategic Problem Solving" team were engaged when the hiatus was announced in September 2024, and a number of workshops were run to attempt to look for solutions for Ride London's financial issues. 
 
-According to [an FAQ](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html) sent to major stakeholders (such as theEssex Council), this meant that no revenue from sponsorships or broadcasting rights could be obtained for funding the organisation of the event. 
+Multiple workshops were held to try and find a sustainable financial model for Ride London, such as the event becoming more of a "carnival style celebration" (based on the existing [London Cycling Festival](https://lcc.org.uk/london-cycling-festival/) ran by the London Cycling Campaign) driven mostly by sponsorships, making use of the already closed roads for the challenge rides.
 
-With rider numbers for the longest route were consistently declining year over year and major routing and funding issues, the decision was made to place the 2025 event on hiatus and attempt to solve issues in the intervening year. 
+Plans were brainstormed for decentralised paid events, such as local hill climbs or time trials in the Olympic park or other closed road locations. Even expanded plans for more distances in the challenge rides and a larger array of merchandise was looked into.
 
+## The indefinite pause
+In the end, Ride London was facing pressure from all directions. The need for more funding from direct sponsorships would require the event extensively altered to accommodate more sponsor friendly situations such as "festival" style set-ups with tents brands could hire. Against falling rider participation numbers this was probably a hard sell. 
+
+The event was also becoming the target of the usual anti-cycling London crowd, Tony Blackburn even suggested that Ride London should be replaced by an ["event for car owners"](https://road.cc/content/news/tony-blackburn-calls-car-event-replace-ridelondon-301527)
+
+This was compounded by having to re-route the London portion of the ride to avoid closing the Silvertown tunnel. Unmentioned in the released internal documents are the impact any distance lost in London would have on the Essex portion of the route which already led to friction and [local](https://www.change.org/p/stop-the-ride-london-essex-cycling-event-from-disrupting-ongar) [petitions](https://www.change.org/p/stop-further-ride-london-essex-cycle-race-in-essex) from local residents.
+
+The new options for both routing and fundraising was brought to RideLondon stakeholders on April 30th 2025. No information is available on the decision making process in this meeting but from internal timeline the decision to officially cancel RideLondon was made on July 21th 2025. 
+
+Communications plans for the cancellation were drafted at the end of January and on February 10th 2026 the news was announced that Ride London was no more.
 <br>
 
-## Why was the race cancelled permanently?
+---
 
-The 2024 Ride London event was a fairly well run event. Riders generally set appropriate times for themselves, with faster riders leaving in earlier waves on average. 
+# Conclusion
 
-However, about 29% of riders didn't leave in their intended block, overpopulating waves 3 and 4, leading to a large area of congestion in the morning of the race. This led to some extreme events where extremely fast riders passed a large number of slower riders throughout the day.
-
-This congestion cleared after the lunch rush at the 50 mile rest point, **with slower riders opting to take longer breaks for lunch**, and the rest of the day had a fairly evenly distributed number of riders.
-
-Considering the epic levels of organisation the event requires, with over 3,000 stewards, 100 support vehicles and 450km of road closures, London Marathon Events also expressed that they would not be able to maintain the subsidy required for keep running the race.
 
 <style>
 

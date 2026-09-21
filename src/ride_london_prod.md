@@ -1072,10 +1072,10 @@ This decision was made in good faith, and the London Marathon Events did impleme
 
 ## The proposed 2025 routes
 
-<div class="grid grid-cols-2">
+### Avoid East London Entirely
+<div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  ### Avoid East London Entirely
   By turning the route Northbound off of the Embankment at Tower bridge the docklands can be avoided entirely, meaning that the Silvertown tunnel could operate without disruption.
   
   The route would continue up the A10 via Dalston and out to Essex. Returning via the A104, cutting through Victoria Park onto the A11 and maintaining the finish on Tower Bridge.
@@ -1092,10 +1092,10 @@ This decision was made in good faith, and the London Marathon Events did impleme
 </div>
 <br>
 
-<div class="grid grid-cols-2">
+### Avoid Central London Entirely
+<div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  ### Avoid Central London Entirely
   By starting the event at the Queen Elizabeth Olympic Park and heading East, this proposed route requires no major river crossing to be closed for the full duration of the day.
 
   The returning route would cut Westerly across North London before heading South through Camden Town, switching to a new ending location of The Mall. 
@@ -1109,10 +1109,10 @@ This decision was made in good faith, and the London Marathon Events did impleme
 </div>
 <br>
 
-<div class="grid grid-cols-2">
+### Only close the Silvertown Tunnel for the morning
+<div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  ### Only close the Silvertown Tunnel for the morning
   By keeping the start of the ride on the Embankment , the route can maintain it's original low-disruption outward leg which involves a high amount of London landmarks. 
   
   This would however cause the Silvertown tunnel to have close until at least 11am and still require a very large amount disruption to Camden Town as this part of the adjusted route would still need to be used to allow the tunnel to reopen.
@@ -1124,10 +1124,10 @@ This decision was made in good faith, and the London Marathon Events did impleme
 </div>
 <br>
 
-<div class="grid grid-cols-2">
+### Avoid the Silvertown tunnel specifically
+<div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  ### Avoid the Silvertown tunnel specifically
   By starting the route in South East London, progressing up the Thames and beginning on the Southbank, Before turning North after Blackfriars Bridge onto the A11 and heading North East out of London on A104.
 
   The riders would again, return by cutting West across North London, then head South via Camden for an ending at the Mall.
@@ -1190,6 +1190,31 @@ body {
 .leaflet-tooltip {
   font-family: 'Poppins', sans-serif;
   font-size: 0.75rem;
+}
+
+/* Framework's .grid sets grid-auto-rows: 1fr, which keeps side-by-side
+   .grid-cols-2 columns the same height on desktop (fine, intentional) - but
+   below its own 640px breakpoint, .grid-cols-2 collapses to a single
+   column, and 1fr then stretches *every stacked row* to match the tallest
+   one instead. That's what was leaving a big gap under the shorter map
+   figures whenever the text next to them ran longer. Reset it back to
+   auto-height rows at the same breakpoint Framework itself collapses at. */
+@container (max-width: 639px) {
+  .grid {
+    grid-auto-rows: auto;
+  }
+}
+
+/* Proposed-routes sections: side by side (text, then map) on desktop, but
+   map above text once .grid-cols-2 collapses to a single column on mobile -
+   swap visual order only, source order (and desktop) stays untouched. */
+@container (max-width: 639px) {
+  .mobile-map-first > div:first-child {
+    order: 2;
+  }
+  .mobile-map-first > div:last-child {
+    order: 1;
+  }
 }
 
 /* Match the two worst-offender riders' lines on the canvas rider-paths

@@ -41,7 +41,7 @@ sidebar: false
 
   In September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event. In February of 2026, Ride London was placed on ["indefinite pause" by the London Marathon Events](https://www.londonmarathonevents.co.uk/ridelondon).
 
-  So what happened to our beloved cycling festival? The answer unfortunately comes down to declining participation numbers, organisational issues and route planning disputes between TFL and London Marathon events. This analysis will explore how the event was performing, how well it was run and why the event was eventually cancelled indefinitely.
+  So what happened to our beloved cycling festival? The answer unfortunately comes down to declining participation numbers, sponsorship issues and route planning disputes between TFL and London Marathon events. This analysis will explore how the event was performing, how well it was run and why the event was eventually cancelled indefinitely.
 
   </div>
 
@@ -157,7 +157,7 @@ const raceData_2024_100 = raceData_100.filter(d => d.year == 2024);
 
 # How was Ride London performing?
 
-The first indication of trouble was that less riders participated in the 2024 edition of Ride London than the previous two years.
+The first indication of trouble for Ride London was that less riders participated in the 2024 edition of Ride London than the previous two years.
 
 In fact only a total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023.
 
@@ -181,7 +181,7 @@ ${resize((width) => ridersYearlyChart(groupedYearlyData, width > 640 ? 640 : wid
 </div>
 
 ### Less people rode the 100, but the shorter rides were growing in popularity
-The source of these declining numbers was in the most popular event, the 100 mile loop out to Essex and back. The total of entrants that departed dropped by 11% year to year, more than 2000 entrants between 2024 and 2023.
+The source of these declining numbers was in the most popular event, the 100 mile loop out to Essex and back. The total of entrants that departed dropped by 11% year to year, more than 2000 fewer entrants than 2023.
 
 ${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "100"), width > 640 ? 640 : width, {
   title: "100 Miles",
@@ -216,7 +216,6 @@ Despite this, the shorter events aimed at beginners had considerably more riders
     }))}
   </div>
 </div>
-
 <br>
 
 ### However, fewer women raced than ever before, including beginners.
@@ -267,9 +266,9 @@ ${resize((width) => femaleRidersTotalsChart(groupedFemaleData, width > 640 ? 640
   ]
 ```
 
-The ratio of female to male riders has dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
+The ratio of female to male riders dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
 
-It's also worth noting the decline in the most beginner friendly race category of 30 miles. Where more women used to race than men. The beginners race popularly doubled in 2024 but this was not been felt equally between male and female riders, with the ratio of men to women seeing a 8% drop from 2023 to 2024.
+It's also worth noting the decline in the most beginner friendly race category of 30 miles in which more women used to race than men. The beginners race's overall popularly doubled in 2024 but this was not been felt equally between male and female riders, with the ratio of women to men seeing a 8% drop from 2023 to 2024.
 
 <div class="grid grid-cols-3">
   <div>
@@ -311,9 +310,9 @@ It's also worth noting the decline in the most beginner friendly race category o
 </div>
 <br>
 
-### This low level of female participation is an outlier in regards to London Sportifs
+### This low level of female participation is an outlier in regards to mass participation LME events
 
-This gender gap is particularly bad when compared to other mass participation events.
+This gender gap is particularly bad when compared to other mass participation events that the London Marathon Events group organises yearly.
 
 When compared to the other two events in the London Classic series, the London marathon and the two mile swim in the Serpentine, we can see that Ride London had the lowest share of female participants of any event. Falling a massive 26% behind the participation rate of the London Marathon.
 
@@ -348,19 +347,17 @@ When compared to the other two events in the London Classic series, the London m
   })))
 ```
 
-It was the only event where this proportion was declining. The London Marathon's male to female ratio of participation has been steadily rising since 2022, from 41% in 2022 to 44% in 2026.
+It was the only event where this gender gap between participants was increasing. The London Marathon's female to male ratio of participation has been steadily rising since 2022, from 41% in 2022 to 44% in 2026.
 
-The London Serpentine swim has performed even better, from 2022 to 2025 (the 2026 has not yet happened at time of writing) female participation in the event has risen from 42% to 48%.
+The London Serpentine swim has performed even better, from 2022 to 2025 (the 2026 edition has not yet happened at time of writing) female participation in the event has risen from 42% to 48%.
 
-It's clear that London's premier cycling event was failing to bring in female riders as time went on.
+It's clear that London's premier cycling event was failing to attract and retain female riders as time went on.
 
 ---
 
 # How well was the race run?
 
-So what could be causing fewer people to attend, perhaps this was because the event was poorly organised?
-
-With over 17,000 riders sharing the road, allowing the event to flow without any traffic and avoiding crashes as much as possible is the priority in creating a good riding experience.
+With over 17,000 riders sharing the 100 miles of road, allowing the event to flow with minimal traffic and providing a safe riding experience is no easy task.
 
 In the perfect scenario the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
 
@@ -579,7 +576,6 @@ const leaveProportions = leaveCategoryTable
 ```
 
 ${resize((width) => verticalBarChart(leaveProportions, width > 640 ? 640 : width, {
-  title: "Over a third of riders did not start in their alloted time.",
   x: "leave_type",
   xDomain: ["Early", "On-Time", "Late"],
   y: "proportion",
@@ -592,26 +588,25 @@ ${resize((width) => verticalBarChart(leaveProportions, width > 640 ? 640 : width
   secondaryLabel: "count",
 }))}
 
-If our rough estimation based on assigned waves is true, that means that 12% of riders (2,224) began the race earlier than specified and 17% (2,992) began later than instructed. Meaning over a third of riders did not begin in their original starting wave. 
+If our rough estimation based on assigned waves is true, that means that 12% of riders (2,224) began the race earlier than specified and 17% (2,992) began later than instructed. Meaning over a third of riders did not begin in their original starting wave.
 
-Of the waves, riders in wave 2 and wave 5 had the highest proportion of riders who did not start in their allocated wave.
-
-The chord diagram below shows the net migration from each rider's **assigned wave** to their **actual start wave**. We can see that the flow of early starters and late leavers generally moved from waves 2 and 5 into waves 3 and 4.
+When we look at which wave each rider left in vs the wave they were asigned to, we can see riders in wave 2 and wave 5 had the highest proportion of riders who did not start in their allocated wave.
 
 
-${waveChordChart(raceData_2024_100, width)}
-
-<figcaption>Arrows show the net migration of riders from the rider's <strong>assigned</strong> wave to their <strong>actual</strong> wave. Grey blocks show the proportion of riders who started in their correct wave.</figcaption>
-
-For the exact numbers behind that flow, here's the same breakdown as a grid - each cell is how many riders assigned to the row's wave actually started in the column's wave.
 
 ```js
 display(resize((width) => waveMigrationHeatmap(raceData_2024_100, width > 640 ? 640 : width)))
 ```
+<figcaption>Each cell's number is how many riders assigned to a wave (rows) actually started in a given wave (columns). The diagonal (started on time) is solid Ride London blue. Off the diagonal, colour is that cell's share of its row - red for early starters, blue for late.</figcaption>
+<br>
 
-<figcaption>Each cell's number is how many riders assigned to a wave (rows) actually started in a given wave (columns). The diagonal (started on time) is solid Ride London blue. Off the diagonal, colour is that cell's share of its row - red for early starters, blue for late - so waves can be compared fairly despite being different sizes.</figcaption>
 
-If we look at the amount of riders in each assigned wave, we can see that the race organisers originally indented to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave. 
+The overall effect being a large net migration of riders from waves 2 & 5 into waves 3 & 4.
+
+${waveChordChart(raceData_2024_100, width)}
+<figcaption>Arrows show the net migration of riders from the rider's <strong>assigned</strong> wave to their <strong>actual</strong> wave. Grey blocks show the proportion of riders who started in their correct wave.</figcaption>
+
+By plotting the number of riders per assigned wave we can see that the race organisers originally indented to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave. 
 
 However, due to the rider behavior seen above, wave 3 and wave 4 had a much higher number of riders, with over 55% of the total riders leaving in two waves.
 
@@ -631,6 +626,7 @@ Wave 4 was especially concentrated, with an extra 1,446 riders leaving in the wa
     ))}
   </div>
 </div>
+<br>
 
 ## How did this effect the flow of the race?
 
@@ -854,6 +850,7 @@ So riders not beginning in their allotted waves led to some over-crowding in the
   const linkData = raceData_2024_100
   const highlightedData = raceData_2024_100.filter(d => d.rider_no == riderNo)
 ```
+<br>
 
 ## Did congestion make the race more dangerous?
 
@@ -878,7 +875,6 @@ display(resize((containerWidth) => {
 However the net position change of the rider doesn't truly capture the number of pass events a rider experiences. A rider could overtake 1000 slower riders and be passed by 1000 faster riders and still hold the same position.
 
 To calculate the total number of pass events, each rider new position at each time gate is compared to every other rider's position at the previous time gate. Since we only have the four time gates available to us, our measurement is the **minimum total race day pass events**.
-
 <br>
 
 ## How did wave departure behavior effect passing effects?
@@ -993,10 +989,8 @@ display(resize((containerWidth) => {
 }))
 ```
 <figcaption>The graph above shows each rider's position at each timing checkpoint. With a line being drawn between the start race position and end race position for each time gate. Shaded bands mark the three official rest stops. Our late and early riders are marked in teal and amber respectively.</figcaption>
-<br>
 
 These examples show how extreme wave jumping can lead to situations where riders are having to make, or having to deal with, high amounts of pass events in which there is a high difference in speeds between the two riders.
-<br>
 <br>
 
 ## Final thoughts
@@ -1177,7 +1171,15 @@ Communications plans for the cancellation were drafted at the end of January and
 ---
 
 # Conclusion
+Ride London in the end was the victim of rising organisational costs, a challenging sponsorship market and a major planning dispute with TFL. With falling ridership numbers, especially with female riders, LME and TFL were unable to come to solution that would have made the event financially and logistically viable.
 
+This isn't to say the event was poorly organised, roads were properly stewarded and steps were taken by the event to reduce congestion by releasing faster riders earlier in the day. 
+
+However around a quarter of participants didn't start in their allotted time however which led to significant rider concentration during the beginning of the day, but most of this balanced out via the rest stops along the route.
+
+Ride London's inability to find a maintainable financial model providing closed road cycling events isn't an outlier. In 2023 the Tour of Cambridgeshire, part of the UCI Gran Fondo World Series, announced it would not return. Vélo Birmingham & Midlands ceased after being cancelled during the Covid-19 pandemic, without refunds being issued to participants due to "unrecoverable costs".
+
+In fact, the cancellation of Ride London leaves England without a single closed road mass participation cycling event. English riders will now need to travel to Scotland for the Etape Caledonia or Loch Ness to take part in a cycling event without sharing the road with cars.
 
 <style>
 

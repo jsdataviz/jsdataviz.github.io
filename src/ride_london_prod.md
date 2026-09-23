@@ -638,6 +638,8 @@ We can then group our riders by which 5 mile bucket they were in and across the 
 
 See below how the simulation looks across the whole day.
 
+<div id="race-sim-anchor"></div>
+
 ```js
 raceSimData.forEach(item => {
   const regular = Number(item.regular_riders) || 0;
@@ -677,9 +679,26 @@ const ridersFinishedInt =
 
 ```js
 const counter = (async function* () {
-  let value = 6;
+  // This loop never stops on its own (`while (true)`) - without a visibility
+  // check it re-renders the chart below every 500ms for as long as the tab
+  // is open, even minutes after the reader has scrolled miles past it. That
+  // constant reflow, happening continuously above wherever the reader
+  // currently is, is exactly what trips browsers' scroll-anchoring into
+  // fighting the reader's own scrolling further down the page - so pause
+  // entirely (stop yielding new values, which stops downstream cells from
+  // re-rendering at all) once this section is off-screen.
+  const anchor = document.getElementById("race-sim-anchor");
+  let visible = true;
+  if (anchor) {
+    new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(anchor);
+  }
 
+  let value = 6;
   while (true) {
+    if (!visible) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      continue;
+    }
     yield value;
     await new Promise((resolve) => setTimeout(resolve, 500));
 

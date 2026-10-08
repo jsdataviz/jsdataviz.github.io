@@ -33,11 +33,11 @@ sidebar: false
   <div>
 
   ## Introduction
-  In case you're not in know, Ride London was a cycling festival created post the 2012 London Olympics games that took place yearly in London over the weekend of the late May public holiday in the UK. During the event roads were closed from Central London to Essex for cycling use only.
+  In case you're not in the know, RideLondon was a cycling festival created after the 2012 London Olympics games. First held in 2013, it was an annual event in London that took place over the UKs late May bank holiday weekend. During the event, roads were closed from Central London to Essex for exclusive use of the RideLondon event.
 
-  The weekend opened with the [RideLondon Classique](https://en.wikipedia.org/wiki/RideLondon_Classique), a three day women's road race that was park of the UCI Women's World Tour as well as a series of challenge rides (or sportives) and a casual 'free-ride' around the closed roads in the center of London for all abilities on the Sunday.
+  The weekend opened with the [RideLondon Classique](https://en.wikipedia.org/wiki/RideLondon_Classique), a three day women's road race that was part of the UCI Women's World Tour as well as a series of challenge rides (or sportives) and a casual 'free-ride' around the closed roads in the centre of London for all abilities on the Sunday.
 
-  The most popular of the challenge rides was the 100 mile route, in which 500,000 people had ridden and raised over £85m for charity since 2013.
+  The most popular of the challenge rides was the 100 mile route, in which [500,000 people had ridden and raised over £85m for charity since 2013](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html).
 
   In September 2024, it was announced that Ride London [would not be returning in 2025](https://www.ridelondon.co.uk/news-and-media/latest-news/2025-event-update). With London Marathon Events saying that they were taking the time to perform a "full strategic review" of the event. In February of 2026, Ride London was placed on ["indefinite pause" by the London Marathon Events](https://www.londonmarathonevents.co.uk/ridelondon).
 
@@ -157,11 +157,11 @@ const raceData_2024_100 = raceData_100.filter(d => d.year == 2024);
 
 # How was Ride London performing?
 
-The first indication of trouble for Ride London was that less riders participated in the 2024 edition of Ride London than the previous two years.
+The first indication of trouble for Ride London was that fewer riders participated in the 2024 edition of Ride London than the previous two years.
 
-In fact only a total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders from 2023.
+In fact only a total of 21,103 people rode in one of the Ride London events in 2024, a 7% drop from the 22,596 riders in 2023.
 
-However, this is the number of riders who completed the race, rather than registrations. Conditions were poor in the morning of the 2024 with scattered rain which may have led to less riders participating but the event did not sell out as in previous years.
+However, this is the number of riders who completed the race, rather than registrations. Conditions were poor the morning of the 2024 with scattered rain which may have led to fewer riders participating, but the event did not sell out as in previous years.
 
 ```js
 const groupedYearlyData = aq.from(combinedRaceData)
@@ -180,8 +180,8 @@ groupedYearlyData.push(
 ${resize((width) => ridersYearlyChart(groupedYearlyData, width > 640 ? 640 : width))}
 </div>
 
-### Less people rode the 100, but the shorter rides were growing in popularity
-The source of these declining numbers was in the most popular event, the 100 mile loop out to Essex and back. The total of entrants that departed dropped by 11% year to year, more than 2000 fewer entrants than 2023.
+### Fewer people rode the 100, but the shorter rides were growing in popularity
+The source of these declining numbers was the most popular event, the 100 mile loop out to Essex and back. The total number of entrants that departed dropped by 11% year to year, more than 2000 fewer entrants than 2023.
 
 ${resize((width) => verticalBarChart(rideTotals.filter(d => d.distance == "100"), width > 640 ? 640 : width, {
   title: "100 Miles",
@@ -222,7 +222,7 @@ Despite this, the shorter events aimed at beginners had considerably more riders
 
 With the Ride London Classique previously being part of the women's UCI world tour, it's disappointing that fewer women took part in the Ride London challenge rides than ever before. Only 4,091 female riders took part in Ride London, a decrease of 709 riders year to year.
 
-This declining trend of female participation even occurred when the event grew in total attendance 2023. Meaning the ratio of female to male riders has also been declining year over year.
+This declining trend of female participation even occurred when the event grew in total attendance in 2023. Meaning the ratio of female to male riders was also declining year on year.
 
 ```js
 const groupedFemaleData = aq.from(combinedRaceData)
@@ -268,7 +268,7 @@ ${resize((width) => femaleRidersTotalsChart(groupedFemaleData, width > 640 ? 640
 
 The ratio of female to male riders dropped in every category, from 2022 to 2024. Dropping 5% in the most popular race category, the 100 miler.
 
-It's also worth noting the decline in the most beginner friendly race category of 30 miles in which more women used to race than men. The beginners race's overall popularly doubled in 2024 but this was not been felt equally between male and female riders, with the ratio of women to men seeing a 8% drop from 2023 to 2024.
+It's also worth noting the decline in the most beginner friendly race category of 30 miles in which more women used to race than men. The beginners race's overall popularity doubled in 2024 but this was not felt equally between male and female riders, with the ratio of women to men seeing a 8% drop from 2023 to 2024.
 
 <div class="grid grid-cols-3">
   <div>
@@ -312,7 +312,7 @@ It's also worth noting the decline in the most beginner friendly race category o
 
 ### This low level of female participation is an outlier in regards to mass participation LME events
 
-This gender gap is particularly bad when compared to other mass participation events that the London Marathon Events group organises yearly.
+This gender gap is particularly marked when compared to other mass participation events that the London Marathon Events group organises yearly.
 
 When compared to the other two events in the London Classic series, the London marathon and the two mile swim in the Serpentine, we can see that Ride London had the lowest share of female participants of any event. Falling a massive 26% behind the participation rate of the London Marathon.
 
@@ -359,7 +359,7 @@ It's clear that London's premier cycling event was failing to attract and retain
 
 With over 17,000 riders sharing the 100 miles of road, allowing the event to flow with minimal traffic and providing a safe riding experience is no easy task.
 
-In the perfect scenario the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
+In a perfectly managed ride the fastest riders would begin first so that the flow of traffic was as smooth as possible. This also means that riders have to perform as few passes of other, slower riders as possible. Reducing these interactions between riders is the safest way to operate the event.
 
 To account for this, when entering into the Ride London events, riders are asked to give an estimated time they expect to complete the event. The organisers then place riders into gated starting times to manage the flow of riders throughout the day.
 
@@ -374,23 +374,23 @@ Generally, riders who began riding earlier in the day did complete the race quic
 
 Let's review how well the "quickest rider first" system was implemented.
 
-For this system to work, these statement need to be true:
+For this system to work, these statements need to be true:
 
 - **Riders are realistic about their estimated finishing time.** If riders choose times that are too ambitious, they will be placed in earlier waves and then passed by faster riders.
 
-- **Riders actually begin at their designated starting time.**  If riders choose to leave at a different time than their alloted wave, they will potentially be passing slower riders, or being passed by faster ones.
+- **Riders actually begin at their designated starting time.** If riders choose to leave at a different time than their allotted wave, they will potentially be passing slower riders, or being passed by faster ones.
 
-To evaluate the these two points, we'll need to know what starting waves riders were assigned to and when they departed. Since this information is not publicly available, we'll have to try and infer it from the data itself.
+To evaluate these two points, we'll need to know what starting waves riders were assigned to and when they departed. Since this information is not publicly available, we'll have to try and infer it from the data itself.
 
 <br>
 
 ## Can we tell which wave each rider was assigned to?
 
-Since rider wave information is not available, how can tell if rider's picked the correct time for their wave, or started in their assigned wave?
+Since rider wave information is not available, how can we tell if riders picked the correct time for their wave, or started in their assigned wave?
 
 Often we can infer information contained in the data by looking at the way the IDs are structured. This was famously used in WW2, when the allies estimated the number of German Panther tanks being produced per month by analysing the serial numbers of captured or destroyed tanks in the field (known as the [German tank problem](https://en.wikipedia.org/wiki/German_tank_problem)).
 
-In our case, we can plot the each rider's designated race number against the time they began the race.
+In our case, we can plot each riders’ designated race number against the time they began the race.
 
 ```js
 display(riderStartScatterChart(raceData_2024_100, width, { stroke: rideBlue, opacity: 0.5, filled: true, highlightRiderNo: riderNo }))
@@ -400,7 +400,7 @@ display(riderStartScatterChart(raceData_2024_100, width, { stroke: rideBlue, opa
 
 We can see that rider numbers were assigned into blocks of departing times. Meaning that riders who picked a certain time range were given a rider number that fell within an appropriate wave with a departing time that would cause them to start after faster riders and before slower ones.
 
-We can see that the 100 mile race was split into 5 starting waves with the following starting times:
+We can see that the 100 mile race was split into five starting waves with the following starting times:
 
 1) **6:00am** - Rider no. between 101,000 and 103,500
 2) **6:05am** - Rider no. numbers between 103,700 and 110,000
@@ -421,11 +421,11 @@ display(riderStartScatterChart(raceData_2024_100, width, {
 }))
 ```
 
-<figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Each rider's assigned wave is shown by colour.</figcaption>
+<figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Each riders’ assigned wave is shown by colour.</figcaption>
 
-There was also a VIP package sold which allowed entry at any point in the day, which I have assumed to the string of riders with numbers between 100,000 and 101,000 who start throughout the day.
+There was also a VIP package sold which allowed entry at any point in the day, looking at the ID structure there is a unique group of riders with IDs between 100,000 and 101,000 who start throughout the day who aren’t clustered into any departure time and leave freely throughout the day. In this analysis I am assuming these are the VIP riders, and they will not be assigned a start wave.
 
-We can also bucket all the rider's who didn't start in the correct wave here, as early or late starters. Let's say as a general rule, if a rider started before their assigned wave start they were an early starter and if they began the race after the subsequent wave start then they are a late starter. 
+We can also bucket all the riders who didn't start in the correct wave here, as early or late starters. Let's say as a general rule, if a rider started before their assigned wave start they were an early starter and if they began the race after the subsequent wave start then they are a late starter.
 
 Since between wave 1 & 2 there is only ~5 minutes, we'll only classify riders who started during wave 3's time window as a later starter, as getting all riders on the road in 5 minutes is quite a task.
 
@@ -450,13 +450,13 @@ display(riderStartScatterChart(raceData_2024_100, width, {
 
 <figcaption>The graph above shows each rider plotted by the time of day they started vs their designated rider number. Riders who started before their assigned wave's start time are marked as early starters, riders who started after the next wave's start time are marked as late starters.</figcaption>
 
-Now we have this information, we can compare various rider stats to see how well riders predicted their own race times and how many departing in their assigned wave.
+Now we have this information, we can compare various rider stats to see how well riders predicted their own race times and how many departed in their assigned wave.
 
 ---
 
 ## Did riders choose the right race times?
 
-Now we know where people alloted themselves, let's evaluate if people choose the appropriate race time for their ability. To do this, let's breakdown  the distribution of total ride times for each wave.
+Now we know where people allotted themselves, let's evaluate if people chose the appropriate race time for their ability. To do this, let's break down the distribution of total ride times for each wave.
 
 ```js
     function aggregateWaveTimes(value, timesData) {
@@ -556,7 +556,7 @@ Interestingly, the deviation of the waves also decreases for each wave, especial
 
 ## Did riders begin in their assigned waves?
 
-We previously labelled the riders who started the race earlier or later than their alloted time slots. Let's look into how this effected the race, starting with how large of a proportion of riders were late or early.
+We previously labelled the riders who started the race earlier or later than their allotted time slots. Let's look into how large this group was and which waves they were likely to end up in.
 
 ```js
   const leaveCategoryTable = aq.from(raceData_2024_100)
@@ -590,7 +590,7 @@ ${resize((width) => verticalBarChart(leaveProportions, width > 640 ? 640 : width
 
 If our rough estimation based on assigned waves is true, that means that 12% of riders (2,224) began the race earlier than specified and 17% (2,992) began later than instructed. Meaning over a third of riders did not begin in their original starting wave.
 
-When we look at which wave each rider left in vs the wave they were asigned to, we can see riders in wave 2 and wave 5 had the highest proportion of riders who did not start in their allocated wave.
+When we look at which wave each rider left in vs the wave they were assigned to, we can see riders in wave 2 and wave 5 had the highest proportion of riders who did not start in their allocated wave.
 
 
 
@@ -604,9 +604,9 @@ display(resize((width) => waveMigrationHeatmap(raceData_2024_100, width > 640 ? 
 The overall effect being a large net migration of riders from waves 2 & 5 into waves 3 & 4.
 
 ${waveChordChart(raceData_2024_100, width)}
-<figcaption>Arrows show the net migration of riders from the rider's <strong>assigned</strong> wave to their <strong>actual</strong> wave. Grey blocks show the proportion of riders who started in their correct wave.</figcaption>
+<figcaption>Arrows show the net migration of riders from the riders’ <strong>assigned</strong> wave to their <strong>actual</strong> wave. Grey blocks show the proportion of riders who started in their correct wave.</figcaption>
 
-By plotting the number of riders per assigned wave we can see that the race organisers originally indented to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave. 
+By plotting the number of riders per assigned wave we can see that the race organisers originally intended to allow a smaller group of faster riders to leave first, followed by even groups of riders of ~4000 people per wave.
 
 However, due to the rider behavior seen above, wave 3 and wave 4 had a much higher number of riders, with over 55% of the total riders leaving in two waves.
 
@@ -628,13 +628,13 @@ Wave 4 was especially concentrated, with an extra 1,446 riders leaving in the wa
 </div>
 <br>
 
-## How did this effect the flow of the race?
+## How did this affect the flow of the race?
 
-Due to people not starting in their designated waves, a large portion of the total riders began in wave 3 and 4 rather than evenly distributed across the morning. But how did that effect the *flow* of the race?
+Due to people not starting in their designated waves, a large portion of the total riders began in wave 3 and 4 rather than evenly distributed across the morning. But how did that affect the *flow* of the race?
 
 To analyse this, I've simulated the ride by splitting the 100 mile course into 5 mile buckets and the rest stops. Using the rider's average time that is calculated at each time gate, we can measure the estimated position of each rider on the route at 15 minute increments across the whole of the ride day.
 
-We can then group our riders by which 5 mile bucket they were in and across the entire day to see where and when there were large concentration of riders during the event.
+We can then group our riders by which 5 mile bucket they were in and across the entire day to see where and when there were large concentrations of riders during the event.
 
 See below how the simulation looks across the whole day.
 
@@ -763,9 +763,9 @@ Let's break down the event over the day, looking how the density of riders chang
 
 At 7AM, the first two waves are flowing freely after departing at 6AM. The road was especially low on congestion due to a third of riders (1,386 of 4,058) assigned to wave 2 not departing until later in the day.
 
-Considering that to enter these waves you would have to get up at the crack of dawn to be at Buckingham Palace before 6AM in rainy conditions, not many riders from later waves started early in these waves. Meaning there was a low amount of rider on the road early 
+Considering that to enter these waves you would have to get up at the crack of dawn to be at Buckingham Palace before 6AM in rainy conditions, not many riders from later waves started early in these waves. Meaning there was a low amount of riders on the road early.
 
- Wave 3 was in the process of departing, containing 900 early starters from wave 4 & 5 and 512 riders from wave 1 & 2, the departing wave is around 10% larger than intended.
+ Wave 3 was in the process of departing, containing 900 early starters from wave 4 & 5 and 512 riders from wave 1 & 2, the departing wave was around 10% larger than intended.
 
  <br>
 
@@ -775,9 +775,9 @@ Considering that to enter these waves you would have to get up at the crack of d
   display(raceSimGraph(riderDistributionLong.filter(d => 8 == d.hour), width))
 ```
 
-At 8am, riders have been beginning in wave 4 for about half an hour. Wave 4 has the highest amount of departing riders by far, as it has the ratio of riders who started in their assigned wave, as well being the most popular wave for riders who started early or late.
+At 8am, riders have been departing from wave 4 for about half an hour. Wave 4 has the highest number of departing riders by far, as it has the ratio of riders who started in their assigned wave, as well being the most popular wave for riders who started early or late.
 
-This leads of a huge peak of riders on the first five miles of the course. With 3,200 riders occupying a 5 mile stretch of the road, 18% of the total riders undertaking Ride London 100 were compressed into one five mile stretch at 8AM on the day of the event.
+This leads to a huge peak of riders on the first five miles of the course. With 3,200 riders occupying a 5 mile stretch of the road, 18% of the total riders undertaking Ride London 100 were compressed into one five mile stretch at 8AM on the day of the event.
 
 <br>
 
@@ -788,9 +788,9 @@ This leads of a huge peak of riders on the first five miles of the course. With 
   display(raceSimGraph(riderDistributionLong.filter(d => 9 == d.hour), width))
 ```
 
-By 9AM, wave 5 has fully departed and the vast majority of riders are now on the road. At this point the early leavers in wave 3 & 4, who we observed generally ride at slower pace are starting to fall back in positions. This contrasted by late starting riders who may have been assigned to waves 1 & 2, who ride quicker and are therefore making up positions.
+By 9AM, wave 5 has fully departed and the vast majority of riders are now on the road. At this point the early leavers in wave 3 & 4, who we observed generally ride at a slower pace are starting to fall back in positions. This contrasted by late starting riders who may have been assigned to waves 1 & 2, who ride quicker and are therefore making up positions.
 
-This leads to a larger concentration of riders in the early portion of the course before the first rest stop as these two groups collide. One slower group being passed on mass due to being slower than the pack on average and one faster group passing large amounts of riders.
+This leads to a larger concentration of riders in the early portion of the course before the first rest stop as these two groups collide. One slower group being passed en mass due to being slower than the pack on average and one faster group passing large amounts of riders.
 
 <br>
 
@@ -800,13 +800,13 @@ This leads to a larger concentration of riders in the early portion of the cours
   display(raceSimGraph(riderDistributionLong.filter(d => 9.5 == d.hour), width))
 ```
 
-At 9:30AM, we can see still see a large amount of rider's concentrated between 10 and 20 miles into the route. However, by 10AM we can see that this has smoothed considerably, and the rider distribution seems to be fairly even across the whole route. So what happened?
+At 9:30AM, we can still see a large number of riders concentrated between 10 and 20 miles into the route. However, by 10AM we can see that this has smoothed considerably, and the rider distribution seems to be fairly even across the whole route. So what happened?
 
 ```js
   display(raceSimGraph(riderDistributionLong.filter(d => 10 == d.hour), width))
 ```
 
-The first rest stop of the ride was 25 miles into the course, however some continued past the rest without stopping. More experienced riders who were in earlier waves stopped much less frequently than slower riders assigned to later waves.
+The first rest stop of the ride was 25 miles into the course, however some continued past the rest stop without taking a break. More experienced riders who were in earlier waves stopped much less frequently than slower riders assigned to later waves.
 
 ```js
 const stopDefs = [
@@ -840,7 +840,7 @@ ${resize((width) => verticalBarChart(restStopStats.filter(d => d.stop == "Mile 2
   label: d => d.pctStopped == null ? "" : `${Math.round(d.pctStopped)}%`,
 }))}
 
-This had a correcting effect on the flow of the race, allowing faster late departing riders to pass slower rides safely while they were stopped in the first rest stop.
+This had a correcting effect on the flow of the race, allowing faster late departing riders to pass slower riders safely while they were stopped at the first rest stop.
 
 <br>
 
@@ -850,7 +850,7 @@ This had a correcting effect on the flow of the race, allowing faster late depar
   display(raceSimGraph(riderDistributionLong.filter(d => 12.25 == d.hour), width))
 ```
 
-The final point of major congestion in the day comes at lunch time, at which point there was over 2,600 people in the 50 mile rest zone. As someone who was here during this time, it certainly felt like it.
+The final point of major congestion in the day comes at lunch time, at which point there were over 2,600 people in the 50 mile rest zone. As someone who was there during this time, it certainly felt like it.
 
 <br>
 
@@ -860,7 +860,7 @@ The final point of major congestion in the day comes at lunch time, at which poi
   display(raceSimGraph(riderDistributionLong.filter(d => 13 == d.hour), width))
 ```
 
-However, one good effect of the large amount of people taking a break at mile 50 is it gives another good opportunity for those late starters to pass and overtake our slower riders. On the day of the ride, it acted as another unofficial reset point for the order of riders.
+However, one good effect of the large amount of people taking a break at mile 50 is that it gives another good opportunity for those late starters to pass and overtake our slower riders. On the day of the ride, it acted as another unofficial reset point for the order of riders.
 
 So riders not beginning in their allotted waves led to some over-crowding in the morning of the race, but this did clear up throughout the day and was aided by the first two rest stops.
 
@@ -873,11 +873,11 @@ So riders not beginning in their allotted waves led to some over-crowding in the
 
 ## Did congestion make the race more dangerous?
 
-Due to a large amount of riders entering early or late into waves 3 and 4, there was significantly more congestion than planned in the first 25 miles of the route. Did this make the event overall a more dangerous ride than if people had departed on time?
+Due to a large number of riders entering early or late into waves 3 and 4, there was significantly more congestion than planned in the first 25 miles of the route. Did this make the event overall a more dangerous ride than if people had departed on time?
 
-The most frequent point of risk for riders during the event is when two riders pass each other. During each pass both riders must interact with each other at speed, around a large number of other riders at speed. Any collision between riders at speed can also lead to a chain reactions of crashes, so reducing the number of rider passes is a must.
+The most frequent point of risk for riders during the event is when two riders pass each other. During each pass both riders must interact with each other at speed, around a large number of other riders at speed. Any collision between riders at speed can also lead to a chain reaction of crashes, so reducing the number of rider passes is a must.
 
-To measure the amount of passing during the event we can monitor the position that each rider hits the time gates set out across the course. See below a very cool looking chart showing each riders relative position change at each time gate.
+To measure the amount of passing during the event we can monitor the position that each rider hits the time gates set out across the course. See below a very cool looking chart showing each rider’s relative position change at each time gate.
 
 ```js
 display(resize((containerWidth) => {
@@ -893,12 +893,12 @@ display(resize((containerWidth) => {
 
 However the net position change of the rider doesn't truly capture the number of pass events a rider experiences. A rider could overtake 1000 slower riders and be passed by 1000 faster riders and still hold the same position.
 
-To calculate the total number of pass events, each rider new position at each time gate is compared to every other rider's position at the previous time gate. Since we only have the four time gates available to us, our measurement is the **minimum total race day pass events**.
+To calculate the total number of pass events, each rider's new position at each time gate is compared to every other rider's position at the previous time gate. Since we only have the four time gates available to us, our measurement is the **minimum total race day pass events**.
 <br>
 
-## How did wave departure behavior effect passing effects?
+## How did wave departure behavior affect passing effects?
 
-Across the whole event, riders passed each at **least 35 million times** on the road. Each rider experienced **1,997 pass events on average**. As we discussed in the previous section, due to wave 3 & 4 having a large amount of late/early starters from other waves the route was particularly congested until the most riders had passed through both rest stops. This was reflected by there being considerably more pass events in the first 50 miles of course. 
+Across the whole event, riders passed  at **least 35 million times** on the road. Each rider experienced **1,997 pass events on average**. As we discussed in the previous section, due to wave 3 & 4 having a large amount of late/early starters from other waves the route was particularly congested until most riders had passed through both rest stops. This was reflected by there being considerably more pass events in the first 50 miles of course.
 
 ```js
 const segmentDefs = [
@@ -925,7 +925,7 @@ ${resize((width) => verticalBarChart(segmentPassStats, width > 640 ? 640 : width
 }))}
 
 
-If we look at each rider's net passes (i.e. did the pass or get passed by more riders), as expected we can also see that riders who left in earlier waves were far more likely to be passed by significantly more riders than they overtook, on average they were passed by over 2500 riders. An opposite trend is true when looking at quicker riders who left late, on average riders who left 3 or 4 waves late passed over 2000 riders during the event.
+If we look at each rider's net passes (i.e. did they pass or get passed by more riders), we can also see that riders who left in earlier waves were far more likely to be passed by significantly more riders than they overtook, on average they were passed by over 2500 riders. An opposite trend is true when looking at quicker riders who left late, on average riders who left 3 or 4 waves late passed over 2000 riders during the event.
 
 ```js
 const WAVE_NUM = { "Wave 1": 1, "Wave 2": 2, "Wave 3": 3, "Wave 4": 4, "Wave 5": 5 };
@@ -978,12 +978,12 @@ display(waveStatsTable(waveDiffStats, { groupLabel: "Wave Diff", format: wholeNu
 <figcaption>The graph above shows the distribution of total net passes made by each rider by how many waves they left early or late. Solid lines mark the median net passes of the group. If you selected a rider number, their result is marked with a red line. The table displays detailed information, including distribution thresholds.</figcaption>
 <br>
 
-Here we can also see the extremes of rider's leaving extremely early or late, where in some cases riders are part of over 10,000 pass events over the course of the day. Let's look at two outliers:
+Here we can also see the extremes of riders leaving extremely early or late, where in some cases riders are part of over 10,000 pass events over the course of the day. Let's look at two outliers:
 
 **<span class="secondaryUnderline">Rider 102302</span>**<br>
 This rider was assigned in Wave 1, which would have been well suited to their ability as they finished in an impressive 4 hours and 52 minutes This puts them not only in the fastest 20% of riders in wave 1 but in the fastest 3% of total riders in the event.
 
-However, this rider instead departed two and half hours later than their alloted start at 8:30AM in wave 5. Over the course of the day they **passed over 8,490 riders**, just under half of the total riders who undertook the event. With an average speed of 21mph (34kpm) for the full event, this rider also passed other riders with over a 6mph (9.6kpm) difference in speed.
+However, this rider departed two and half hours later than their allotted start at 8:30AM in wave 5. Over the course of the day they **passed over 8,490 riders**, just under half of the total riders who undertook the event. With an average speed of 21mph (34kpm) for the full event, this rider also passed other riders with over 6mph (9.6kpm) difference in speed.
 
 **<span class="primaryUnderline">Rider 128118</span>**<br>
 Inversely, this rider was assigned to wave 5, this was the correct wave choice for this rider as they finished the ride in 10 hours and 17 minutes, putting them in the slowest 2% of riders for the whole event. However they left at 6:30AM with wave 2 and were **passed by 14,404 riders** throughout the day. 
@@ -1014,13 +1014,13 @@ These examples show how extreme wave jumping can lead to situations where riders
 
 ## Final thoughts
 
-Overall, Ride London 2024 was well run, over 3,000 stewards and 100 vehicles provided 100 miles of safely closed road from London to Essex throughout the day, which on it's own requires a huge level of planning. 
+Overall, Ride London 2024 was well run, over 3,000 stewards and 100 vehicles provided 100 miles of safely closed road from London to Essex throughout the day, which on its own requires a huge level of planning.
 
 London Marathon Events also planned departure waves that were intended to allow faster riders to depart earlier to keep the ride flowing freely. Most riders complied with these waves and assigned themselves to appropriate waves which reduced the number of rider pass events. 
 
-However, due to around 29% of riders to not starting in their assigned waves, the first 25 miles of the route faced heavy congestion during wave 3 and wave 4's departure. This congestion eased over the day with the assistance of slower riders stopping more frequently at the first two rest stops.
+However, due to around 29% of riders not starting in their assigned waves, the first 25 miles of the route faced heavy congestion during wave 3 and wave 4's departure. This congestion eased over the day with the assistance of slower riders stopping more frequently at the first two rest stops.
 
-This early period of congestion did make the early sections of the course more dangerous by introducing more passing events, especially in extreme cases where riders started over 2 waves early or late. In these cases, large amounts of riders who left in the correct had to make high speed passes past very slow riders, or were passed by late leaving high speed riders.
+This early period of congestion did make the early sections of the course more dangerous by introducing more passing events, especially in extreme cases where riders started over 2 waves early or late. In these cases, large amounts of riders who left in the correct wave had to make high speed passes past very slow riders, or were passed by late leaving high speed riders.
 
 So how could this be improved? With over 17,000 riders to manage at the start line, it would be very difficult to enforce a *mandatory* start time for each rider without causing huge delays at the start as every rider is checked to ensure they're in the correct wave but I would recommend the following to increase rider safety and ride management:
 
@@ -1036,15 +1036,15 @@ So how could this be improved? With over 17,000 riders to manage at the start li
 <br>
 
 ## The 2025 hiatus
-When planning the 2025 edition of Ride London, two major roadblocks presented themselves to organisational team at the London Marathon Events. 
+When planning the 2025 edition of Ride London, two major roadblocks presented themselves to the organisational team at the London Marathon Events.
 
-The first was that TFL was demanding a major re-routing of the event to keep the Silvertown tunnel open for the full duration of the event day. At the same time the women's professional race, the London-Surrey Classic, was also dropped during this period when the UCI moved the dates of the race to the same day as the tooping the colour.
+The first was that TFL was demanding a major re-routing of the event to keep the Silvertown tunnel open for the full duration of the event day. At the same time the women's professional race, the London-Surrey Classic, was also dropped during this period when the UCI moved the dates of the race to the same day as the trooping the colour.
 
-According to an FAQ sent to major stakeholders (such as the Essex County Council), this meant that no revenue to fund the organisation of the public sportives could be obtained from sponsorships or broadcasting rights for the UCI events.
+According to [an FAQ sent to major stakeholders](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html) (such as the Essex County Council), this meant that no revenue to fund the organisation of the public sportives could be obtained from sponsorships or broadcasting rights for the UCI events.
 
 With overall rider numbers consistently declining year over year and major routing and funding issues, the decision was made to place the 2025 event on hiatus and attempt to solve issues in the intervening year.
 
-This decision was made in good faith, and the London Marathon Events did implement a roadmap for tackling these issues. Between September 2024 and April 2025 multiple sessions were conducted between LME, TFL and other stakeholders to attempt to resolve the routing and funding issues. The next two sections will investigate these problems in more detail.<br>
+This decision was made in good faith, and London Marathon Events did implement a roadmap for tackling these issues. Between September 2024 and April 2025 multiple sessions were conducted between LME, TFL and other stakeholders to attempt to resolve the routing and funding issues. The next two sections will investigate these problems in more detail.<br>
 <br>
 
 
@@ -1052,17 +1052,17 @@ This decision was made in good faith, and the London Marathon Events did impleme
 <div class="grid grid-cols-2">
   <div>
 
-  To fully understand why rerouting the event was so challenging it's important to understand why the existing route worked so well and why closing the Silvertown tunnel become such a key issue. 
+  To fully understand why rerouting the event was so challenging it's important to understand why the existing route worked so well and why closing the Silvertown tunnel became such a key issue.
 
   The central London portion of the 2024 Ride London route had riders congregate at Buckingham Palace before heading down the Mall and starting along the Thames River Embankment. This route then avoided the docklands by using the Limehouse Link Tunnel, before cutting North via the A12 and heading out to Essex. The ride returned via the same route, ending with a sprint finish across Tower Bridge.
 
-  By following this route, cyclists could ride through central London via riverside embankment route from West to East. This kept disruption on traffic flow across London as kept to a minimum as Traffic could still move across the Thames via the multiple tunnels and bridges that passed below and above the embankment. Traffic could also move from the East London and Essex into Central London via A13, and the roads passing under the A12.
+  By following this route, cyclists could ride through central London via riverside embankment route from West to East. This kept disruption on traffic flow across London to a minimum as Traffic could still move across the Thames via the multiple tunnels and bridges that passed below and above the embankment. Traffic could also move from East London and Essex into Central London via A13, and the roads passing under the A12.
 
   This route provided an easy, high volume route in and out London with minimal disruption to the standard weekend traffic that flows over the Thames river each day.
   </div>
   <div>
     ${silvertonRouteMap(introRouteGeoJSON, londonBridges, { center: [51.5085, -0.0485], zoom: 11.8, mobileZoom: 11.0, width, cartoKey })}
-  <figcaption>Bridges and tunnels that could remain open using the 2022-2024 embankment route are marked in green, those that would have to closed are marked in red.</figcaption>
+  <figcaption>Bridges and tunnels that could remain open using the 2022-2024 embankment route are marked in green, those that would have to be closed are marked in red.</figcaption>
   </div>
 </div>
 <br>
@@ -1073,7 +1073,7 @@ This decision was made in good faith, and the London Marathon Events did impleme
   
   In April 2025, the Silvertown tunnel opened linking the Royal Docks and Canary Wharf with north Greenwich. The tunnel was intended to reduce pressure on the heavily congested Dartford crossing and Blackwater Tunnel.
 
-  If the previous Embankment route was to be used, the Silvertown tunnel would have to close between 4am and 7pm on the day of the event. However, Will Norman, London's cycling and walking commissioner at the time of planning described this described this as an “absolute no”.
+  If the previous Embankment route was to be used, the Silvertown tunnel would have to close between 4am and 7pm on the day of the event. [Internal TfL correspondence](https://www.whatdotheyknow.com/request/ride_london_2025/response/2786534/attach/html/3/FOI%201919%20Redacted%20V2.pdf.html) records a colleague relaying Will Norman's - London's cycling and walking commissioner at the time of planning - verdict on this as an "absolute no".
 
   This left the London Marathon Events with a monumental re-planning effort, having to find a way to keep the Silvertown tunnel open and essentially ditching the tried and tested route following the Embankment without causing large scale disruption to central London.
 
@@ -1119,7 +1119,7 @@ This decision was made in good faith, and the London Marathon Events did impleme
 
   The returning route would cut Westerly across North London before heading South through Camden Town, switching to a new ending location of The Mall. 
 
-  This route would create significant disruption Camden Town, one of London's busiest areas. It was also noted that for an event touted as Ride London, riders would see a very small amount of London Landmarks during their ride.
+  This route would create significant disruption in Camden Town, one of London's busiest areas. It was also noted that for an event touted as Ride London, riders would see a very small amount of London Landmarks during their ride.
 
   </div>
   <div>
@@ -1132,9 +1132,9 @@ This decision was made in good faith, and the London Marathon Events did impleme
 <div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  By keeping the start of the ride on the Embankment , the route can maintain it's original low-disruption outward leg which involves a high amount of London landmarks. 
+  By keeping the start of the ride on the Embankment, the route can maintain its original low-disruption outward leg which involves a high amount of London landmarks. 
   
-  This would however cause the Silvertown tunnel to have close until at least 11am and still require a very large amount disruption to Camden Town as this part of the adjusted route would still need to be used to allow the tunnel to reopen.
+  This would however cause the Silvertown tunnel to have to close until at least 11am and still require a very large amount of disruption to Camden Town as this part of the adjusted route would still need to be used to allow the tunnel to reopen.
 
   </div>
   <div>
@@ -1147,13 +1147,13 @@ This decision was made in good faith, and the London Marathon Events did impleme
 <div class="grid grid-cols-2 mobile-map-first">
   <div>
 
-  By starting the route in South East London, progressing up the Thames and beginning on the Southbank, Before turning North after Blackfriars Bridge onto the A11 and heading North East out of London on A104.
+  By starting the route in South East London, progressing up the Thames and beginning on the Southbank, before turning North after Blackfriars Bridge onto the A11 and heading North East out of London on A104.
 
   The riders would again, return by cutting West across North London, then head South via Camden for an ending at the Mall.
 
-  This route attempts to give Riders more visable London landmarks in the morning, while keeping the Silvertown tunnel open throughout the day.
+  This route attempts to give riders more visibility of London landmarks in the morning, while keeping the Silvertown tunnel open throughout the day.
 
-  However, in attempting to solve each issue it also inherits all of issues from the other routes. A departing route via East London leaves no way for traffic to flow into central London from West to East, and introduces major disruption in Camden.
+  However, in attempting to solve each issue it also inherits all of the issues from the other routes. A departing route via East London leaves no way for traffic to flow into central London from West to East, and introduces major disruption in Camden.
 
   </div>
   <div>
@@ -1163,38 +1163,38 @@ This decision was made in good faith, and the London Marathon Events did impleme
 <br>
 
 ## Finding Funding
-According to internal documents, the cost of stewarding the challenge events was only growing, against declining rider numbers in the paid events and low interest from sponsors in what was described as a "challenging macro sponsorship environment".
+According to [internal TfL documents](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html), the cost of stewarding the challenge events was only growing, against declining rider numbers in the paid events and low interest from sponsors in what was described as a "challenging macro sponsorship environment".
 
-These facts combined with the lost revenue of the UCI Women's Event meant that the Ride London event would need to source significant amount of additional funding for a 2026 edition to be feasible. The LME documents available have specific information about funding amount redacted but confirm that LME would not be able to provide the level of subsidy needed to run the event in it's existing form.
+These facts combined with the lost revenue of the UCI Women's Event meant that the Ride London event would need to source a significant amount of additional funding for a 2026 edition to be feasible. Specific information about how much funding was needed was redacted in the released document but confirm that LME would not be able to provide the level of subsidy needed to run the event in its existing form.
 
-On top of this, when the event was founded after the London Olympic Games in 2012, a commitment was made that Ride London would not be held at any cost to the GLA (Greater London Authority), TFL or the taxpayer. Meaning that the event would have to court major sponsorship funding and significantly grow the number of paid entrants to acquire the relevant funding needed to keep the event viable.
+On top of this, when the event was founded after the London Olympic Games in 2012, a commitment was made that Ride London would not be held at any cost to the GLA (Greater London Authority), TFL or the taxpayer. This meant that the event would have to court major sponsorship funding and significantly grow the number of paid entrants to acquire the relevant funding needed to keep the event viable.
 
-TFL's "Strategic Problem Solving" team were engaged when the hiatus was announced in September 2024, and a number of workshops were run to attempt to look for solutions for Ride London's financial issues. 
+[TfL's "Strategic Problem Solving" team](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html) were engaged when the hiatus was announced in September 2024, and a number of workshops were run to attempt to look for solutions for Ride London's financial issues. 
 
-Multiple workshops were held to try and find a sustainable financial model for Ride London, such as the event becoming more of a "carnival style celebration" (based on the existing [London Cycling Festival](https://lcc.org.uk/london-cycling-festival/) ran by the London Cycling Campaign) driven mostly by sponsorships, making use of the already closed roads for the challenge rides.
+Multiple workshops were held to try and find a sustainable financial model for Ride London, such as the event becoming more of a "carnival style celebration" (based on the existing [London Cycling Festival](https://lcc.org.uk/london-cycling-festival/) run by the London Cycling Campaign) driven mostly by sponsorships, making use of the already closed roads for the challenge rides.
 
-Plans were brainstormed for decentralised paid events, such as local hill climbs or time trials in the Olympic park or other closed road locations. Even expanded plans for more distances in the challenge rides and a larger array of merchandise was looked into.
+Plans were brainstormed for decentralised paid events, such as local hill climbs or time trials in the Olympic park or other closed road locations. Even expanded plans for more distances in the challenge rides and a larger array of merchandise were looked into.
 
 ## The indefinite pause
-In the end, Ride London was facing pressure from all directions. The need for more funding from direct sponsorships would require the event extensively altered to accommodate more sponsor friendly situations such as "festival" style set-ups with tents brands could hire. Against falling rider participation numbers this was probably a hard sell. 
+In the end, Ride London was facing pressure from all directions. The need for more funding from direct sponsorships would require the event to be extensively altered to accommodate more sponsor friendly situations such as "festival" style set-ups with tents brands could hire. Against falling rider participation numbers this was probably a hard sell.
 
 The event was also becoming the target of the usual anti-cycling London crowd, Tony Blackburn even suggested that Ride London should be replaced by an ["event for car owners"](https://road.cc/content/news/tony-blackburn-calls-car-event-replace-ridelondon-301527)
 
-This was compounded by having to re-route the London portion of the ride to avoid closing the Silvertown tunnel. Unmentioned in the released internal documents are the impact any distance lost in London would have on the Essex portion of the route which already led to friction and [local](https://www.change.org/p/stop-the-ride-london-essex-cycling-event-from-disrupting-ongar) [petitions](https://www.change.org/p/stop-further-ride-london-essex-cycle-race-in-essex) from local residents.
+This was compounded by having to re-route the London portion of the ride to avoid closing the Silvertown tunnel. Unmentioned in the released internal documents is the impact any distance lost in London would have on the Essex portion of the route which already led to friction and [local](https://www.change.org/p/stop-the-ride-london-essex-cycling-event-from-disrupting-ongar) [petitions](https://www.change.org/p/stop-further-ride-london-essex-cycle-race-in-essex) from local residents.
 
-The new options for both routing and fundraising was brought to RideLondon stakeholders on April 30th 2025. No information is available on the decision making process in this meeting but from internal timeline the decision to officially cancel RideLondon was made on July 21th 2025. 
+The new options for both routing and fundraising were brought to RideLondon stakeholders on [April 30th 2025](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html). No information is available on the decision making process in this meeting but from the internal timeline the decision to officially cancel RideLondon was made on July 21st 2025.
 
-Communications plans for the cancellation were drafted at the end of January and on February 10th 2026 the news was announced that Ride London was no more.
+[Communications plans for the cancellation](https://www.whatdotheyknow.com/request/correspondence_with_london_marat/response/3375500/attach/html/4/FOI%204366%202526%20Redacted.pdf.html) were drafted at the end of January and on February 10th 2026 the news was announced that Ride London was no more.
 <br>
 
 ---
 
 # Conclusion
-Ride London in the end was the victim of rising organisational costs, a challenging sponsorship market and a major planning dispute with TFL. With falling ridership numbers, especially with female riders, LME and TFL were unable to come to solution that would have made the event financially and logistically viable.
+Ride London in the end was the victim of rising organisational costs, a challenging sponsorship market and a major planning dispute with TFL. With falling ridership numbers, especially with female riders, LME and TFL were unable to come to a solution that would have made the event financially and logistically viable.
 
 This isn't to say the event was poorly organised, roads were properly stewarded and steps were taken by the event to reduce congestion by releasing faster riders earlier in the day. 
 
-However around a quarter of participants didn't start in their allotted time however which led to significant rider concentration during the beginning of the day, but most of this balanced out via the rest stops along the route.
+However around a quarter of participants didn't start in their allotted time which led to significant rider concentration during the beginning of the day, but most of this balanced out via the rest stops along the route.
 
 Ride London's inability to find a maintainable financial model providing closed road cycling events isn't an outlier. In 2023 the Tour of Cambridgeshire, part of the UCI Gran Fondo World Series, announced it would not return. Vélo Birmingham & Midlands ceased after being cancelled during the Covid-19 pandemic, without refunds being issued to participants due to "unrecoverable costs".
 
